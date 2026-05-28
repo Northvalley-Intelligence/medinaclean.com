@@ -2,10 +2,12 @@ import { Building2, CalendarCheck, Camera, Gift, Home, MessageCircle, Phone, Spa
 import { AppointmentForm } from "@/components/AppointmentForm";
 import { ReviewForm } from "@/components/ReviewForm";
 import { copy, instagram, phone, pricing, type Locale, whatsapp } from "@/lib/content";
+import { getApprovedReviews } from "@/lib/supabase-rest";
 
-export function SitePage({ locale }: { locale: Locale }) {
+export async function SitePage({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const otherLocale = locale === "en" ? "es" : "en";
+  const approvedReviews = await getApprovedReviews(locale);
 
   return (
     <main className="site-shell">
@@ -172,14 +174,41 @@ export function SitePage({ locale }: { locale: Locale }) {
           <div className="forms">
             <div>
               <div className="review-list">
-                <article className="card">
-                  <div className="stars" aria-label="5 stars">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star key={star} size={16} fill="#d6337b" color="#d6337b" aria-hidden />
-                    ))}
-                  </div>
-                  <p>{t.reviews.empty}</p>
-                </article>
+                {approvedReviews.length > 0
+                  ? approvedReviews.map((review) => (
+                      <article className="card review-card" key={review.id}>
+                        <div className="review-person">
+                          <div className="review-avatar" aria-hidden>
+                            {review.name.slice(0, 1).toUpperCase()}
+                          </div>
+                          <div>
+                            <h3>{review.name}</h3>
+                            <div className="stars" aria-label={`${review.rating} stars`}>
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star
+                                  key={star}
+                                  size={16}
+                                  fill={star <= review.rating ? "#d6337b" : "none"}
+                                  color="#d6337b"
+                                  aria-hidden
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <p>{review.message}</p>
+                      </article>
+                    ))
+                  : (
+                    <article className="card">
+                      <div className="stars" aria-label="5 stars">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star key={star} size={16} fill="#d6337b" color="#d6337b" aria-hidden />
+                        ))}
+                      </div>
+                      <p>{t.reviews.empty}</p>
+                    </article>
+                    )}
               </div>
             </div>
             <article className="card">

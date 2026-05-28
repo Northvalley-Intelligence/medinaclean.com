@@ -56,3 +56,43 @@ export async function uploadReviewPhoto(file: File, path: string) {
 
   return path;
 }
+
+export type ApprovedReview = {
+  id: string;
+  name: string;
+  rating: number;
+  message: string;
+  photo_path: string | null;
+  created_at: string;
+};
+
+export async function getApprovedReviews(language: "en" | "es") {
+  const key = serviceKey || publishableKey;
+  if (!url || !key) {
+    return [];
+  }
+
+  const params = new URLSearchParams({
+    select: "id,name,rating,message,photo_path,created_at",
+    status: "eq.approved",
+    consent_to_publish: "eq.true",
+    language: `eq.${language}`,
+    order: "created_at.desc",
+    limit: "6"
+  });
+
+  const response = await fetch(`${url}/rest/v1/reviews?${params.toString()}`, {
+    headers: {
+      apikey: key,
+      authorization: `Bearer ${key}`
+    },
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    console.error(`Supabase approved reviews fetch failed: ${await response.text()}`);
+    return [];
+  }
+
+  return (await response.json()) as ApprovedReview[];
+}
