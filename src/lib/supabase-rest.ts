@@ -57,6 +57,35 @@ export async function uploadReviewPhoto(file: File, path: string) {
   return path;
 }
 
+export async function createReviewPhotoSignedUrl(path: string) {
+  if (!url || !serviceKey) {
+    throw new Error("Supabase service role key is required for private photo display.");
+  }
+
+  const bucket = process.env.SUPABASE_REVIEW_BUCKET || "review-headshots";
+  const response = await fetch(`${url}/storage/v1/object/sign/${bucket}/${path}`, {
+    method: "POST",
+    headers: {
+      apikey: serviceKey,
+      authorization: `Bearer ${serviceKey}`,
+      "content-type": "application/json"
+    },
+    body: JSON.stringify({ expiresIn: 3600 })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Supabase signed URL failed: ${await response.text()}`);
+  }
+
+  const data = (await response.json()) as { signedURL?: string; signedUrl?: string };
+  const signedPath = data.signedURL || data.signedUrl;
+  if (!signedPath) {
+    throw new Error("Supabase did not return a signed review photo URL.");
+  }
+
+  return signedPath.startsWith("http") ? signedPath : `${url}${signedPath}`;
+}
+
 export type ApprovedReview = {
   id: string;
   name: string;

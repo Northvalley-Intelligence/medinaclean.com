@@ -172,15 +172,25 @@ export async function SitePage({ locale }: { locale: Locale }) {
             <p>{t.reviews.body}</p>
           </div>
           <div className="forms">
-            <div>
-              <div className="review-list">
+            <div className="review-display">
+              <div className="review-list" aria-live="polite">
                 {approvedReviews.length > 0
                   ? approvedReviews.map((review) => (
                       <article className="card review-card" key={review.id}>
                         <div className="review-person">
-                          <div className="review-avatar" aria-hidden>
-                            {review.name.slice(0, 1).toUpperCase()}
-                          </div>
+                          {review.photo_path ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              className="review-avatar"
+                              src={`/api/review-photo?path=${encodeURIComponent(review.photo_path)}`}
+                              alt=""
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="review-avatar" aria-hidden>
+                              {review.name.slice(0, 1).toUpperCase()}
+                            </div>
+                          )}
                           <div>
                             <h3>{review.name}</h3>
                             <div className="stars" aria-label={`${review.rating} stars`}>
