@@ -1,20 +1,23 @@
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const publishableKey =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 export function isSupabaseConfigured() {
-  return Boolean(url && serviceKey);
+  return Boolean(url && (serviceKey || publishableKey));
 }
 
 export async function insertRow<T extends Record<string, unknown>>(table: string, payload: T) {
-  if (!url || !serviceKey) {
+  const key = serviceKey || publishableKey;
+  if (!url || !key) {
     throw new Error("Supabase is not configured.");
   }
 
   const response = await fetch(`${url}/rest/v1/${table}`, {
     method: "POST",
     headers: {
-      apikey: serviceKey,
-      authorization: `Bearer ${serviceKey}`,
+      apikey: key,
+      authorization: `Bearer ${key}`,
       "content-type": "application/json",
       prefer: "return=representation"
     },
@@ -31,7 +34,7 @@ export async function insertRow<T extends Record<string, unknown>>(table: string
 
 export async function uploadReviewPhoto(file: File, path: string) {
   if (!url || !serviceKey) {
-    throw new Error("Supabase is not configured.");
+    throw new Error("Supabase service role key is required for private photo uploads.");
   }
 
   const bucket = process.env.SUPABASE_REVIEW_BUCKET || "review-headshots";

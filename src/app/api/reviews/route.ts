@@ -30,6 +30,13 @@ export async function POST(request: Request) {
 
   let photoPath: string | null = null;
   if (photo instanceof File && photo.size > 0) {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return NextResponse.json(
+        { error: "Photo uploads require Supabase service role configuration. Submit the review without a photo for now." },
+        { status: 503 }
+      );
+    }
+
     if (!["image/webp", "image/jpeg", "image/png"].includes(photo.type) || photo.size > maxPhotoBytes) {
       return NextResponse.json({ error: "Photo must be a low-resolution image under 250 KB." }, { status: 400 });
     }
