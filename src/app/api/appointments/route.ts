@@ -56,7 +56,16 @@ export async function POST(request: Request) {
     );
   }
 
-  await insertRow("appointment_requests", row);
+  try {
+    await insertRow("appointment_requests", row);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "The appointment request could not be saved." },
+      { status: 500 }
+    );
+  }
+
   return NextResponse.json({ ok: true });
 }
 

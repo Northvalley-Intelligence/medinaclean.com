@@ -44,15 +44,23 @@ export async function POST(request: Request) {
     photoPath = await uploadReviewPhoto(photo, `${randomUUID()}.webp`);
   }
 
-  await insertRow("reviews", {
-    language,
-    name,
-    rating,
-    message,
-    photo_path: photoPath,
-    consent_to_publish: consent,
-    status: "pending"
-  });
+  try {
+    await insertRow("reviews", {
+      language,
+      name,
+      rating,
+      message,
+      photo_path: photoPath,
+      consent_to_publish: consent,
+      status: "pending"
+    });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "The review could not be saved." },
+      { status: 500 }
+    );
+  }
 
   return NextResponse.json({ ok: true });
 }
