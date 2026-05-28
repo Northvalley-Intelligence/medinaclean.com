@@ -10,6 +10,7 @@ For similar projects: contact@northvalleyintel.com
 
 - Next.js
 - Supabase Free for appointment requests, moderated reviews, referrals, and low-resolution review headshots
+- Cloudflare Workers deployment through OpenNext
 - No paid Google Maps dependency
 - Local ZIP-radius validation against the 30188 service center
 
@@ -31,7 +32,12 @@ Copy `.env.example` to `.env.local` after creating a Supabase Free project.
 
 ## Deployment
 
-Use Vercel Hobby or Cloudflare Pages only if their free-tier terms fit the project. Do not add billing unless explicitly approved.
+Deployments are configured through GitHub Actions to Cloudflare Workers. Do not add billing unless explicitly approved.
+
+```bash
+npm run cf:build
+npm run cf:preview
+```
 
 ## Supabase Setup
 

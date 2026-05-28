@@ -12,21 +12,54 @@ The site owner should create and own the Supabase and hosting projects. Codex sh
 ## Free-Only Setup
 
 - Supabase: Free project, no billing required.
-- Hosting: Vercel Hobby or Cloudflare Pages, no billing required if permitted by current terms.
+- Hosting: Cloudflare Workers using the OpenNext adapter, staying on the free tier unless explicitly approved.
 - Domain/DNS: `medinaclean.com` is managed in Cloudflare.
 - Maps: no Google Maps billing. The site uses local ZIP validation only.
 - Email/SMS: not required for launch.
 
+## GitHub Actions Deployment
+
+The workflow at `.github/workflows/deploy-cloudflare.yml` deploys `main` to Cloudflare Workers.
+
+Required GitHub repository secrets:
+
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `NEXT_PUBLIC_SITE_URL`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_REVIEW_BUCKET`
+
+Optional GitHub repository secrets:
+
+- `NEXT_PUBLIC_ROSA_PHONE`
+- `NEXT_PUBLIC_ROSA_WHATSAPP`
+- `NEXT_PUBLIC_ROSA_INSTAGRAM`
+
+Use `https://medinaclean.com` for `NEXT_PUBLIC_SITE_URL` in production.
+
+The workflow also writes the Supabase/contact values as Cloudflare Worker secrets during deploy so runtime API routes can access them.
+
 ## Cloudflare DNS
 
-If hosting on Vercel, connect `medinaclean.com` in the Vercel project first, then add the DNS records Vercel provides inside Cloudflare.
+After the first successful Worker deployment, connect `medinaclean.com` to the Worker in Cloudflare:
 
-Typical Vercel records:
+1. Open Cloudflare dashboard.
+2. Go to Workers & Pages.
+3. Select the `medinaclean-com` Worker.
+4. Add custom domain `medinaclean.com`.
+5. Add `www.medinaclean.com` if Rosa wants the `www` version too.
 
-- Apex `medinaclean.com`: `A` record to Vercel's provided IP, or Vercel's current recommended apex record.
-- `www`: `CNAME` to Vercel's provided target.
+Do not enable paid Cloudflare products unless explicitly approved.
 
-Keep Cloudflare proxy settings aligned with the host's current guidance. Do not enable paid Cloudflare products unless explicitly approved.
+## Local Cloudflare Preview
+
+```bash
+npm run cf:preview
+```
+
+This builds with the Cloudflare OpenNext adapter and previews in the Workers runtime.
 
 ## Environment Variables
 

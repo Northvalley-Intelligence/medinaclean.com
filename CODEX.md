@@ -17,7 +17,7 @@ This is a public bilingual website for a small local cleaning business. Keep the
 - Next.js App Router
 - TypeScript
 - Supabase Free for database and storage
-- Cloudflare-managed domain
+- Cloudflare-managed domain and Cloudflare Workers deployment through OpenNext
 - No paid Google Maps, email, SMS, or analytics dependency unless explicitly approved
 
 ## Required Checks
@@ -155,6 +155,8 @@ Do not add services that require billing without explicit approval:
 - Paid analytics
 - Paid image/CDN transformations
 - Paid database or hosting tiers
+
+Cloudflare Workers/OpenNext configuration should stay compatible with the free tier unless the owner explicitly approves otherwise.
 
 If a feature would be better with a paid provider, implement a free-safe fallback and document the tradeoff.
 
