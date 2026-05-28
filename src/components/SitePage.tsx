@@ -85,6 +85,18 @@ export async function SitePage({ locale }: { locale: Locale }) {
         ))}
       </section>
 
+      <section className="section alt reviews-section" id="reviews">
+        <div className="section-inner">
+          <div className="section-head">
+            <h2>{t.reviews.title}</h2>
+            <p>{t.reviews.body}</p>
+          </div>
+          <div className="review-display">
+            <ReviewList approvedReviews={approvedReviews} emptyText={t.reviews.empty} />
+          </div>
+        </div>
+      </section>
+
       <section className="section alt" id="services">
         <div className="section-inner">
           <div className="section-head">
@@ -141,7 +153,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
       <section className="section alt" id="referral">
         <div className="section-inner">
           <div className="referral">
-            <div>
+            <div className="review-display">
               <p className="eyebrow">Referral</p>
               <h2>{t.referral.title}</h2>
               <p>{t.referral.body}</p>
@@ -161,70 +173,6 @@ export async function SitePage({ locale }: { locale: Locale }) {
             <div className="slot">Before / after</div>
             <div className="slot">Rosa at work</div>
             <div className="slot">Finished rooms</div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section alt" id="reviews">
-        <div className="section-inner">
-          <div className="section-head">
-            <h2>{t.reviews.title}</h2>
-            <p>{t.reviews.body}</p>
-          </div>
-          <div className="forms">
-            <div className="review-display">
-              <div className="review-list" aria-live="polite">
-                {approvedReviews.length > 0
-                  ? approvedReviews.map((review) => (
-                      <article className="card review-card" key={review.id}>
-                        <div className="review-person">
-                          {review.photo_path ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              className="review-avatar"
-                              src={`/api/review-photo?path=${encodeURIComponent(review.photo_path)}`}
-                              alt=""
-                              loading="lazy"
-                            />
-                          ) : (
-                            <div className="review-avatar" aria-hidden>
-                              {review.name.slice(0, 1).toUpperCase()}
-                            </div>
-                          )}
-                          <div>
-                            <h3>{review.name}</h3>
-                            <div className="stars" aria-label={`${review.rating} stars`}>
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Star
-                                  key={star}
-                                  size={16}
-                                  fill={star <= review.rating ? "#d6337b" : "none"}
-                                  color="#d6337b"
-                                  aria-hidden
-                                />
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                        <p>{review.message}</p>
-                      </article>
-                    ))
-                  : (
-                    <article className="card">
-                      <div className="stars" aria-label="5 stars">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star key={star} size={16} fill="#d6337b" color="#d6337b" aria-hidden />
-                        ))}
-                      </div>
-                      <p>{t.reviews.empty}</p>
-                    </article>
-                    )}
-              </div>
-            </div>
-            <article className="card">
-              <h3>{t.reviews.formTitle}</h3>
-              <ReviewForm locale={locale} />
-            </article>
           </div>
         </div>
       </section>
@@ -253,6 +201,15 @@ export async function SitePage({ locale }: { locale: Locale }) {
         </div>
       </section>
 
+      <section className="section alt" id="leave-review">
+        <div className="section-inner">
+          <article className="card leave-review-card">
+            <h2>{t.reviews.formTitle}</h2>
+            <ReviewForm locale={locale} />
+          </article>
+        </div>
+      </section>
+
       <footer className="footer" id="contact">
         <div className="footer-inner">
           <div>
@@ -275,6 +232,64 @@ export async function SitePage({ locale }: { locale: Locale }) {
         </div>
       </footer>
     </main>
+  );
+}
+
+function ReviewList({
+  approvedReviews,
+  emptyText
+}: {
+  approvedReviews: Awaited<ReturnType<typeof getApprovedReviews>>;
+  emptyText: string;
+}) {
+  return (
+    <div className="review-list" aria-live="polite">
+      {approvedReviews.length > 0 ? (
+        approvedReviews.map((review) => (
+          <article className="card review-card" key={review.id}>
+            <div className="review-person">
+              {review.photo_path ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  className="review-avatar"
+                  src={`/api/review-photo?path=${encodeURIComponent(review.photo_path)}`}
+                  alt=""
+                  loading="lazy"
+                />
+              ) : (
+                <div className="review-avatar" aria-hidden>
+                  {review.name.slice(0, 1).toUpperCase()}
+                </div>
+              )}
+              <div>
+                <h3>{review.name}</h3>
+                <div className="stars" aria-label={`${review.rating} stars`}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={16}
+                      fill={star <= review.rating ? "#d6337b" : "none"}
+                      color="#d6337b"
+                      aria-hidden
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <p>{review.message}</p>
+          </article>
+        ))
+      ) : (
+        <article className="card">
+          <div className="stars" aria-label="5 stars">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star key={star} size={16} fill="#d6337b" color="#d6337b" aria-hidden />
+            ))}
+          </div>
+          <p>{emptyText}</p>
+        </article>
+      )}
+    </div>
   );
 }
 

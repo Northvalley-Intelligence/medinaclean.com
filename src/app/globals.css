@@ -436,8 +436,18 @@ textarea {
   gap: 16px;
 }
 
+.reviews-section {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
 .review-display {
   min-width: 0;
+}
+
+.leave-review-card {
+  max-width: 760px;
+  margin: 0 auto;
 }
 
 .review-card h3 {
@@ -571,6 +581,7 @@ textarea {
     align-items: flex-start;
     flex-direction: column;
   }
+
 
   .stat-row {
     grid-template-columns: 1fr;
