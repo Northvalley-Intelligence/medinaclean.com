@@ -52,10 +52,11 @@ export function AppointmentForm({ locale }: { locale: Locale }) {
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setSubmitting(true);
     setStatus({ type: "idle", message: "" });
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(form);
     const payload = Object.fromEntries(formData.entries());
 
     try {
@@ -70,7 +71,7 @@ export function AppointmentForm({ locale }: { locale: Locale }) {
         throw new Error(result.error || t.error);
       }
 
-      event.currentTarget.reset();
+      form.reset();
       setStatus({ type: "success", message: t.success });
     } catch (error) {
       setStatus({ type: "error", message: error instanceof Error ? error.message : t.error });

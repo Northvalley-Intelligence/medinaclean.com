@@ -38,10 +38,11 @@ export function ReviewForm({ locale }: { locale: Locale }) {
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setSubmitting(true);
     setStatus({ type: "idle", message: "" });
 
-    const source = new FormData(event.currentTarget);
+    const source = new FormData(form);
     const formData = new FormData();
     formData.set("language", locale);
     formData.set("name", String(source.get("name") || ""));
@@ -65,7 +66,7 @@ export function ReviewForm({ locale }: { locale: Locale }) {
         throw new Error(result.error || t.error);
       }
 
-      event.currentTarget.reset();
+      form.reset();
       setStatus({ type: "success", message: t.success });
     } catch (error) {
       setStatus({ type: "error", message: error instanceof Error ? error.message : t.error });
