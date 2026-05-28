@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Clean pink home interior placeholder</title>
+  <desc id="desc">A bright illustrated room reserved for Rosa Medina's future cleaning photos.</desc>
+  <rect width="900" height="1100" fill="#fff4f8"/>
+  <path d="M0 760h900v340H0z" fill="#f8dce8"/>
+  <path d="M120 160h660v560H120z" fill="#ffffff" stroke="#e7b5c9" stroke-width="6"/>
+  <path d="M175 230h245v170H175zM480 230h245v170H480z" fill="#dff7ea" stroke="#e7b5c9" stroke-width="5"/>
+  <path d="M174 500h552v170H174z" fill="#ffe4a3" stroke="#e7b5c9" stroke-width="5"/>
+  <circle cx="690" cy="745" r="95" fill="#d6337b"/>
+  <path d="M645 742c34 20 65 20 92-4" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="20"/>
+  <path d="M210 790h330c36 0 65 29 65 65v42H145v-42c0-36 29-65 65-65z" fill="#ffffff" stroke="#e7b5c9" stroke-width="6"/>
+  <path d="M210 885h400M300 790v95M490 790v95" stroke="#e7b5c9" stroke-width="6"/>
+  <text x="450" y="1000" text-anchor="middle" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#9f1e58">Photo space</text>
+</svg>

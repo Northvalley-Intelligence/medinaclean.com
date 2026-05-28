@@ -1,0 +1,273 @@
+import { Building2, CalendarCheck, Camera, Gift, Home, MessageCircle, Phone, Sparkles, Star } from "lucide-react";
+import { AppointmentForm } from "@/components/AppointmentForm";
+import { ReviewForm } from "@/components/ReviewForm";
+import { copy, instagram, phone, pricing, type Locale, whatsapp } from "@/lib/content";
+
+export function SitePage({ locale }: { locale: Locale }) {
+  const t = copy[locale];
+  const otherLocale = locale === "en" ? "es" : "en";
+
+  return (
+    <main className="site-shell">
+      <JsonLd locale={locale} />
+      <header className="topbar">
+        <a className="promo-strip" href="#referral">
+          <Gift size={17} aria-hidden />
+          <span>{t.referral.topline}</span>
+          <strong>{t.referral.title}</strong>
+        </a>
+        <nav className="nav" aria-label="Main navigation">
+          <a className="brand" href={`/${locale}`}>
+            <span className="brand-mark">
+              <Sparkles size={20} aria-hidden />
+            </span>
+            <span>Medina Clean</span>
+          </a>
+          <div className="nav-links">
+            <a href="#services">{t.nav.services}</a>
+            <a href="#pricing">{t.nav.pricing}</a>
+            <a href="#reviews">{t.nav.reviews}</a>
+            <a href="#schedule">{t.nav.schedule}</a>
+          </div>
+          <div className="nav-actions">
+            <div className="lang-switch" aria-label="Language">
+              <a className={locale === "en" ? "active" : ""} href="/en">
+                EN
+              </a>
+              <a className={locale === "es" ? "active" : ""} href="/es">
+                ES
+              </a>
+            </div>
+            <a className="button secondary" href={`tel:${phone}`}>
+              <Phone size={17} aria-hidden />
+              {t.nav.call}
+            </a>
+          </div>
+        </nav>
+      </header>
+
+      <section className="hero">
+        <div>
+          <p className="eyebrow">{t.hero.eyebrow}</p>
+          <h1>{t.hero.title}</h1>
+          <p className="hero-copy">{t.hero.body}</p>
+          <div className="hero-actions">
+            <a className="button primary" href="#schedule">
+              <CalendarCheck size={18} aria-hidden />
+              {t.hero.primary}
+            </a>
+            <a className="button ghost" href={whatsapp}>
+              <MessageCircle size={18} aria-hidden />
+              {t.hero.whatsapp}
+            </a>
+            <a className="button ghost" href={instagram}>
+              <Camera size={18} aria-hidden />
+              Instagram
+            </a>
+          </div>
+        </div>
+        <div className="hero-panel" role="img" aria-label="Clean home interior with pink cleaning accents">
+          <div className="hero-panel-inner">
+            <strong>Woodstock, GA</strong>
+            <span>30188 + nearby homes and businesses</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="stat-row" aria-label="Highlights">
+        {t.stats.map(([value, label]) => (
+          <div className="stat" key={value}>
+            <strong>{value}</strong>
+            <span>{label}</span>
+          </div>
+        ))}
+      </section>
+
+      <section className="section alt" id="services">
+        <div className="section-inner">
+          <div className="section-head">
+            <h2>{t.services.title}</h2>
+            <p>{t.services.body}</p>
+          </div>
+          <div className="grid">
+            {t.services.items.map(([title, body], index) => {
+              const Icon = [Home, Building2, Sparkles, Building2][index];
+              return (
+                <article className="card" key={title}>
+                  <Icon color="#d6337b" size={24} aria-hidden />
+                  <h3>{title}</h3>
+                  <p>{body}</p>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="section" id="pricing">
+        <div className="section-inner">
+          <div className="section-head">
+            <h2>{t.pricing.title}</h2>
+            <p>{t.pricing.body}</p>
+          </div>
+          <div className="pricing-wrap">
+            <table className="pricing">
+              <thead>
+                <tr>
+                  {t.pricing.headers.map((header) => (
+                    <th key={header}>{header}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {pricing.map((row) => (
+                  <tr key={row.bedrooms}>
+                    <td>{row.bedrooms}</td>
+                    <td>{row.baths}</td>
+                    <td>{row.oneTime}</td>
+                    <td>{row.everyThreeWeeks}</td>
+                    <td>{row.everyTwoWeeks}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="note">{t.pricing.note}</p>
+        </div>
+      </section>
+
+      <section className="section alt" id="referral">
+        <div className="section-inner">
+          <div className="referral">
+            <div>
+              <p className="eyebrow">Referral</p>
+              <h2>{t.referral.title}</h2>
+              <p>{t.referral.body}</p>
+            </div>
+            <Gift color="#d6337b" size={42} aria-hidden />
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="section-inner">
+          <div className="section-head">
+            <h2>{t.gallery.title}</h2>
+            <p>{t.gallery.body}</p>
+          </div>
+          <div className="gallery-slots">
+            <div className="slot">Before / after</div>
+            <div className="slot">Rosa at work</div>
+            <div className="slot">Finished rooms</div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section alt" id="reviews">
+        <div className="section-inner">
+          <div className="section-head">
+            <h2>{t.reviews.title}</h2>
+            <p>{t.reviews.body}</p>
+          </div>
+          <div className="forms">
+            <div>
+              <div className="review-list">
+                <article className="card">
+                  <div className="stars" aria-label="5 stars">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star key={star} size={16} fill="#d6337b" color="#d6337b" aria-hidden />
+                    ))}
+                  </div>
+                  <p>{t.reviews.empty}</p>
+                </article>
+              </div>
+            </div>
+            <article className="card">
+              <h3>{t.reviews.formTitle}</h3>
+              <ReviewForm locale={locale} />
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section className="section" id="schedule">
+        <div className="section-inner">
+          <div className="section-head">
+            <h2>{t.schedule.title}</h2>
+            <p>{t.schedule.body}</p>
+          </div>
+          <div className="forms">
+            <article className="card">
+              <h3>{t.schedule.formTitle}</h3>
+              <AppointmentForm locale={locale} />
+            </article>
+            <div className="faq">
+              <h2>{t.faq.title}</h2>
+              {t.faq.items.map(([question, answer]) => (
+                <details key={question}>
+                  <summary>{question}</summary>
+                  <p>{answer}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="footer" id="contact">
+        <div className="footer-inner">
+          <div>
+            <strong>Medina Clean</strong>
+            <p>{t.privacy}</p>
+            <p>
+              Built by <a href="https://northvalleyintel.com">Northvalley Intelligence LLC</a>. For similar projects,
+              contact <a href="mailto:contact@northvalleyintel.com">contact@northvalleyintel.com</a>.
+            </p>
+          </div>
+          <div className="nav-actions">
+            <a className="button secondary" href={`/${otherLocale}`}>
+              {otherLocale.toUpperCase()}
+            </a>
+            <a className="button secondary" href={`tel:${phone}`}>
+              <Phone size={17} aria-hidden />
+              {phone}
+            </a>
+          </div>
+        </div>
+      </footer>
+    </main>
+  );
+}
+
+function JsonLd({ locale }: { locale: Locale }) {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "CleaningService",
+    name: "Medina Clean",
+    url: "https://medinaclean.com",
+    telephone: phone,
+    areaServed: ["Woodstock GA", "30188", "Cherokee County GA", "Cobb County GA"],
+    availableLanguage: ["English", "Spanish"],
+    priceRange: "$$",
+    serviceType: ["House cleaning", "Apartment cleaning", "Condo cleaning", "Deep cleaning", "Office cleaning"],
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Woodstock",
+      addressRegion: "GA",
+      postalCode: "30188",
+      addressCountry: "US"
+    },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: locale === "en" ? "Cleaning services" : "Servicios de limpieza",
+      itemListElement: pricing.map((row) => ({
+        "@type": "Offer",
+        name: `${row.bedrooms} bedroom cleaning`,
+        priceCurrency: "USD",
+        price: row.oneTime.replace("$", "")
+      }))
+    }
+  };
+
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
+}
