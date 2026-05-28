@@ -54,6 +54,10 @@ export function AppointmentForm({ locale }: { locale: Locale }) {
     type: "idle",
     message: ""
   });
+  const [phoneStatus, setPhoneStatus] = useState<{ type: "idle" | "success" | "error"; message: string }>({
+    type: "idle",
+    message: ""
+  });
 
   function onZipBlur(event: React.FocusEvent<HTMLInputElement>) {
     const zip = event.currentTarget.value.trim();
@@ -75,6 +79,33 @@ export function AppointmentForm({ locale }: { locale: Locale }) {
     setZipStatus({ type: result.ok ? "success" : "error", message: result.message });
   }
 
+  function onPhoneBlur(event: React.FocusEvent<HTMLInputElement>) {
+    const input = event.currentTarget;
+    const normalized = normalizeUsPhone(input.value);
+
+    if (!input.value.trim()) {
+      setPhoneStatus({ type: "idle", message: "" });
+      return;
+    }
+
+    if (!normalized) {
+      setPhoneStatus({
+        type: "error",
+        message:
+          locale === "es"
+            ? "Ingrese un número de teléfono de EE. UU. de 10 dígitos."
+            : "Enter a 10-digit US phone number."
+      });
+      return;
+    }
+
+    input.value = normalized.display;
+    setPhoneStatus({
+      type: "success",
+      message: locale === "es" ? "Número válido de EE. UU." : "Valid US phone number."
+    });
+  }
+
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -83,12 +114,25 @@ export function AppointmentForm({ locale }: { locale: Locale }) {
 
     const formData = new FormData(form);
     const payload = Object.fromEntries(formData.entries());
+    const phone = normalizeUsPhone(String(payload.phone || ""));
+
+    if (!phone) {
+      setPhoneStatus({
+        type: "error",
+        message:
+          locale === "es"
+            ? "Ingrese un número de teléfono de EE. UU. de 10 dígitos."
+            : "Enter a 10-digit US phone number."
+      });
+      setSubmitting(false);
+      return;
+    }
 
     try {
       const response = await fetch("/api/appointments", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ...payload, language: locale })
+        body: JSON.stringify({ ...payload, phone: phone.e164, language: locale })
       });
 
       if (!response.ok) {
@@ -114,7 +158,21 @@ export function AppointmentForm({ locale }: { locale: Locale }) {
         </label>
         <label>
           {t.phone}
-          <input name="phone" required autoComplete="tel" inputMode="tel" />
+          <input
+            name="phone"
+            required
+            autoComplete="tel"
+            inputMode="tel"
+            placeholder="(470) 443-4817"
+            onBlur={onPhoneBlur}
+            aria-describedby="phone-status"
+          />
+          <span
+            className={`field-hint ${phoneStatus.type === "error" ? "error" : phoneStatus.type === "success" ? "success" : ""}`}
+            id="phone-status"
+          >
+            {phoneStatus.message}
+          </span>
         </label>
       </div>
       <label>
@@ -194,4 +252,18 @@ export function AppointmentForm({ locale }: { locale: Locale }) {
       </p>
     </form>
   );
+}
+
+function normalizeUsPhone(value: string) {
+  const digits = value.replace(/\D/g, "");
+  const national = digits.length === 11 && digits.startsWith("1") ? digits.slice(1) : digits;
+
+  if (!/^[2-9]\d{2}[2-9]\d{6}$/.test(national)) {
+    return null;
+  }
+
+  return {
+    e164: `+1${national}`,
+    display: `(${national.slice(0, 3)}) ${national.slice(3, 6)}-${national.slice(6)}`
+  };
 }
