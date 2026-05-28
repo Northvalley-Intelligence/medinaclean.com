@@ -83,7 +83,7 @@ export async function createReviewPhotoSignedUrl(path: string) {
     throw new Error("Supabase did not return a signed review photo URL.");
   }
 
-  return signedPath.startsWith("http") ? signedPath : `${url}${signedPath}`;
+  return signedPath.startsWith("http") ? signedPath : `${url}/storage/v1${signedPath}`;
 }
 
 export type ApprovedReview = {
