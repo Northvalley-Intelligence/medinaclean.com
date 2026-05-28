@@ -49,7 +49,14 @@ After the first successful Worker deployment, connect `medinaclean.com` to the W
 4. Add custom domain `medinaclean.com`.
 5. Add `www.medinaclean.com` if Rosa wants the `www` version too.
 
-The repo does not manage Worker routes in `wrangler.jsonc` because some scoped Cloudflare tokens do not expose the Worker Routes permission in the dashboard. Custom domains/routes can be attached manually in Cloudflare after deployment.
+The repo manages Worker routes in `wrangler.jsonc`, so the Cloudflare API token must be able to edit Worker routes for the `medinaclean.com` zone.
+
+Required Cloudflare token permissions:
+
+- `Account` -> `Workers Scripts` -> `Edit`
+- `Account` -> `Account Settings` -> `Read`
+- `Zone` -> `Workers Routes` -> `Edit`
+- `Zone` -> `Zone` -> `Read`
 
 Do not enable paid Cloudflare products unless explicitly approved.
 

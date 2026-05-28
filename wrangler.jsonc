@@ -4,7 +4,16 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-05-28",
   "compatibility_flags": ["nodejs_compat"],
-  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "medinaclean.com/*",
+      "zone_name": "medinaclean.com"
+    },
+    {
+      "pattern": "www.medinaclean.com/*",
+      "zone_name": "medinaclean.com"
+    }
+  ],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
