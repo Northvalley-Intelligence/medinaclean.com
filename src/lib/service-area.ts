@@ -42,6 +42,28 @@ export function validateServiceArea(zipCode: string) {
   };
 }
 
+export function validateServiceAreaMessage(zipCode: string, language: "en" | "es") {
+  const validation = validateServiceArea(zipCode);
+
+  if (validation.ok) {
+    return {
+      ok: true,
+      message:
+        language === "es"
+          ? "Este ZIP está dentro del área de servicio actual."
+          : "This ZIP is within the current service area."
+    };
+  }
+
+  return {
+    ok: false,
+    message:
+      language === "es"
+        ? "Este ZIP parece estar fuera del área de servicio de 20 millas. Rosa puede revisarlo manualmente."
+        : "This ZIP appears outside the 20-mile service area. Rosa can review it manually."
+  };
+}
+
 function distance(a: { lat: number; lon: number }, b: { lat: number; lon: number }) {
   const radius = 3958.8;
   const dLat = toRad(b.lat - a.lat);

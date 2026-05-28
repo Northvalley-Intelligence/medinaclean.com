@@ -399,6 +399,22 @@ textarea {
   resize: vertical;
 }
 
+.field-hint {
+  min-height: 18px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.field-hint.error {
+  color: #9b1c1c;
+}
+
+.field-hint.success {
+  color: #17613a;
+}
+
 .checkbox {
   grid-template-columns: auto 1fr;
   align-items: start;

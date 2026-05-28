@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Locale } from "@/lib/content";
+import { validateServiceAreaMessage } from "@/lib/service-area";
 
 const text = {
   en: {
@@ -49,6 +50,30 @@ export function AppointmentForm({ locale }: { locale: Locale }) {
     message: ""
   });
   const [submitting, setSubmitting] = useState(false);
+  const [zipStatus, setZipStatus] = useState<{ type: "idle" | "success" | "error"; message: string }>({
+    type: "idle",
+    message: ""
+  });
+
+  function onZipBlur(event: React.FocusEvent<HTMLInputElement>) {
+    const zip = event.currentTarget.value.trim();
+
+    if (!zip) {
+      setZipStatus({ type: "idle", message: "" });
+      return;
+    }
+
+    if (!/^\d{5}$/.test(zip)) {
+      setZipStatus({
+        type: "error",
+        message: locale === "es" ? "Ingrese un código ZIP de 5 dígitos." : "Enter a 5-digit ZIP code."
+      });
+      return;
+    }
+
+    const result = validateServiceAreaMessage(zip, locale);
+    setZipStatus({ type: result.ok ? "success" : "error", message: result.message });
+  }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -99,7 +124,21 @@ export function AppointmentForm({ locale }: { locale: Locale }) {
       <div className="field-grid">
         <label>
           {t.zip}
-          <input name="zipCode" required inputMode="numeric" pattern="[0-9]{5}" placeholder="30188" />
+          <input
+            name="zipCode"
+            required
+            inputMode="numeric"
+            pattern="[0-9]{5}"
+            placeholder="30188"
+            onBlur={onZipBlur}
+            aria-describedby="zip-status"
+          />
+          <span
+            className={`field-hint ${zipStatus.type === "error" ? "error" : zipStatus.type === "success" ? "success" : ""}`}
+            id="zip-status"
+          >
+            {zipStatus.message}
+          </span>
         </label>
         <label>
           {t.service}
