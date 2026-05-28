@@ -18,14 +18,16 @@ jobs:
       contents: read
       deployments: write
     env:
-      NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+      NEXT_PUBLIC_SITE_URL: https://medinaclean.com
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       NEXT_PUBLIC_ROSA_PHONE: ${{ secrets.NEXT_PUBLIC_ROSA_PHONE }}
       NEXT_PUBLIC_ROSA_WHATSAPP: ${{ secrets.NEXT_PUBLIC_ROSA_WHATSAPP }}
       NEXT_PUBLIC_ROSA_INSTAGRAM: ${{ secrets.NEXT_PUBLIC_ROSA_INSTAGRAM }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      SUPABASE_REVIEW_BUCKET: ${{ secrets.SUPABASE_REVIEW_BUCKET }}
+      SUPABASE_REVIEW_BUCKET: review-headshots
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -48,28 +50,24 @@ jobs:
       - name: Build Cloudflare worker
         run: npm run cf:build
 
-      - name: Deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          secrets: |
-            NEXT_PUBLIC_SITE_URL
-            NEXT_PUBLIC_SUPABASE_URL
-            NEXT_PUBLIC_SUPABASE_ANON_KEY
-            NEXT_PUBLIC_ROSA_PHONE
-            NEXT_PUBLIC_ROSA_WHATSAPP
-            NEXT_PUBLIC_ROSA_INSTAGRAM
+      - name: Sync Worker secrets
+        run: |
+          set -euo pipefail
+          for name in \
+            NEXT_PUBLIC_SUPABASE_URL \
+            NEXT_PUBLIC_SUPABASE_ANON_KEY \
+            NEXT_PUBLIC_ROSA_PHONE \
+            NEXT_PUBLIC_ROSA_WHATSAPP \
+            NEXT_PUBLIC_ROSA_INSTAGRAM \
             SUPABASE_SERVICE_ROLE_KEY
-            SUPABASE_REVIEW_BUCKET
-        env:
-          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_ROSA_PHONE: ${{ secrets.NEXT_PUBLIC_ROSA_PHONE }}
-          NEXT_PUBLIC_ROSA_WHATSAPP: ${{ secrets.NEXT_PUBLIC_ROSA_WHATSAPP }}
-          NEXT_PUBLIC_ROSA_INSTAGRAM: ${{ secrets.NEXT_PUBLIC_ROSA_INSTAGRAM }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          SUPABASE_REVIEW_BUCKET: ${{ secrets.SUPABASE_REVIEW_BUCKET }}
+          do
+            value="${!name:-}"
+            if [ -n "$value" ]; then
+              printf "%s" "$value" | npx wrangler secret put "$name"
+            else
+              echo "Skipping $name; no GitHub secret configured."
+            fi
+          done
+
+      - name: Deploy
+        run: npx wrangler deploy

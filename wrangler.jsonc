@@ -8,6 +8,10 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://medinaclean.com",
+    "SUPABASE_REVIEW_BUCKET": "review-headshots"
+  },
   "observability": {
     "enabled": true
   }

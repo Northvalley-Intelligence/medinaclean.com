@@ -25,11 +25,9 @@ Required GitHub repository secrets:
 
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
-- `NEXT_PUBLIC_SITE_URL`
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
-- `SUPABASE_REVIEW_BUCKET`
 
 Optional GitHub repository secrets:
 
@@ -39,7 +37,7 @@ Optional GitHub repository secrets:
 
 Use `https://medinaclean.com` for `NEXT_PUBLIC_SITE_URL` in production.
 
-The workflow also writes the Supabase/contact values as Cloudflare Worker secrets during deploy so runtime API routes can access them.
+The workflow writes configured Supabase/contact values as Cloudflare Worker secrets during deploy so runtime API routes can access them. Empty optional values are skipped.
 
 ## Cloudflare DNS
 
