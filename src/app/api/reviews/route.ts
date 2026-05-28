@@ -41,7 +41,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Photo must be a low-resolution image under 250 KB." }, { status: 400 });
     }
 
-    photoPath = await uploadReviewPhoto(photo, `${randomUUID()}.webp`);
+    try {
+      photoPath = await uploadReviewPhoto(photo, `${randomUUID()}.webp`);
+    } catch (error) {
+      console.error(error);
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : "The review photo could not be uploaded." },
+        { status: 500 }
+      );
+    }
   }
 
   try {
