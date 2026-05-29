@@ -7,6 +7,10 @@ export function isSupabaseConfigured() {
   return Boolean(url && (serviceKey || publishableKey));
 }
 
+export function isSupabaseServiceConfigured() {
+  return Boolean(url && serviceKey);
+}
+
 export async function insertRow<T extends Record<string, unknown>>(table: string, payload: T) {
   const key = serviceKey || publishableKey;
   if (!url || !key) {
@@ -27,6 +31,98 @@ export async function insertRow<T extends Record<string, unknown>>(table: string
   if (!response.ok) {
     const text = await response.text();
     throw new Error(`Supabase insert failed: ${text}`);
+  }
+
+  return (await response.json()) as unknown[];
+}
+
+export async function insertServiceRow<T extends Record<string, unknown>>(table: string, payload: T) {
+  if (!url || !serviceKey) {
+    throw new Error("Supabase service role key is required.");
+  }
+
+  const response = await fetch(`${url}/rest/v1/${table}`, {
+    method: "POST",
+    headers: {
+      apikey: serviceKey,
+      authorization: `Bearer ${serviceKey}`,
+      "content-type": "application/json",
+      prefer: "return=representation"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Supabase service insert failed: ${text}`);
+  }
+
+  return (await response.json()) as unknown[];
+}
+
+export async function selectServiceRows<T>(table: string, query = "") {
+  if (!url || !serviceKey) {
+    throw new Error("Supabase service role key is required.");
+  }
+
+  const suffix = query ? `?${query}` : "";
+  const response = await fetch(`${url}/rest/v1/${table}${suffix}`, {
+    headers: {
+      apikey: serviceKey,
+      authorization: `Bearer ${serviceKey}`
+    },
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Supabase service select failed: ${text}`);
+  }
+
+  return (await response.json()) as T[];
+}
+
+export async function updateServiceRows<T extends Record<string, unknown>>(table: string, query: string, payload: T) {
+  if (!url || !serviceKey) {
+    throw new Error("Supabase service role key is required.");
+  }
+
+  const response = await fetch(`${url}/rest/v1/${table}?${query}`, {
+    method: "PATCH",
+    headers: {
+      apikey: serviceKey,
+      authorization: `Bearer ${serviceKey}`,
+      "content-type": "application/json",
+      prefer: "return=representation"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Supabase service update failed: ${text}`);
+  }
+
+  return (await response.json()) as unknown[];
+}
+
+export async function deleteServiceRows(table: string, query: string) {
+  if (!url || !serviceKey) {
+    throw new Error("Supabase service role key is required.");
+  }
+
+  const response = await fetch(`${url}/rest/v1/${table}?${query}`, {
+    method: "DELETE",
+    headers: {
+      apikey: serviceKey,
+      authorization: `Bearer ${serviceKey}`,
+      prefer: "return=representation"
+    }
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Supabase service delete failed: ${text}`);
   }
 
   return (await response.json()) as unknown[];

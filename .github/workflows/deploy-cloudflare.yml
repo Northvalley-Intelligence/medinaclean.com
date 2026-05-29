@@ -47,6 +47,15 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Test with coverage
+        run: npm run test:coverage
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Playwright integration tests
+        run: npm run test:e2e -- --project=chromium
+
       - name: Build Cloudflare worker
         run: npm run cf:build
 

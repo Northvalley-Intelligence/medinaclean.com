@@ -19,6 +19,15 @@ The service role key must only be stored in `.env.local` and hosting environment
 2. Confirm Row Level Security is enabled for all public tables.
 3. Create a private storage bucket named `review-headshots`.
 4. Add environment variables from `.env.example`.
+5. Set `ROSA_ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` before using `/admin`.
+
+Generate a local session secret with:
+
+```bash
+openssl rand -hex 32
+```
+
+For local isolated development and integration testing, use the Supabase CLI workflow in `docs/local-testing.md` instead of Rosa's production Supabase project.
 
 ## Review Moderation
 
@@ -57,3 +66,17 @@ Status values:
 ## Future Ops App
 
 The operations app can connect to the same Rosa-only Supabase project using backend-only service credentials. It should not use public anon access for business automation.
+
+## AI Usage Tracking
+
+The `ai_usage_events` table is private and service-role only. Public users cannot insert or read AI usage rows.
+
+Use `ai_usage_monthly_summary` to review provider usage, estimated cost, latency, and errors:
+
+```sql
+select *
+from public.ai_usage_monthly_summary
+order by month desc, estimated_cost_usd desc;
+```
+
+Use this data before deciding whether to keep using free hosted AI, pay for API usage, or test a local LLM.
