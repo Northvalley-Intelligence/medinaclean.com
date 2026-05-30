@@ -118,7 +118,7 @@ test.describe("admin operations with local database", () => {
     await expect(page.getByRole("link", { name: "Siguiente" })).toBeVisible();
     await expect(page.getByLabel("Ir a fecha")).toHaveValue(jobDay);
     await expect(page.getByText(`Trabajo: ${clientName}`)).toBeVisible();
-    await expect(page.getByText(/First cleaning .* Necesita confirmación .* (Rosa Medina|Crew Member)/)).toBeVisible();
+    await expect(page.getByText(/First cleaning .* Esperando aceptación del cliente .* (Rosa Medina|Crew Member)/)).toBeVisible();
     await expect(page.getByText(new RegExp(`First cleaning .* Crew Member ${testRun}`))).not.toBeVisible();
     await page.getByRole("link", { name: "Siguiente" }).click();
     await expect(page).toHaveURL(new RegExp(`/admin/calendar\\?view=day&date=${nextDate(jobDay)}`));
@@ -163,7 +163,11 @@ test.describe("admin operations with local database", () => {
     const nextJobTask = page.getByRole("article").filter({ hasText: clientName }).filter({ hasText: "Planear próxima limpieza" });
     await expect(nextJobTask).toBeVisible();
     await nextJobTask.getByRole("button", { name: "Crear próxima limpieza" }).click();
-    await expect(page.getByText("Próxima limpieza creada.")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Calendario" })).toBeVisible();
+    await expect(page.getByText(/Próxima limpieza creada para .+\./)).toBeVisible();
+    const calendarNextJob = page.getByRole("article").filter({ hasText: `Trabajo: ${clientName}` });
+    await expect(calendarNextJob).toBeVisible();
+    await expect(calendarNextJob.getByText("Esperando aceptación del cliente")).toBeVisible();
     await page.getByRole("link", { name: "Clientes" }).click();
     await page.getByRole("article").filter({ hasText: clientName }).getByRole("link", { name: "Ver detalles" }).click();
     const plannedNextJob = page.getByRole("article").filter({ hasText: "Necesita confirmación" }).first();

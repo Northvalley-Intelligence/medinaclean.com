@@ -28,6 +28,8 @@ type CalendarPageProps = {
   searchParams?: Promise<{
     error?: string;
     blockCreated?: string;
+    nextJobCreated?: string;
+    nextJobAt?: string;
     lang?: string;
     view?: string;
     date?: string;
@@ -122,6 +124,11 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
       </header>
 
       {params?.blockCreated ? <p className="admin-success">{t.blockSaved}</p> : null}
+      {params?.nextJobCreated ? (
+        <p className="admin-success">
+          {t.nextCleaningCreatedFor} {formatDateTime(params.nextJobAt || "", locale)}.
+        </p>
+      ) : null}
       {params?.error || loadError ? <p className="admin-alert">{params?.error || loadError}</p> : null}
 
       <section className="admin-calendar-shell">
@@ -284,7 +291,7 @@ function buildActivities(
         id: job.id,
         at: job.scheduled_for || "",
         label: `${t.jobActivity}: ${clientNames.get(job.client_id) || job.service_type}`,
-        detail: `${job.service_type} · ${jobStatusLabel(job.status, locale)} · ${job.crew_member_id ? crewNames.get(job.crew_member_id) || t.notSet : t.notSet}`,
+        detail: `${job.service_type} · ${calendarJobStatusLabel(job.status, locale)} · ${job.crew_member_id ? crewNames.get(job.crew_member_id) || t.notSet : t.notSet}`,
         meta: formatDateTime(job.scheduled_for, locale),
         kind: "job" as const
       })),
@@ -307,6 +314,14 @@ function buildActivities(
       kind: "block" as const
     }))
   ].sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime());
+}
+
+function calendarJobStatusLabel(value: string, locale: "es" | "en") {
+  if (value === "needs_confirmation") {
+    return adminText[locale].waitingClientAcceptance;
+  }
+
+  return jobStatusLabel(value, locale);
 }
 
 function getView(value: string | undefined): CalendarView {

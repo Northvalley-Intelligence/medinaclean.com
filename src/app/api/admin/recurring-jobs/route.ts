@@ -59,6 +59,8 @@ export async function POST(request: Request) {
       scheduled_for: assignment.scheduledFor,
       crew_member_id: assignment.crewMember.id
     });
+
+    return respondWithScheduledJob(request, { ok: true, lang, scheduledFor: assignment.scheduledFor }, 200, isForm);
   } catch (error) {
     console.error(error);
     return respond(
@@ -70,6 +72,29 @@ export async function POST(request: Request) {
   }
 
   return respond(request, { ok: true, lang }, 200, isForm);
+}
+
+function respondWithScheduledJob(
+  request: Request,
+  body: Record<string, unknown> & { scheduledFor?: string },
+  status: number,
+  isForm: boolean | undefined
+) {
+  if (!isForm) {
+    return NextResponse.json(body, { status });
+  }
+
+  const params = new URLSearchParams();
+  if (body.lang === "en") {
+    params.set("lang", "en");
+  }
+  params.set("view", "day");
+  if (body.scheduledFor) {
+    params.set("date", body.scheduledFor.slice(0, 10));
+    params.set("nextJobAt", body.scheduledFor);
+  }
+  params.set("nextJobCreated", "1");
+  return NextResponse.redirect(new URL(`/admin/calendar?${params.toString()}`, request.url), { status: 303 });
 }
 
 function respond(request: Request, body: Record<string, unknown>, status: number, isForm: boolean | undefined) {
