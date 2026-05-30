@@ -67,6 +67,9 @@ test.describe("admin operations with local database", () => {
     await clientRow.getByRole("link", { name: "Ver detalles" }).click();
     await expect(page.getByRole("heading", { name: clientName })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Memoria del cliente" })).toBeVisible();
+    const clientMemory = page.locator(".admin-facts");
+    await expect(clientMemory.getByText("Teléfono")).toBeVisible();
+    await expect(clientMemory.getByText("(470) 555-0100")).toBeVisible();
 
     await page.getByLabel("Fecha y hora").fill(jobDate);
     await page.getByLabel("Duración en minutos").fill("180");

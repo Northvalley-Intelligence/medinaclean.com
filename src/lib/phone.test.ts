@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeUsPhone } from "./phone";
+import { formatUsPhone, normalizeUsPhone } from "./phone";
 
 describe("phone", () => {
   it("accepts any formatted 10-digit phone number", () => {
@@ -11,5 +11,9 @@ describe("phone", () => {
 
   it("rejects values that do not contain exactly 10 national digits", () => {
     expect(normalizeUsPhone("555")).toBeNull();
+  });
+
+  it("formats stored E.164 phone numbers for display", () => {
+    expect(formatUsPhone("+11122332133")).toBe("(112) 233-2133");
   });
 });

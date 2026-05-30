@@ -11,3 +11,11 @@ export function normalizeUsPhone(value: string) {
     display: `(${national.slice(0, 3)}) ${national.slice(3, 6)}-${national.slice(6)}`
   };
 }
+
+export function formatUsPhone(value: string | null | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  return normalizeUsPhone(value)?.display || value;
+}
