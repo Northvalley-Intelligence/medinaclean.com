@@ -75,6 +75,29 @@ test("admin client phone validates on blur without losing typed client data", as
   await expect(page.getByLabel("Notas")).toHaveValue("Do not lose this text.");
 });
 
+test("admin client phone validation does not run on submit before blur", async ({ page }) => {
+  await page.goto("/admin?lang=en");
+  await page.getByLabel("Password").fill("test-admin");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.locator('form[action="/api/admin/clients"]')).toHaveAttribute("data-ready", "true");
+
+  await page.route("**/api/admin/clients", async (route) => {
+    await route.fulfill({
+      status: 303,
+      headers: { location: "/admin?lang=en&created=1" }
+    });
+  });
+
+  await page.getByLabel("Name").fill("Client With Unblurred Phone");
+  await page.getByRole("textbox", { name: "Phone" }).fill("222-133-2323");
+
+  const clientRequest = page.waitForRequest((request) => request.url().includes("/api/admin/clients"));
+  await page.getByRole("button", { name: "Save client" }).click();
+  await clientRequest;
+
+  await expect(page.getByText("Enter a 10-digit US phone number.")).not.toBeVisible();
+});
+
 test("admin can switch to English", async ({ page }) => {
   await page.goto("/admin?lang=en");
 
