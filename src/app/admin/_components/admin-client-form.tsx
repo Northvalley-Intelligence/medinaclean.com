@@ -139,7 +139,7 @@ export function AdminClientForm({ locale }: { locale: AdminLocale }) {
         </label>
         <label>
           {t.price}
-          <input name="currentPriceUsd" inputMode="decimal" placeholder="150" />
+          <input name="currentPriceUsd" inputMode="decimal" defaultValue="150" />
         </label>
       </div>
       <div className="admin-form-row">
@@ -149,7 +149,7 @@ export function AdminClientForm({ locale }: { locale: AdminLocale }) {
         </label>
         <label>
           {t.usualTime}
-          <input name="usualTime" placeholder="Morning" />
+          <input name="usualTime" defaultValue="Morning" />
         </label>
       </div>
       <div className="admin-checks">
