@@ -5,6 +5,7 @@ type ClientLike = {
   cleaning_frequency: string;
   preferred_communication_channel?: string | null;
   usual_time?: string | null;
+  current_price_usd?: number | null;
 };
 
 type JobLike = {
@@ -67,7 +68,7 @@ export function shouldCreateNextJob(client: ClientLike, jobs: JobLike[]) {
   return !jobs.some((job) => job.client_id === client.id && isActiveJobStatus(job.status) && job.scheduled_for);
 }
 
-export function planNextRecurringJob(client: ClientLike, jobs: JobLike[]) {
+export function planNextRecurringJob(client: ClientLike, jobs: JobLike[], now = new Date()) {
   if (!shouldCreateNextJob(client, jobs)) {
     return null;
   }
@@ -76,11 +77,8 @@ export function planNextRecurringJob(client: ClientLike, jobs: JobLike[]) {
     .filter((job) => job.client_id === client.id && job.status === "completed" && job.scheduled_for)
     .sort((a, b) => new Date(b.scheduled_for || "").getTime() - new Date(a.scheduled_for || "").getTime())[0];
 
-  if (!lastCompletedJob?.scheduled_for) {
-    return null;
-  }
-
-  const nextDate = getNextRecurringDate(lastCompletedJob.scheduled_for, client.cleaning_frequency);
+  const baseDate = lastCompletedJob?.scheduled_for || now.toISOString();
+  const nextDate = getNextRecurringDate(baseDate, client.cleaning_frequency);
   if (!nextDate) {
     return null;
   }
@@ -88,11 +86,11 @@ export function planNextRecurringJob(client: ClientLike, jobs: JobLike[]) {
   return {
     client_id: client.id,
     scheduled_for: applyClientPreferredTime(nextDate, client.usual_time),
-    estimated_duration_minutes: lastCompletedJob.estimated_duration_minutes ?? null,
-    service_type: lastCompletedJob.service_type || "Recurring cleaning",
+    estimated_duration_minutes: lastCompletedJob?.estimated_duration_minutes ?? null,
+    service_type: lastCompletedJob?.service_type || "Recurring cleaning",
     status: "needs_confirmation",
     calendar_invite_status: "not_sent",
-    price_usd: lastCompletedJob.price_usd ?? null,
+    price_usd: lastCompletedJob?.price_usd ?? client.current_price_usd ?? null,
     notes: "Auto-planned from recurring schedule."
   };
 }

@@ -166,7 +166,10 @@ test.describe("admin operations with local database", () => {
     await expect(page.getByText("Próxima limpieza creada.")).toBeVisible();
     await page.getByRole("link", { name: "Clientes" }).click();
     await page.getByRole("article").filter({ hasText: clientName }).getByRole("link", { name: "Ver detalles" }).click();
-    await expect(page.locator("article span").filter({ hasText: "Necesita confirmación" }).first()).toBeVisible();
+    const plannedNextJob = page.getByRole("article").filter({ hasText: "Necesita confirmación" }).first();
+    await expect(plannedNextJob).toBeVisible();
+    await expect(plannedNextJob.getByText(/Equipo asignado: .+/)).toBeVisible();
+    await expect(plannedNextJob.getByText("Equipo asignado: No establecido")).not.toBeVisible();
 
     await page.getByRole("link", { name: "Reseñas" }).click();
     await expect(page.getByRole("heading", { name: "Aprobar reseñas" })).toBeVisible();

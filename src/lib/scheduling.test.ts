@@ -69,6 +69,25 @@ describe("scheduling", () => {
     });
   });
 
+  it("plans a first recurring job from client defaults when no completed job exists", () => {
+    expect(
+      planNextRecurringJob(
+        { ...client, usual_time: "Morning", current_price_usd: 150 },
+        [],
+        new Date("2026-06-01T14:00:00.000Z")
+      )
+    ).toEqual({
+      client_id: "client-1",
+      scheduled_for: "2026-06-15T10:00:00.000Z",
+      estimated_duration_minutes: null,
+      service_type: "Recurring cleaning",
+      status: "needs_confirmation",
+      calendar_invite_status: "not_sent",
+      price_usd: 150,
+      notes: "Auto-planned from recurring schedule."
+    });
+  });
+
   it("translates client preferred time labels into concrete scheduling times", () => {
     expect(applyClientPreferredTime("2026-06-15T13:00:00.000Z", "Morning")).toBe("2026-06-15T10:00:00.000Z");
     expect(applyClientPreferredTime("2026-06-15T13:00:00.000Z", "mañana")).toBe("2026-06-15T10:00:00.000Z");
