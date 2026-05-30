@@ -12,6 +12,11 @@ type ChooseCrewInput = {
   durationMinutes: number | null;
 };
 
+type CrewSlotInput = ChooseCrewInput & {
+  searchDays?: number;
+  stepMinutes?: number;
+};
+
 type CanCrewInput = {
   crewMember: CrewMemberRow;
   jobs: JobRow[];
@@ -62,6 +67,38 @@ export function chooseCrewMemberForJob(input: ChooseCrewInput) {
     const allocationDelta = (allocationCounts.get(a.id) || 0) - (allocationCounts.get(b.id) || 0);
     return allocationDelta || Number(b.is_rosa) - Number(a.is_rosa) || a.name.localeCompare(b.name);
   })[0];
+}
+
+export function findNextAvailableCrewSlot(input: CrewSlotInput) {
+  if (!input.scheduledFor) {
+    return null;
+  }
+
+  const start = new Date(input.scheduledFor);
+  if (Number.isNaN(start.getTime())) {
+    return null;
+  }
+
+  const searchDays = input.searchDays ?? 14;
+  const stepMinutes = input.stepMinutes ?? 60;
+  const maxTime = start.getTime() + searchDays * 24 * 60 * 60 * 1000;
+
+  for (let time = start.getTime(); time <= maxTime; time += stepMinutes * 60 * 1000) {
+    const scheduledFor = new Date(time).toISOString();
+    const crewMember = chooseCrewMemberForJob({
+      crewMembers: input.crewMembers,
+      jobs: input.jobs,
+      unavailability: input.unavailability,
+      scheduledFor,
+      durationMinutes: input.durationMinutes
+    });
+
+    if (crewMember) {
+      return { scheduledFor, crewMember };
+    }
+  }
+
+  return null;
 }
 
 export function canCrewTakeJob(input: CanCrewInput) {

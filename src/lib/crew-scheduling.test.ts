@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canCrewTakeJob, chooseCrewMemberForJob, hasCrewConflict } from "./crew-scheduling";
+import { canCrewTakeJob, chooseCrewMemberForJob, findNextAvailableCrewSlot, hasCrewConflict } from "./crew-scheduling";
 import type { CrewMemberRow, CrewUnavailabilityRow } from "./crew-records";
 import type { JobRow } from "./operations-records";
 
@@ -119,6 +119,36 @@ describe("crew-scheduling", () => {
         durationMinutes: 60
       })
     ).toBe(false);
+  });
+
+  it("finds the next available crew slot after the preferred recurring time is unavailable", () => {
+    const result = findNextAvailableCrewSlot({
+      crewMembers: [member("rosa", "Rosa Medina", true)],
+      jobs: [],
+      unavailability: [unavailable("rosa", "2026-06-16T10:00:00.000Z", "2026-06-16T13:00:00.000Z")],
+      scheduledFor: "2026-06-16T10:00:00.000Z",
+      durationMinutes: 180
+    });
+
+    expect(result).toEqual({
+      crewMember: expect.objectContaining({ id: "rosa" }),
+      scheduledFor: "2026-06-16T13:00:00.000Z"
+    });
+  });
+
+  it("keeps searching on following days when the preferred day is fully booked", () => {
+    const result = findNextAvailableCrewSlot({
+      crewMembers: [member("rosa", "Rosa Medina", true)],
+      jobs: [job("job-1", "rosa", "2026-06-16T10:00:00.000Z", 360)],
+      unavailability: [],
+      scheduledFor: "2026-06-16T10:00:00.000Z",
+      durationMinutes: 180
+    });
+
+    expect(result).toEqual({
+      crewMember: expect.objectContaining({ id: "rosa" }),
+      scheduledFor: "2026-06-17T10:00:00.000Z"
+    });
   });
 });
 
