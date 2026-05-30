@@ -5,7 +5,16 @@ const eslintConfig = [
   ...nextVitals,
   ...nextTypescript,
   {
-    ignores: [".next/**", ".open-next/**", ".wrangler/**", "node_modules/**", "out/**"]
+    ignores: [
+      ".next/**",
+      ".open-next/**",
+      ".wrangler/**",
+      "coverage/**",
+      "node_modules/**",
+      "out/**",
+      "playwright-report/**",
+      "test-results/**"
+    ]
   }
 ];
 

@@ -9,6 +9,13 @@ export const metadata: Metadata = {
   },
   description:
     "Pink-themed local cleaning service for homes, apartments, condos, and small businesses near Woodstock, GA and ZIP 30188.",
+  icons: {
+    icon: [
+      { url: "/favicon.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/medina-clean-logo.png", type: "image/png" }
+    ],
+    apple: [{ url: "/brand/medina-clean-logo.png" }]
+  },
   alternates: {
     canonical: "/",
     languages: {

@@ -23,6 +23,20 @@ npm run dev
 
 Copy `.env.example` to `.env.local` after creating a Supabase Free project.
 
+For isolated local database and browser integration testing, see `docs/local-testing.md`.
+
+Useful test commands:
+
+```bash
+npm run test:coverage
+npm run test:e2e
+npm run test:e2e:db
+```
+
+## GitHub Governance
+
+See `docs/github-governance.md` for the PR-gate, CI, Dependabot, and branch-protection plan. Branch protection/rulesets require a GitHub plan that supports private-repo enforcement or a public repository.
+
 ## Cost Controls
 
 - The app does not require paid APIs.

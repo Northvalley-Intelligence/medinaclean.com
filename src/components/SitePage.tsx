@@ -1,4 +1,5 @@
 import { Building2, CalendarCheck, Camera, Gift, Home, MessageCircle, Phone, Sparkles, Star } from "lucide-react";
+import Image from "next/image";
 import { AppointmentForm } from "@/components/AppointmentForm";
 import { ReviewForm } from "@/components/ReviewForm";
 import { copy, instagram, phone, pricing, type Locale, whatsapp } from "@/lib/content";
@@ -20,10 +21,14 @@ export async function SitePage({ locale }: { locale: Locale }) {
         </a>
         <nav className="nav" aria-label="Main navigation">
           <a className="brand" href={`/${locale}`}>
-            <span className="brand-mark">
-              <Sparkles size={20} aria-hidden />
-            </span>
-            <span>Medina Clean</span>
+            <Image
+              className="brand-logo"
+              src="/brand/medina-clean-logo.png"
+              alt="Medina Clean"
+              width={1536}
+              height={1024}
+              priority
+            />
           </a>
           <div className="nav-links">
             <a href="#services">{t.nav.services}</a>
@@ -40,16 +45,26 @@ export async function SitePage({ locale }: { locale: Locale }) {
                 ES
               </a>
             </div>
-            <a className="button secondary" href={`tel:${phone}`}>
-              <Phone size={17} aria-hidden />
-              {t.nav.call}
-            </a>
+            {phone ? (
+              <a className="button secondary" href={`tel:${phone}`}>
+                <Phone size={17} aria-hidden />
+                {t.nav.call}
+              </a>
+            ) : null}
           </div>
         </nav>
       </header>
 
       <section className="hero">
         <div>
+          <Image
+            className="hero-logo"
+            src="/brand/medina-clean-logo.png"
+            alt="Medina Clean"
+            width={1536}
+            height={1024}
+            priority
+          />
           <p className="eyebrow">{t.hero.eyebrow}</p>
           <h1>{t.hero.title}</h1>
           <p className="hero-copy">{t.hero.body}</p>
@@ -213,21 +228,30 @@ export async function SitePage({ locale }: { locale: Locale }) {
       <footer className="footer" id="contact">
         <div className="footer-inner">
           <div>
-            <strong>Medina Clean</strong>
+            <Image
+              className="footer-logo"
+              src="/brand/medina-clean-logo.png"
+              alt="Medina Clean"
+              width={1536}
+              height={1024}
+            />
             <p>{t.privacy}</p>
             <p>
-              Built by <a href="https://northvalleyintel.com">Northvalley Intelligence LLC</a>. For similar projects,
-              contact <a href="mailto:contact@northvalleyintel.com">contact@northvalleyintel.com</a>.
+              Built by <a href="https://northvalleyintel.com">Northvalley Intelligence LLC</a> (
+              <a href="https://northvalleyintel.com">northvalleyintel.com</a>). For similar projects, contact{" "}
+              <a href="mailto:contact@northvalleyintel.com">contact@northvalleyintel.com</a>.
             </p>
           </div>
           <div className="nav-actions">
             <a className="button secondary" href={`/${otherLocale}`}>
               {otherLocale.toUpperCase()}
             </a>
-            <a className="button secondary" href={`tel:${phone}`}>
-              <Phone size={17} aria-hidden />
-              {phone}
-            </a>
+            {phone ? (
+              <a className="button secondary" href={`tel:${phone}`}>
+                <Phone size={17} aria-hidden />
+                {phone}
+              </a>
+            ) : null}
           </div>
         </div>
       </footer>
@@ -299,7 +323,6 @@ function JsonLd({ locale }: { locale: Locale }) {
     "@type": "CleaningService",
     name: "Medina Clean",
     url: "https://medinaclean.com",
-    telephone: phone,
     areaServed: ["Woodstock GA", "30188", "Cherokee County GA", "Cobb County GA"],
     availableLanguage: ["English", "Spanish"],
     priceRange: "$$",
@@ -323,5 +346,7 @@ function JsonLd({ locale }: { locale: Locale }) {
     }
   };
 
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
+  const jsonLd = phone ? { ...data, telephone: phone } : data;
+
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />;
 }

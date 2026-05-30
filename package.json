@@ -11,22 +11,37 @@
     "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "start": "next start",
     "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:db": "node scripts/check-local-supabase.mjs && RUN_DB_E2E=1 playwright test tests/e2e/admin-db.spec.ts --project=chromium",
+    "test:coverage": "vitest run --coverage",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:status": "supabase status",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "lucide-react": "latest",
-    "next": "latest",
-    "react": "latest",
-    "react-dom": "latest"
+    "lucide-react": "1.17.0",
+    "next": "16.2.6",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "overrides": {
+    "postcss": "8.5.15"
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "^1.19.11",
-    "@types/node": "latest",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "eslint": "latest",
-    "eslint-config-next": "latest",
-    "typescript": "latest",
+    "@playwright/test": "^1.60.0",
+    "@types/node": "25.9.1",
+    "@types/react": "19.2.15",
+    "@types/react-dom": "19.2.3",
+    "@vitest/coverage-v8": "4.1.7",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.6",
+    "supabase": "^2.101.0",
+    "typescript": "6.0.3",
+    "vitest": "4.1.7",
     "wrangler": "^4.95.0"
   }
 }

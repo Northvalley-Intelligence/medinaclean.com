@@ -1,6 +1,6 @@
 export type Locale = "en" | "es";
 
-export const phone = process.env.NEXT_PUBLIC_ROSA_PHONE || "(404) 000-0000";
+export const phone = process.env.NEXT_PUBLIC_ROSA_PHONE || "";
 export const whatsapp = process.env.NEXT_PUBLIC_ROSA_WHATSAPP || "#schedule";
 export const instagram = process.env.NEXT_PUBLIC_ROSA_INSTAGRAM || "#contact";
 
@@ -37,9 +37,8 @@ export const copy = {
     },
     hero: {
       eyebrow: "Cleaning near Woodstock, GA",
-      title: "Medina Clean",
-      body:
-        "Friendly house, condo, apartment, and small business cleaning with careful detail, flexible recurring service, and direct contact with Rosa Medina.",
+      title: "House, condo, apartment, and small business cleaning",
+      body: "Careful, flexible cleaning near Woodstock, GA with direct communication from Rosa Medina.",
       primary: "Schedule a cleaning",
       whatsapp: "WhatsApp"
     },
@@ -121,9 +120,8 @@ export const copy = {
     },
     hero: {
       eyebrow: "Limpieza cerca de Woodstock, GA",
-      title: "Medina Clean",
-      body:
-        "Limpieza para casas, condominios, apartamentos y pequeños negocios con detalle, servicio recurrente flexible y comunicación directa con Rosa Medina.",
+      title: "Limpieza para casas, condominios, apartamentos y pequeños negocios",
+      body: "Limpieza cuidadosa y flexible cerca de Woodstock, GA con comunicación directa con Rosa Medina.",
       primary: "Pedir una cita",
       whatsapp: "WhatsApp"
     },
