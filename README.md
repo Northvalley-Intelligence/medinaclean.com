@@ -44,6 +44,44 @@ See `docs/github-governance.md` for the PR-gate, CI, Dependabot, and branch-prot
 - Supabase API routes return a configuration error instead of writing data when Supabase env vars are missing.
 - Review photos are resized client-side before upload and rejected server-side when too large.
 
+## Website Chat LLM Flow
+
+The public chat assistant can use hosted or local OpenAI-compatible chat providers, but pricing, service-area checks, material claims, and appointment submission stay guarded by deterministic application code.
+
+```mermaid
+flowchart TD
+  A[Customer uses website chat] --> B[POST /api/chat-estimate]
+  B --> C[Normalize message, locale, and hidden browser turn index]
+  C --> D[Build deterministic Medina Clean fallback answer]
+  C --> E{AI chat enabled?}
+  E -- No --> D
+  E -- Yes --> F[Choose provider order from AI_CHAT_PROVIDER_CHAIN]
+  F --> G{Turn index}
+  G -- Even --> H[Try Gemini Flash first]
+  G -- Odd --> I[Try OpenRouter first]
+  H --> J[Fallback provider: OpenRouter]
+  I --> K[Fallback provider: Gemini Flash]
+  J --> L{Provider reply ok?}
+  K --> L
+  L -- No, timeout, quota, or error --> D
+  L -- Yes --> M[Reject unsafe or invented claims]
+  M --> N{Reply touches controlled facts?}
+  N -- Pricing, service area, materials, booking --> D
+  N -- General answer --> O[Return LLM answer]
+  D --> P[Return deterministic answer]
+  O --> Q[Log AI usage metadata only]
+  P --> Q
+
+  subgraph Supported providers
+    R[Gemini Flash direct]
+    S[OpenRouter free/paid models]
+    T[OpenAI API models]
+    U[Local Llama through Ollama or OpenAI-compatible server]
+  end
+```
+
+Current production configuration alternates Gemini and OpenRouter by browser-session turn while keeping deterministic rules as the final fallback. OpenAI and local Llama/Ollama can be used by setting the OpenAI-compatible base URL, model, and API key in the same provider configuration pattern. See `docs/ai-usage-and-local-llm.md`.
+
 ## Deployment
 
 Deployments are configured through GitHub Actions to Cloudflare Workers. Do not add billing unless explicitly approved.
