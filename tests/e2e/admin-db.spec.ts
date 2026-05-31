@@ -9,6 +9,7 @@ test.describe("admin operations with local database", () => {
     const testRun = Date.now();
     const clientName = `Test Client ${testRun}`;
     const reviewName = `Review Client ${testRun}`;
+    const leadName = `Chat Lead ${testRun}`;
     const blockReason = `Doctor ${testRun}`;
     const jobDate = tomorrowDateTimeInput();
     const jobDay = jobDate.slice(0, 10);
@@ -155,8 +156,31 @@ test.describe("admin operations with local database", () => {
     });
     expect(reviewResponse.ok()).toBeTruthy();
 
+    const appointmentResponse = await page.request.post("/api/appointments", {
+      data: {
+        language: "en",
+        name: leadName,
+        phone: "+14705550123",
+        address: "200 Chat Lead Street, Woodstock, GA",
+        zipCode: "30188",
+        serviceType: "Every 2 weeks - chat estimate",
+        bedrooms: "3",
+        bathrooms: "2",
+        preferredTime1: `${nextDate(jobDay)}T09:00`,
+        preferredTime2: `${nextDate(jobDay)}T10:00`,
+        preferredTime3: `${nextDate(jobDay)}T13:00`,
+        notes: "Chat estimate: first cleaning $300, recurring $150 every 2 weeks.",
+        source: "chat_agent"
+      }
+    });
+    expect(appointmentResponse.ok()).toBeTruthy();
+
     await page.getByRole("link", { name: "Tareas" }).click();
     await expect(page.getByRole("heading", { level: 1, name: "Tareas" })).toBeVisible();
+    const leadTask = page.getByRole("article").filter({ hasText: leadName });
+    await expect(leadTask).toBeVisible();
+    await expect(leadTask.getByRole("link", { name: "Nuevo cliente potencial" })).toBeVisible();
+    await expect(leadTask.getByText("Every 2 weeks - chat estimate · 30188 · +14705550123")).toBeVisible();
     const reviewTask = page.getByRole("article").filter({ hasText: reviewName });
     await expect(reviewTask).toBeVisible();
     await expect(reviewTask.getByRole("link", { name: "Necesita aprobación" })).toBeVisible();

@@ -25,9 +25,21 @@ type ReviewLike = {
   created_at: string;
 };
 
+export type AppointmentRequestLike = {
+  id: string;
+  created_at: string;
+  name: string;
+  phone: string;
+  address: string;
+  zip_code: string;
+  service_type: string;
+  status: string;
+  source?: string | null;
+};
+
 export type AttentionTask = {
   id: string;
-  type: "review_approval" | "job_confirmation" | "next_job_needed";
+  type: "review_approval" | "job_confirmation" | "next_job_needed" | "appointment_request";
   priority: "high" | "medium" | "low";
   title: string;
   detail: string;
@@ -114,15 +126,33 @@ export function buildAttentionTasks({
   now,
   clients,
   jobs,
-  reviews
+  reviews,
+  appointmentRequests = []
 }: {
   now: Date;
   clients: ClientLike[];
   jobs: JobLike[];
   reviews: ReviewLike[];
+  appointmentRequests?: AppointmentRequestLike[];
 }) {
   const tasks: AttentionTask[] = [];
   const clientsById = new Map(clients.map((client) => [client.id, client]));
+
+  for (const request of appointmentRequests) {
+    if (request.status === "pending") {
+      const source = request.source === "chat_agent" ? "chat lead" : "appointment request";
+      tasks.push({
+        id: `appointment-request-${request.id}`,
+        type: "appointment_request",
+        priority: "high",
+        title: `New ${source} from ${request.name}`,
+        detail: [request.service_type, request.zip_code, request.phone].filter(Boolean).join(" · "),
+        href: `/admin/tasks#appointment-request-${request.id}`,
+        due_at: request.created_at,
+        subject_id: request.id
+      });
+    }
+  }
 
   for (const review of reviews) {
     if (review.status === "pending") {

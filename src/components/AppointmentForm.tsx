@@ -22,6 +22,7 @@ const text = {
     sending: "Sending...",
     success: "Request received. Rosa will review and contact you.",
     error: "The request could not be sent. Please check the fields and try again.",
+    addressError: "Enter the street address.",
     serviceOptions: ["First-time / one-time deep cleaning", "Every 3 weeks", "Every 2 weeks", "Small business cleaning"]
   },
   es: {
@@ -40,6 +41,7 @@ const text = {
     sending: "Enviando...",
     success: "Solicitud recibida. Rosa la revisará y se comunicará con usted.",
     error: "No se pudo enviar la solicitud. Revise los campos e intente de nuevo.",
+    addressError: "Ingrese la dirección.",
     serviceOptions: ["Primera / limpieza profunda de una vez", "Cada 3 semanas", "Cada 2 semanas", "Limpieza para pequeño negocio"]
   }
 };
@@ -56,6 +58,10 @@ export function AppointmentForm({ locale }: { locale: Locale }) {
     message: ""
   });
   const [phoneStatus, setPhoneStatus] = useState<{ type: "idle" | "success" | "error"; message: string }>({
+    type: "idle",
+    message: ""
+  });
+  const [addressStatus, setAddressStatus] = useState<{ type: "idle" | "error"; message: string }>({
     type: "idle",
     message: ""
   });
@@ -105,6 +111,21 @@ export function AppointmentForm({ locale }: { locale: Locale }) {
       type: "success",
       message: locale === "es" ? "Número válido de EE. UU." : "Valid US phone number."
     });
+  }
+
+  function onAddressBlur(event: React.FocusEvent<HTMLInputElement>) {
+    if (!event.currentTarget.value.trim()) {
+      setAddressStatus({ type: "error", message: t.addressError });
+      return;
+    }
+
+    setAddressStatus({ type: "idle", message: "" });
+  }
+
+  function onAddressChange() {
+    if (addressStatus.type !== "idle") {
+      setAddressStatus({ type: "idle", message: "" });
+    }
   }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -164,7 +185,6 @@ export function AppointmentForm({ locale }: { locale: Locale }) {
             required
             autoComplete="tel"
             inputMode="tel"
-            placeholder="(470) 443-4817"
             onBlur={onPhoneBlur}
             aria-describedby="phone-status"
           />
@@ -178,7 +198,18 @@ export function AppointmentForm({ locale }: { locale: Locale }) {
       </div>
       <label>
         {t.address}
-        <input name="address" required autoComplete="street-address" placeholder="Street, city, GA" />
+        <input
+          name="address"
+          required
+          autoComplete="street-address"
+          placeholder="Street, city, GA"
+          onBlur={onAddressBlur}
+          onChange={onAddressChange}
+          aria-describedby="address-status"
+        />
+        <span className={`field-hint ${addressStatus.type === "error" ? "error" : ""}`} id="address-status">
+          {addressStatus.message}
+        </span>
       </label>
       <div className="field-grid">
         <label>

@@ -124,13 +124,49 @@ describe("scheduling", () => {
           status: "invite_sent"
         }
       ],
-      reviews: [{ id: "review-1", name: "Ana", status: "pending", created_at: "2026-06-10T10:00:00.000Z" }]
+      reviews: [{ id: "review-1", name: "Ana", status: "pending", created_at: "2026-06-10T10:00:00.000Z" }],
+      appointmentRequests: []
     });
 
     expect(tasks).toEqual([
       expect.objectContaining({ id: "review-review-1", type: "review_approval", priority: "high" }),
       expect.objectContaining({ id: "job-confirm-job-1", type: "job_confirmation", priority: "high" }),
       expect.objectContaining({ id: "client-next-job-client-2", type: "next_job_needed", priority: "medium" })
+    ]);
+  });
+
+  it("builds high-priority tasks for pending chat appointment requests", () => {
+    const tasks = buildAttentionTasks({
+      now: new Date("2026-06-10T14:00:00.000Z"),
+      clients: [],
+      jobs: [],
+      reviews: [],
+      appointmentRequests: [
+        {
+          id: "lead-1",
+          created_at: "2026-06-10T13:00:00.000Z",
+          name: "Taylor Client",
+          phone: "+14705550111",
+          address: "100 Main Street, Woodstock, GA",
+          zip_code: "30188",
+          service_type: "Every 2 weeks - chat estimate",
+          status: "pending",
+          source: "chat_agent"
+        }
+      ]
+    });
+
+    expect(tasks).toEqual([
+      expect.objectContaining({
+        id: "appointment-request-lead-1",
+        type: "appointment_request",
+        priority: "high",
+        title: "New chat lead from Taylor Client",
+        detail: "Every 2 weeks - chat estimate · 30188 · +14705550111",
+        href: "/admin/tasks#appointment-request-lead-1",
+        due_at: "2026-06-10T13:00:00.000Z",
+        subject_id: "lead-1"
+      })
     ]);
   });
 });

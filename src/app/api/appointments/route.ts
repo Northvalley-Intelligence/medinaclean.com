@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { validateAppointmentRequestPayload } from "@/lib/appointment-request";
 import { extractZip, validateServiceArea } from "@/lib/service-area";
 import { insertRow, isSupabaseConfigured } from "@/lib/supabase-rest";
 
@@ -33,6 +34,17 @@ export async function POST(request: Request) {
     }
   }
 
+  const payloadValidation = validateAppointmentRequestPayload({
+    bedrooms: Number(body.bedrooms),
+    bathrooms: Number(body.bathrooms),
+    preferredTime1: String(body.preferredTime1),
+    preferredTime2: String(body.preferredTime2),
+    preferredTime3: String(body.preferredTime3)
+  });
+  if (!payloadValidation.ok) {
+    return NextResponse.json({ error: payloadValidation.error }, { status: 400 });
+  }
+
   const row = {
     language: body.language === "es" ? "es" : "en",
     name: clean(body.name, 120),
@@ -40,13 +52,14 @@ export async function POST(request: Request) {
     address: clean(body.address, 260),
     zip_code: zipCode,
     service_type: clean(body.serviceType, 120),
-    bedrooms: Number(body.bedrooms),
-    bathrooms: Number(body.bathrooms),
-    preferred_time_1: new Date(String(body.preferredTime1)).toISOString(),
-    preferred_time_2: new Date(String(body.preferredTime2)).toISOString(),
-    preferred_time_3: new Date(String(body.preferredTime3)).toISOString(),
+    bedrooms: payloadValidation.bedrooms,
+    bathrooms: payloadValidation.bathrooms,
+    preferred_time_1: payloadValidation.preferredTime1,
+    preferred_time_2: payloadValidation.preferredTime2,
+    preferred_time_3: payloadValidation.preferredTime3,
     notes: clean(body.notes || "", 1200) || null,
-    distance_miles: validation.distanceMiles
+    distance_miles: validation.distanceMiles,
+    source: appointmentSource(body.source)
   };
 
   if (!isSupabaseConfigured()) {
@@ -74,4 +87,8 @@ function clean(value: unknown, max: number) {
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, max);
+}
+
+function appointmentSource(value: unknown) {
+  return value === "chat_agent" ? "chat_agent" : "website";
 }

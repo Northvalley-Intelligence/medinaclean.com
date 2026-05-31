@@ -6,7 +6,7 @@ import { adminSessionCookie, isAdminConfigured, verifyAdminSession } from "@/lib
 import { adminText, getAdminLocale, langQuery } from "@/lib/admin-i18n";
 import type { ClientRow } from "@/lib/client-records";
 import type { JobRow } from "@/lib/operations-records";
-import { buildAttentionTasks, type AttentionTask } from "@/lib/scheduling";
+import { buildAttentionTasks, type AppointmentRequestLike, type AttentionTask } from "@/lib/scheduling";
 import { isSupabaseServiceConfigured, selectServiceRows } from "@/lib/supabase-rest";
 
 export const metadata: Metadata = {
@@ -55,12 +55,16 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
 
   if (isSupabaseServiceConfigured()) {
     try {
-      const [clients, jobs, reviews] = await Promise.all([
+      const [clients, jobs, reviews, appointmentRequests] = await Promise.all([
         selectServiceRows<ClientRow>("clients", "select=*&order=name.asc&limit=200"),
         selectServiceRows<JobRow>("jobs", "select=*&order=scheduled_for.asc.nullslast&limit=200"),
-        selectServiceRows<ReviewRow>("reviews", "select=id,created_at,name,status&order=created_at.desc&limit=100")
+        selectServiceRows<ReviewRow>("reviews", "select=id,created_at,name,status&order=created_at.desc&limit=100"),
+        selectServiceRows<AppointmentRequestLike>(
+          "appointment_requests",
+          "select=id,created_at,name,phone,address,zip_code,service_type,status,source&status=eq.pending&order=created_at.desc&limit=100"
+        )
       ]);
-      tasks = buildAttentionTasks({ now: new Date(), clients, jobs, reviews });
+      tasks = buildAttentionTasks({ now: new Date(), clients, jobs, reviews, appointmentRequests });
     } catch (error) {
       loadError = error instanceof Error ? error.message : "Tasks could not be loaded.";
     }
@@ -100,7 +104,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
             <p className="admin-muted">{t.noTasks}</p>
           ) : (
             tasks.map((task) => (
-              <article className="admin-list-row" key={task.id}>
+              <article className="admin-list-row" id={task.id} key={task.id}>
                 <div>
                   <strong>{task.title}</strong>
                   <p>{taskLabel(task.type, locale)} · {task.detail}</p>
@@ -131,10 +135,18 @@ function TaskAction({ task, locale }: { task: AttentionTask; locale: "es" | "en"
   }
 
   return (
-    <a className="button secondary compact" href={`${task.href}${langQuery(locale)}`}>
+    <a className="button secondary compact" href={taskHref(task, locale)}>
       {taskLabel(task.type, locale)}
     </a>
   );
+}
+
+function taskHref(task: AttentionTask, locale: "es" | "en") {
+  if (task.type === "appointment_request") {
+    return `/admin/tasks${langQuery(locale)}#${task.id}`;
+  }
+
+  return `${task.href}${langQuery(locale)}`;
 }
 
 function taskLabel(type: AttentionTask["type"], locale: "es" | "en") {
@@ -142,7 +154,8 @@ function taskLabel(type: AttentionTask["type"], locale: "es" | "en") {
   const labels = {
     review_approval: t.taskReviewApproval,
     job_confirmation: t.taskJobConfirmation,
-    next_job_needed: t.taskNextJobNeeded
+    next_job_needed: t.taskNextJobNeeded,
+    appointment_request: t.taskAppointmentRequest
   };
   return labels[type];
 }
