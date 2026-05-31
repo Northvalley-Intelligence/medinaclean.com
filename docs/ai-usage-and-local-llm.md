@@ -57,10 +57,44 @@ Decision factors:
 ## Recommended Path
 
 1. Start with rules-based lead capture and templates, which cost `$0`.
-2. Add free-tier AI only for low-risk tasks: translation, summaries, and reply drafts.
+2. Add free-tier AI only for low-risk tasks: public chat assistance, translation, summaries, and reply drafts.
 3. Track every AI call in `ai_usage_events`.
 4. Keep a template fallback for every AI feature.
 5. Revisit local LLM hosting only when measured usage shows a recurring cost or reliability problem.
+
+## Provider Switching
+
+The public website chat uses OpenAI-compatible chat completions behind environment variables. Pricing, service-area answers, material claims, and lead capture remain deterministic in application code, so weaker or free models can be tried without trusting them for business rules.
+
+For browser sessions, the app rotates the primary provider invisibly by turn number. With `AI_CHAT_PROVIDER_CHAIN=gemini,openrouter`, the first message tries Gemini first, the second tries OpenRouter first, and later messages continue alternating. If the selected provider fails, the API tries the next configured provider before returning the deterministic rules fallback.
+
+Local Ollama example:
+
+```bash
+AI_CHAT_ENABLED=true
+AI_CHAT_PROVIDER=ollama
+AI_CHAT_MODE=local
+AI_CHAT_BASE_URL=http://127.0.0.1:11434/v1/chat/completions
+AI_CHAT_MODEL=llama3.1:8b
+```
+
+OpenRouter free-model example:
+
+```bash
+AI_CHAT_ENABLED=true
+AI_CHAT_PROVIDER_CHAIN=gemini,openrouter
+AI_CHAT_MODE=free_api
+GEMINI_API_KEY=<gemini-key>
+GEMINI_MODEL=gemini-2.5-flash
+GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/chat/completions
+OPENROUTER_API_KEY=<openrouter-key>
+OPENROUTER_MODEL=liquid/lfm-2.5-1.2b-instruct:free
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1/chat/completions
+AI_CHAT_APP_URL=https://medinaclean.com
+AI_CHAT_APP_TITLE=Medina Clean
+```
+
+OpenRouter free models and provider routing are best-effort, not a production SLA. Keep deterministic fallback and local Ollama available when quota, model availability, or latency are poor.
 
 ## Local LLM Test Criteria
 

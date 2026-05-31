@@ -9,6 +9,7 @@ test.describe("admin operations with local database", () => {
     const testRun = Date.now();
     const clientName = `Test Client ${testRun}`;
     const reviewName = `Review Client ${testRun}`;
+    const leadName = `Chat Lead ${testRun}`;
     const blockReason = `Doctor ${testRun}`;
     const jobDate = tomorrowDateTimeInput();
     const jobDay = jobDate.slice(0, 10);
@@ -67,6 +68,9 @@ test.describe("admin operations with local database", () => {
     await clientRow.getByRole("link", { name: "Ver detalles" }).click();
     await expect(page.getByRole("heading", { name: clientName })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Memoria del cliente" })).toBeVisible();
+    const clientMemory = page.locator(".admin-facts");
+    await expect(clientMemory.getByText("Teléfono")).toBeVisible();
+    await expect(clientMemory.getByText("(470) 555-0100")).toBeVisible();
 
     await page.getByLabel("Fecha y hora").fill(jobDate);
     await page.getByLabel("Duración en minutos").fill("180");
@@ -115,7 +119,7 @@ test.describe("admin operations with local database", () => {
     await expect(page.getByRole("link", { name: "Siguiente" })).toBeVisible();
     await expect(page.getByLabel("Ir a fecha")).toHaveValue(jobDay);
     await expect(page.getByText(`Trabajo: ${clientName}`)).toBeVisible();
-    await expect(page.getByText(/First cleaning .* Necesita confirmación .* (Rosa Medina|Crew Member)/)).toBeVisible();
+    await expect(page.getByText(/First cleaning .* Esperando aceptación del cliente .* (Rosa Medina|Crew Member)/)).toBeVisible();
     await expect(page.getByText(new RegExp(`First cleaning .* Crew Member ${testRun}`))).not.toBeVisible();
     await page.getByRole("link", { name: "Siguiente" }).click();
     await expect(page).toHaveURL(new RegExp(`/admin/calendar\\?view=day&date=${nextDate(jobDay)}`));
@@ -152,18 +156,48 @@ test.describe("admin operations with local database", () => {
     });
     expect(reviewResponse.ok()).toBeTruthy();
 
+    const appointmentResponse = await page.request.post("/api/appointments", {
+      data: {
+        language: "en",
+        name: leadName,
+        phone: "+14705550123",
+        address: "200 Chat Lead Street, Woodstock, GA",
+        zipCode: "30188",
+        serviceType: "Every 2 weeks - chat estimate",
+        bedrooms: "3",
+        bathrooms: "2",
+        preferredTime1: `${nextDate(jobDay)}T09:00`,
+        preferredTime2: `${nextDate(jobDay)}T10:00`,
+        preferredTime3: `${nextDate(jobDay)}T13:00`,
+        notes: "Chat estimate: first cleaning $300, recurring $150 every 2 weeks.",
+        source: "chat_agent"
+      }
+    });
+    expect(appointmentResponse.ok()).toBeTruthy();
+
     await page.getByRole("link", { name: "Tareas" }).click();
     await expect(page.getByRole("heading", { level: 1, name: "Tareas" })).toBeVisible();
+    const leadTask = page.getByRole("article").filter({ hasText: leadName });
+    await expect(leadTask).toBeVisible();
+    await expect(leadTask.getByRole("link", { name: "Nuevo cliente potencial" })).toBeVisible();
+    await expect(leadTask.getByText("Every 2 weeks - chat estimate · 30188 · +14705550123")).toBeVisible();
     const reviewTask = page.getByRole("article").filter({ hasText: reviewName });
     await expect(reviewTask).toBeVisible();
     await expect(reviewTask.getByRole("link", { name: "Necesita aprobación" })).toBeVisible();
     const nextJobTask = page.getByRole("article").filter({ hasText: clientName }).filter({ hasText: "Planear próxima limpieza" });
     await expect(nextJobTask).toBeVisible();
     await nextJobTask.getByRole("button", { name: "Crear próxima limpieza" }).click();
-    await expect(page.getByText("Próxima limpieza creada.")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Calendario" })).toBeVisible();
+    await expect(page.getByText(/Próxima limpieza creada para .+\./)).toBeVisible();
+    const calendarNextJob = page.getByRole("article").filter({ hasText: `Trabajo: ${clientName}` });
+    await expect(calendarNextJob).toBeVisible();
+    await expect(calendarNextJob.getByText("Esperando aceptación del cliente")).toBeVisible();
     await page.getByRole("link", { name: "Clientes" }).click();
     await page.getByRole("article").filter({ hasText: clientName }).getByRole("link", { name: "Ver detalles" }).click();
-    await expect(page.locator("article span").filter({ hasText: "Necesita confirmación" }).first()).toBeVisible();
+    const plannedNextJob = page.getByRole("article").filter({ hasText: "Necesita confirmación" }).first();
+    await expect(plannedNextJob).toBeVisible();
+    await expect(plannedNextJob.getByText(/Equipo asignado: .+/)).toBeVisible();
+    await expect(plannedNextJob.getByText("Equipo asignado: No establecido")).not.toBeVisible();
 
     await page.getByRole("link", { name: "Reseñas" }).click();
     await expect(page.getByRole("heading", { name: "Aprobar reseñas" })).toBeVisible();

@@ -5,6 +5,7 @@ type ClientLike = {
   cleaning_frequency: string;
   preferred_communication_channel?: string | null;
   usual_time?: string | null;
+  current_price_usd?: number | null;
 };
 
 type JobLike = {
@@ -24,9 +25,21 @@ type ReviewLike = {
   created_at: string;
 };
 
+export type AppointmentRequestLike = {
+  id: string;
+  created_at: string;
+  name: string;
+  phone: string;
+  address: string;
+  zip_code: string;
+  service_type: string;
+  status: string;
+  source?: string | null;
+};
+
 export type AttentionTask = {
   id: string;
-  type: "review_approval" | "job_confirmation" | "next_job_needed";
+  type: "review_approval" | "job_confirmation" | "next_job_needed" | "appointment_request";
   priority: "high" | "medium" | "low";
   title: string;
   detail: string;
@@ -67,7 +80,7 @@ export function shouldCreateNextJob(client: ClientLike, jobs: JobLike[]) {
   return !jobs.some((job) => job.client_id === client.id && isActiveJobStatus(job.status) && job.scheduled_for);
 }
 
-export function planNextRecurringJob(client: ClientLike, jobs: JobLike[]) {
+export function planNextRecurringJob(client: ClientLike, jobs: JobLike[], now = new Date()) {
   if (!shouldCreateNextJob(client, jobs)) {
     return null;
   }
@@ -76,11 +89,8 @@ export function planNextRecurringJob(client: ClientLike, jobs: JobLike[]) {
     .filter((job) => job.client_id === client.id && job.status === "completed" && job.scheduled_for)
     .sort((a, b) => new Date(b.scheduled_for || "").getTime() - new Date(a.scheduled_for || "").getTime())[0];
 
-  if (!lastCompletedJob?.scheduled_for) {
-    return null;
-  }
-
-  const nextDate = getNextRecurringDate(lastCompletedJob.scheduled_for, client.cleaning_frequency);
+  const baseDate = lastCompletedJob?.scheduled_for || now.toISOString();
+  const nextDate = getNextRecurringDate(baseDate, client.cleaning_frequency);
   if (!nextDate) {
     return null;
   }
@@ -88,11 +98,11 @@ export function planNextRecurringJob(client: ClientLike, jobs: JobLike[]) {
   return {
     client_id: client.id,
     scheduled_for: applyClientPreferredTime(nextDate, client.usual_time),
-    estimated_duration_minutes: lastCompletedJob.estimated_duration_minutes ?? null,
-    service_type: lastCompletedJob.service_type || "Recurring cleaning",
+    estimated_duration_minutes: lastCompletedJob?.estimated_duration_minutes ?? null,
+    service_type: lastCompletedJob?.service_type || "Recurring cleaning",
     status: "needs_confirmation",
     calendar_invite_status: "not_sent",
-    price_usd: lastCompletedJob.price_usd ?? null,
+    price_usd: lastCompletedJob?.price_usd ?? client.current_price_usd ?? null,
     notes: "Auto-planned from recurring schedule."
   };
 }
@@ -116,15 +126,33 @@ export function buildAttentionTasks({
   now,
   clients,
   jobs,
-  reviews
+  reviews,
+  appointmentRequests = []
 }: {
   now: Date;
   clients: ClientLike[];
   jobs: JobLike[];
   reviews: ReviewLike[];
+  appointmentRequests?: AppointmentRequestLike[];
 }) {
   const tasks: AttentionTask[] = [];
   const clientsById = new Map(clients.map((client) => [client.id, client]));
+
+  for (const request of appointmentRequests) {
+    if (request.status === "pending") {
+      const source = request.source === "chat_agent" ? "chat lead" : "appointment request";
+      tasks.push({
+        id: `appointment-request-${request.id}`,
+        type: "appointment_request",
+        priority: "high",
+        title: `New ${source} from ${request.name}`,
+        detail: [request.service_type, request.zip_code, request.phone].filter(Boolean).join(" · "),
+        href: `/admin/tasks#appointment-request-${request.id}`,
+        due_at: request.created_at,
+        subject_id: request.id
+      });
+    }
+  }
 
   for (const review of reviews) {
     if (review.status === "pending") {

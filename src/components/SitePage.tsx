@@ -1,8 +1,9 @@
-import { Building2, CalendarCheck, Camera, Gift, Home, MessageCircle, Phone, Sparkles, Star } from "lucide-react";
+import { Building2, CalendarCheck, Camera, Construction, ExternalLink, Gift, Home, Hotel, MessageCircle, Phone, Star, Store } from "lucide-react";
 import Image from "next/image";
 import { AppointmentForm } from "@/components/AppointmentForm";
+import { ChatEstimateAgent } from "@/components/ChatEstimateAgent";
 import { ReviewForm } from "@/components/ReviewForm";
-import { copy, instagram, phone, pricing, type Locale, whatsapp } from "@/lib/content";
+import { copy, instagram, phone, pricing, projectVideos, type Locale, whatsapp } from "@/lib/content";
 import { getApprovedReviews } from "@/lib/supabase-rest";
 
 export async function SitePage({ locale }: { locale: Locale }) {
@@ -33,6 +34,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
           <div className="nav-links">
             <a href="#services">{t.nav.services}</a>
             <a href="#pricing">{t.nav.pricing}</a>
+            <a href="#chat">{t.nav.chat}</a>
             <a href="#reviews">{t.nav.reviews}</a>
             <a href="#schedule">{t.nav.schedule}</a>
           </div>
@@ -57,14 +59,6 @@ export async function SitePage({ locale }: { locale: Locale }) {
 
       <section className="hero">
         <div>
-          <Image
-            className="hero-logo"
-            src="/brand/medina-clean-logo.png"
-            alt="Medina Clean"
-            width={1536}
-            height={1024}
-            priority
-          />
           <p className="eyebrow">{t.hero.eyebrow}</p>
           <h1>{t.hero.title}</h1>
           <p className="hero-copy">{t.hero.body}</p>
@@ -118,11 +112,11 @@ export async function SitePage({ locale }: { locale: Locale }) {
             <h2>{t.services.title}</h2>
             <p>{t.services.body}</p>
           </div>
-          <div className="grid">
+          <div className="services-grid">
             {t.services.items.map(([title, body], index) => {
-              const Icon = [Home, Building2, Sparkles, Building2][index];
+              const Icon = [Home, Building2, Hotel, Store, Construction][index];
               return (
-                <article className="card" key={title}>
+                <article className={`card service-card ${index < 2 ? "featured" : ""}`} key={title}>
                   <Icon color="#d6337b" size={24} aria-hidden />
                   <h3>{title}</h3>
                   <p>{body}</p>
@@ -150,18 +144,28 @@ export async function SitePage({ locale }: { locale: Locale }) {
               </thead>
               <tbody>
                 {pricing.map((row) => (
-                  <tr key={row.bedrooms}>
-                    <td>{row.bedrooms}</td>
-                    <td>{row.baths}</td>
-                    <td>{row.oneTime}</td>
-                    <td>{row.everyThreeWeeks}</td>
-                    <td>{row.everyTwoWeeks}</td>
+                  <tr key={row.item}>
+                    <td>{row.item}</td>
+                    <td>{row.calculation}</td>
+                    <td>{row.standard}</td>
+                    <td>{row.veryDirty}</td>
+                    <td>{row.notes}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <p className="note">{t.pricing.note}</p>
+        </div>
+      </section>
+
+      <section className="section alt" id="chat">
+        <div className="section-inner chat-section">
+          <div className="section-head">
+            <h2>{t.chat.title}</h2>
+            <p>{t.chat.body}</p>
+          </div>
+          <ChatEstimateAgent locale={locale} />
         </div>
       </section>
 
@@ -184,10 +188,25 @@ export async function SitePage({ locale }: { locale: Locale }) {
             <h2>{t.gallery.title}</h2>
             <p>{t.gallery.body}</p>
           </div>
-          <div className="gallery-slots">
-            <div className="slot">Before / after</div>
-            <div className="slot">Rosa at work</div>
-            <div className="slot">Finished rooms</div>
+          <div className="video-links">
+            {projectVideos.map((video, index) => (
+              <article className="video-card" key={video.id}>
+                <iframe
+                  src={video.embedUrl}
+                  title={t.gallery.videos[index]}
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+                <div className="video-card-copy">
+                  <strong>{t.gallery.videos[index]}</strong>
+                  <a href={video.watchUrl} target="_blank" rel="noopener noreferrer">
+                    {t.gallery.action}
+                    <ExternalLink size={14} aria-hidden />
+                  </a>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -339,9 +358,9 @@ function JsonLd({ locale }: { locale: Locale }) {
       name: locale === "en" ? "Cleaning services" : "Servicios de limpieza",
       itemListElement: pricing.map((row) => ({
         "@type": "Offer",
-        name: `${row.bedrooms} bedroom cleaning`,
+        name: row.item,
         priceCurrency: "USD",
-        price: row.oneTime.replace("$", "")
+        description: `${row.calculation}. ${row.standard}. ${row.veryDirty}.`
       }))
     }
   };

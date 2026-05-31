@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin-auth";
 import type { ClientRow } from "@/lib/client-records";
 import type { CrewMemberRow, CrewUnavailabilityRow } from "@/lib/crew-records";
-import { chooseCrewMemberForJob } from "@/lib/crew-scheduling";
+import { findNextAvailableCrewSlot } from "@/lib/crew-scheduling";
 import type { JobRow } from "@/lib/operations-records";
 import { planNextRecurringJob } from "@/lib/scheduling";
 import { insertServiceRow, isSupabaseServiceConfigured, selectServiceRows } from "@/lib/supabase-rest";
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       selectServiceRows<JobRow>("jobs", "select=*&order=scheduled_for.asc.nullslast&limit=500"),
       selectServiceRows<CrewUnavailabilityRow>("crew_unavailability", "select=*&order=start_at.asc&limit=500")
     ]);
-    const assigned = chooseCrewMemberForJob({
+    const assignment = findNextAvailableCrewSlot({
       crewMembers,
       jobs: allJobs,
       unavailability,
@@ -50,11 +50,17 @@ export async function POST(request: Request) {
       durationMinutes: nextJob.estimated_duration_minutes
     });
 
-    if (!assigned) {
-      return respond(request, { error: "No crew member is available for that time.", lang }, 409, isForm);
+    if (!assignment) {
+      return respond(request, { error: "No crew member is available in the next two weeks.", lang }, 409, isForm);
     }
 
-    await insertServiceRow("jobs", { ...nextJob, crew_member_id: assigned.id });
+    await insertServiceRow("jobs", {
+      ...nextJob,
+      scheduled_for: assignment.scheduledFor,
+      crew_member_id: assignment.crewMember.id
+    });
+
+    return respondWithScheduledJob(request, { ok: true, lang, scheduledFor: assignment.scheduledFor }, 200, isForm);
   } catch (error) {
     console.error(error);
     return respond(
@@ -66,6 +72,29 @@ export async function POST(request: Request) {
   }
 
   return respond(request, { ok: true, lang }, 200, isForm);
+}
+
+function respondWithScheduledJob(
+  request: Request,
+  body: Record<string, unknown> & { scheduledFor?: string },
+  status: number,
+  isForm: boolean | undefined
+) {
+  if (!isForm) {
+    return NextResponse.json(body, { status });
+  }
+
+  const params = new URLSearchParams();
+  if (body.lang === "en") {
+    params.set("lang", "en");
+  }
+  params.set("view", "day");
+  if (body.scheduledFor) {
+    params.set("date", body.scheduledFor.slice(0, 10));
+    params.set("nextJobAt", body.scheduledFor);
+  }
+  params.set("nextJobCreated", "1");
+  return NextResponse.redirect(new URL(`/admin/calendar?${params.toString()}`, request.url), { status: 303 });
 }
 
 function respond(request: Request, body: Record<string, unknown>, status: number, isForm: boolean | undefined) {

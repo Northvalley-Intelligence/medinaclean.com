@@ -26,6 +26,17 @@ jobs:
       NEXT_PUBLIC_ROSA_INSTAGRAM: ${{ secrets.NEXT_PUBLIC_ROSA_INSTAGRAM }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_REVIEW_BUCKET: review-headshots
+      AI_CHAT_ENABLED: "true"
+      AI_CHAT_PROVIDER_CHAIN: gemini,openrouter
+      AI_CHAT_MODE: free_api
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_MODEL: gemini-2.5-flash
+      GEMINI_BASE_URL: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      OPENROUTER_MODEL: liquid/lfm-2.5-1.2b-instruct:free
+      OPENROUTER_BASE_URL: https://openrouter.ai/api/v1/chat/completions
+      AI_CHAT_APP_URL: https://medinaclean.com
+      AI_CHAT_APP_TITLE: Medina Clean
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
@@ -68,7 +79,18 @@ jobs:
             NEXT_PUBLIC_ROSA_PHONE \
             NEXT_PUBLIC_ROSA_WHATSAPP \
             NEXT_PUBLIC_ROSA_INSTAGRAM \
-            SUPABASE_SERVICE_ROLE_KEY
+            SUPABASE_SERVICE_ROLE_KEY \
+            AI_CHAT_ENABLED \
+            AI_CHAT_PROVIDER_CHAIN \
+            AI_CHAT_MODE \
+            GEMINI_API_KEY \
+            GEMINI_MODEL \
+            GEMINI_BASE_URL \
+            OPENROUTER_API_KEY \
+            OPENROUTER_MODEL \
+            OPENROUTER_BASE_URL \
+            AI_CHAT_APP_URL \
+            AI_CHAT_APP_TITLE
           do
             value="${!name:-}"
             if [ -n "$value" ]; then

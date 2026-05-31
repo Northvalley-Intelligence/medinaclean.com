@@ -47,16 +47,17 @@ export function AdminClientForm({ locale }: { locale: AdminLocale }) {
   }
 
   function onPhoneBlur(event: React.FocusEvent<HTMLInputElement>) {
+    const nextTarget = event.relatedTarget;
+    if (nextTarget instanceof HTMLButtonElement && nextTarget.type === "submit") {
+      return;
+    }
+
     validatePhone(event.currentTarget);
   }
 
-  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    const form = event.currentTarget;
-    const phone = form.elements.namedItem("phone");
-    if (phone instanceof HTMLInputElement && !validatePhone(phone)) {
-      event.preventDefault();
-      phone.reportValidity();
-    }
+  function onPhoneChange(event: React.ChangeEvent<HTMLInputElement>) {
+    event.currentTarget.setCustomValidity("");
+    setPhoneStatus({ type: "idle", message: "" });
   }
 
   return (
@@ -64,7 +65,6 @@ export function AdminClientForm({ locale }: { locale: AdminLocale }) {
       className="admin-panel admin-form"
       action="/api/admin/clients"
       method="post"
-      onSubmit={onSubmit}
       data-ready={ready ? "true" : "false"}
     >
       <input name="lang" type="hidden" value={locale} />
@@ -82,6 +82,7 @@ export function AdminClientForm({ locale }: { locale: AdminLocale }) {
           autoComplete="tel"
           placeholder="(470) 443-4817"
           onBlur={onPhoneBlur}
+          onChange={onPhoneChange}
           aria-describedby="admin-client-phone-status"
         />
         <span
@@ -138,7 +139,7 @@ export function AdminClientForm({ locale }: { locale: AdminLocale }) {
         </label>
         <label>
           {t.price}
-          <input name="currentPriceUsd" inputMode="decimal" placeholder="150" />
+          <input name="currentPriceUsd" inputMode="decimal" defaultValue="150" />
         </label>
       </div>
       <div className="admin-form-row">
@@ -148,7 +149,7 @@ export function AdminClientForm({ locale }: { locale: AdminLocale }) {
         </label>
         <label>
           {t.usualTime}
-          <input name="usualTime" placeholder="Morning" />
+          <input name="usualTime" defaultValue="Morning" />
         </label>
       </div>
       <div className="admin-checks">

@@ -75,6 +75,68 @@ test("admin client phone validates on blur without losing typed client data", as
   await expect(page.getByLabel("Notas")).toHaveValue("Do not lose this text.");
 });
 
+test("admin client phone accepts formatted 10-digit numbers on blur", async ({ page }) => {
+  await page.goto("/admin?lang=en");
+  await page.getByLabel("Password").fill("test-admin");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.locator('form[action="/api/admin/clients"]')).toHaveAttribute("data-ready", "true");
+
+  const phone = page.getByRole("textbox", { name: "Phone" });
+  await phone.fill("112-233-4566");
+  await phone.blur();
+
+  await expect(phone).toHaveValue("(112) 233-4566");
+  await expect(page.getByText("Enter a 10-digit US phone number.")).not.toBeVisible();
+  await expect(page.getByText("Valid US phone number.")).toBeVisible();
+});
+
+test("admin client phone validation does not run on submit before blur", async ({ page }) => {
+  await page.goto("/admin?lang=en");
+  await page.getByLabel("Password").fill("test-admin");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.locator('form[action="/api/admin/clients"]')).toHaveAttribute("data-ready", "true");
+
+  await page.route("**/api/admin/clients", async (route) => {
+    await route.fulfill({
+      status: 303,
+      headers: { location: "/admin?lang=en&created=1" }
+    });
+  });
+
+  await page.getByLabel("Name").fill("Client With Unblurred Phone");
+  await page.getByRole("textbox", { name: "Phone" }).fill("222-133-2323");
+
+  const clientRequest = page.waitForRequest((request) => request.url().includes("/api/admin/clients"));
+  await page.getByRole("button", { name: "Save client" }).click();
+  await clientRequest;
+
+  await expect(page.getByText("Enter a 10-digit US phone number.")).not.toBeVisible();
+});
+
+test("admin client visible defaults are saved when untouched", async ({ page }) => {
+  await page.goto("/admin?lang=en");
+  await page.getByLabel("Password").fill("test-admin");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.locator('form[action="/api/admin/clients"]')).toHaveAttribute("data-ready", "true");
+
+  await page.route("**/api/admin/clients", async (route) => {
+    await route.fulfill({
+      status: 303,
+      headers: { location: "/admin?lang=en&created=1" }
+    });
+  });
+
+  await page.getByLabel("Name").fill("Client With Defaults");
+  await page.getByRole("textbox", { name: "Phone" }).fill("(470) 555-0123");
+
+  const clientRequest = page.waitForRequest((request) => request.url().includes("/api/admin/clients"));
+  await page.getByRole("button", { name: "Save client" }).click();
+
+  const submitted = new URLSearchParams((await clientRequest).postData() || "");
+  expect(submitted.get("currentPriceUsd")).toBe("150");
+  expect(submitted.get("usualTime")).toBe("Morning");
+});
+
 test("admin can switch to English", async ({ page }) => {
   await page.goto("/admin?lang=en");
 

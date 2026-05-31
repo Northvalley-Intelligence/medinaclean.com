@@ -10,20 +10,69 @@ type SiteCopy = {
   stats: string[][];
   services: { title: string; body: string; items: string[][] };
   pricing: { title: string; body: string; headers: string[]; note: string };
+  chat: { title: string; body: string };
   referral: { title: string; topline: string; body: string };
-  gallery: { title: string; body: string };
+  gallery: { title: string; body: string; videos: string[]; action: string };
   reviews: { title: string; body: string; empty: string; formTitle: string };
   schedule: { title: string; body: string; formTitle: string; submit: string };
   faq: { title: string; items: string[][] };
   privacy: string;
 };
 
+export const projectVideos = [
+  {
+    id: "DQs4E0SqXc8",
+    watchUrl: "https://youtube.com/shorts/DQs4E0SqXc8",
+    embedUrl: "https://www.youtube-nocookie.com/embed/DQs4E0SqXc8"
+  },
+  {
+    id: "k5D5DABbeyw",
+    watchUrl: "https://youtube.com/shorts/k5D5DABbeyw",
+    embedUrl: "https://www.youtube-nocookie.com/embed/k5D5DABbeyw"
+  },
+  {
+    id: "gRXCFWNCid4",
+    watchUrl: "https://youtube.com/shorts/gRXCFWNCid4",
+    embedUrl: "https://www.youtube-nocookie.com/embed/gRXCFWNCid4"
+  }
+];
+
 export const pricing = [
-  { bedrooms: 1, baths: "1", oneTime: "$250", everyThreeWeeks: "$125", everyTwoWeeks: "$100" },
-  { bedrooms: 2, baths: "1-2", oneTime: "$325", everyThreeWeeks: "$165", everyTwoWeeks: "$125" },
-  { bedrooms: 3, baths: "2", oneTime: "$400", everyThreeWeeks: "$200", everyTwoWeeks: "$150" },
-  { bedrooms: 4, baths: "2-3", oneTime: "$500", everyThreeWeeks: "$250", everyTwoWeeks: "$190" },
-  { bedrooms: 5, baths: "3+", oneTime: "$625", everyThreeWeeks: "$315", everyTwoWeeks: "$240" }
+  {
+    item: "Every 2 weeks",
+    calculation: "$30 per bedroom + bathroom",
+    standard: "Example: 3 bedrooms + 2 baths = $150",
+    veryDirty: "First cleaning is double",
+    notes: "Best recurring value"
+  },
+  {
+    item: "Every 3 weeks",
+    calculation: "$40 per bedroom + bathroom",
+    standard: "Example: 3 bedrooms + 2 baths = $200",
+    veryDirty: "First cleaning is double",
+    notes: "For lighter recurring needs"
+  },
+  {
+    item: "First-time / one-time",
+    calculation: "Double the matching recurring estimate",
+    standard: "Example: every-3-week base $200 -> $400",
+    veryDirty: "Rosa confirms after seeing the property",
+    notes: "Rough starting estimate"
+  },
+  {
+    item: "Oven and refrigerator cleaning",
+    calculation: "Optional add-on",
+    standard: "$50",
+    veryDirty: "$80 if very dirty",
+    notes: "Added when requested"
+  },
+  {
+    item: "Post-construction cleanup",
+    calculation: "Onsite inspection required",
+    standard: "Estimated after Rosa sees the property",
+    veryDirty: "Dust, debris, paint, and buildup vary by project",
+    notes: "Reviewed case by case"
+  }
 ];
 
 export const copy = {
@@ -31,14 +80,16 @@ export const copy = {
     nav: {
       services: "Services",
       pricing: "Pricing",
+      chat: "Chat estimate",
       reviews: "Reviews",
       schedule: "Schedule",
       call: "Call Rosa"
     },
     hero: {
       eyebrow: "Cleaning near Woodstock, GA",
-      title: "House, condo, apartment, and small business cleaning",
-      body: "Careful, flexible cleaning near Woodstock, GA with direct communication from Rosa Medina.",
+      title: "Medina Clean",
+      body:
+        "House, condo, apartment, small business, and post-construction cleaning near Woodstock, GA with direct communication from Rosa Medina at Medina Clean.",
       primary: "Schedule a cleaning",
       whatsapp: "WhatsApp"
     },
@@ -50,21 +101,27 @@ export const copy = {
     services: {
       title: "Cleaning for the spaces people actually live and work in.",
       body:
-        "Rosa handles one-time deep cleans, first-time cleans, and recurring cleaning for apartments, condos, houses, and small offices.",
+        "Rosa handles one-time deep cleans, first-time cleans, recurring cleaning, post-construction cleanup, and service for apartments, condos, houses, and small offices.",
       items: [
         ["Houses", "Reliable room-by-room cleaning for busy families and homeowners."],
         ["Apartments", "Compact, efficient cleaning for apartments and rentals."],
         ["Condos", "Careful cleaning for shared-building homes and move-in refreshes."],
-        ["Small businesses", "Office and light commercial cleaning reviewed case by case."]
+        ["Small businesses", "Office and light commercial cleaning reviewed case by case."],
+        ["Post-construction cleanup", "Dust, debris, and project cleanup estimated after Rosa reviews the property onsite."]
       ]
     },
     pricing: {
-      title: "Simple starting rates",
+      title: "Starting rate guide",
       body:
-        "These projected rates are based on bedrooms, typical bathrooms, and service frequency. Rosa confirms final pricing after reviewing the home.",
-      headers: ["Bedrooms", "Typical baths", "First-time / one-time", "Every 3 weeks", "Every 2 weeks"],
+        "Use the guided estimate below to customize bedrooms, bathrooms, frequency, and add-ons for your specific case. These rates explain the starting rules Rosa uses before confirming the final price.",
+      headers: ["Service", "Calculation", "Standard estimate", "Heavy condition", "Note"],
       note:
         "Rates assume Rosa brings standard cleaning materials and the client is comfortable with those materials. Special product requests, specialty surfaces, heavy buildup, pet conditions, move-out cleaning, or unusual requirements may create additional charges decided case by case."
+    },
+    chat: {
+      title: "Get a guided estimate",
+      body:
+        "Ask a quick question, then use the guided form to check the ZIP and send Rosa your contact details."
     },
     referral: {
       title: "$50 referral credit",
@@ -73,8 +130,10 @@ export const copy = {
         "Refer a new client who books a qualified cleaning and receive a $50 credit toward your next service."
     },
     gallery: {
-      title: "Real project photos coming soon",
-      body: "Reserved space for Rosa's before-and-after photos, team photos, and finished-room examples."
+      title: "Before-and-after videos",
+      body: "Watch short project videos from Medina Clean jobs, including real before-and-after cleaning results.",
+      videos: ["Before cleaning walkthrough", "After cleaning result", "Quick bathroom cleaning before and after"],
+      action: "Watch on YouTube"
     },
     reviews: {
       title: "Client reviews",
@@ -114,14 +173,16 @@ export const copy = {
     nav: {
       services: "Servicios",
       pricing: "Precios",
+      chat: "Estimado por chat",
       reviews: "Reseñas",
       schedule: "Cita",
       call: "Llamar a Rosa"
     },
     hero: {
       eyebrow: "Limpieza cerca de Woodstock, GA",
-      title: "Limpieza para casas, condominios, apartamentos y pequeños negocios",
-      body: "Limpieza cuidadosa y flexible cerca de Woodstock, GA con comunicación directa con Rosa Medina.",
+      title: "Medina Clean",
+      body:
+        "Limpieza para casas, condominios, apartamentos, pequeños negocios y después de construcción cerca de Woodstock, GA con comunicación directa con Rosa Medina de Medina Clean.",
       primary: "Pedir una cita",
       whatsapp: "WhatsApp"
     },
@@ -133,21 +194,27 @@ export const copy = {
     services: {
       title: "Limpieza para los espacios donde la gente vive y trabaja.",
       body:
-        "Rosa ofrece limpiezas profundas de una vez, primeras limpiezas y servicio recurrente para apartamentos, condominios, casas y oficinas pequeñas.",
+        "Rosa ofrece limpiezas profundas de una vez, primeras limpiezas, servicio recurrente, limpieza después de construcción y servicio para apartamentos, condominios, casas y oficinas pequeñas.",
       items: [
         ["Casas", "Limpieza confiable cuarto por cuarto para familias ocupadas."],
         ["Apartamentos", "Limpieza eficiente para apartamentos y rentas."],
         ["Condominios", "Limpieza cuidadosa para hogares en edificios compartidos."],
-        ["Pequeños negocios", "Limpieza de oficina y comercial ligera revisada caso por caso."]
+        ["Pequeños negocios", "Limpieza de oficina y comercial ligera revisada caso por caso."],
+        ["Limpieza después de construcción", "Polvo, residuos y limpieza de proyecto se estiman después de que Rosa revise la propiedad."]
       ]
     },
     pricing: {
-      title: "Precios iniciales simples",
+      title: "Guía de precios iniciales",
       body:
-        "Estos precios proyectados se basan en habitaciones, baños típicos y frecuencia del servicio. Rosa confirma el precio final después de revisar la casa.",
-      headers: ["Habitaciones", "Baños típicos", "Primera / una vez", "Cada 3 semanas", "Cada 2 semanas"],
+        "Use el estimado guiado abajo para personalizar habitaciones, baños, frecuencia y extras para su caso específico. Estos precios explican las reglas iniciales que Rosa usa antes de confirmar el precio final.",
+      headers: ["Servicio", "Cálculo", "Estimado normal", "Condición fuerte", "Nota"],
       note:
         "Los precios asumen que Rosa trae materiales de limpieza estándar y que el cliente está de acuerdo con esos materiales. Solicitudes especiales de productos, superficies delicadas, acumulación fuerte, mascotas, mudanzas o requisitos especiales pueden tener cargos adicionales decididos caso por caso."
+    },
+    chat: {
+      title: "Reciba un estimado guiado",
+      body:
+        "Haga una pregunta rápida y use el formulario guiado para revisar el ZIP y enviar sus datos a Rosa."
     },
     referral: {
       title: "$50 de crédito por referir",
@@ -156,8 +223,10 @@ export const copy = {
         "Refiera un cliente nuevo que reserve una limpieza calificada y reciba $50 de crédito para su próximo servicio."
     },
     gallery: {
-      title: "Fotos reales próximamente",
-      body: "Espacio reservado para fotos de antes y después, fotos de Rosa y ejemplos de cuartos terminados."
+      title: "Videos de antes y después",
+      body: "Vea videos cortos de trabajos de Medina Clean, incluyendo resultados reales de limpieza antes y después.",
+      videos: ["Recorrido antes de limpiar", "Resultado después de limpiar", "Limpieza rápida de baño antes y después"],
+      action: "Ver en YouTube"
     },
     reviews: {
       title: "Reseñas de clientes",

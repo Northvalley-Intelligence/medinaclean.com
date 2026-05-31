@@ -14,6 +14,7 @@ import {
 import type { ClientRow } from "@/lib/client-records";
 import type { CrewMemberRow } from "@/lib/crew-records";
 import type { FollowUpTaskRow, JobRow } from "@/lib/operations-records";
+import { formatUsPhone } from "@/lib/phone";
 import { isSupabaseServiceConfigured, selectServiceRows } from "@/lib/supabase-rest";
 
 export const metadata: Metadata = {
@@ -105,6 +106,8 @@ export default async function ClientPage({ params, searchParams }: ClientPagePro
     );
   }
 
+  const displayPhone = formatUsPhone(client.phone);
+
   return (
     <main className="admin-shell">
       <header className="admin-header">
@@ -112,7 +115,7 @@ export default async function ClientPage({ params, searchParams }: ClientPagePro
           <p className="eyebrow">{t.clientDetails}</p>
           <h1>{client.name}</h1>
           <p className="admin-muted">
-            {client.phone || t.noPhone} {client.address ? `· ${client.address}` : ""}
+            {[displayPhone || t.noPhone, client.address].filter(Boolean).join(" · ")}
           </p>
           <AdminNav locale={locale} current="clients" />
         </div>
@@ -134,6 +137,10 @@ export default async function ClientPage({ params, searchParams }: ClientPagePro
         <section className="admin-panel">
           <h2>{t.clientMemory}</h2>
           <dl className="admin-facts">
+            <div>
+              <dt>{t.phone}</dt>
+              <dd>{displayPhone || t.noPhone}</dd>
+            </div>
             <div>
               <dt>{t.language}</dt>
               <dd>{client.preferred_language.toUpperCase()}</dd>

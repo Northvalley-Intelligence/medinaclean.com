@@ -2,7 +2,7 @@ export function normalizeUsPhone(value: string) {
   const digits = value.replace(/\D/g, "");
   const national = digits.length === 11 && digits.startsWith("1") ? digits.slice(1) : digits;
 
-  if (!/^[2-9]\d{2}[2-9]\d{6}$/.test(national)) {
+  if (!/^\d{10}$/.test(national)) {
     return null;
   }
 
@@ -10,4 +10,12 @@ export function normalizeUsPhone(value: string) {
     e164: `+1${national}`,
     display: `(${national.slice(0, 3)}) ${national.slice(3, 6)}-${national.slice(6)}`
   };
+}
+
+export function formatUsPhone(value: string | null | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  return normalizeUsPhone(value)?.display || value;
 }
