@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { getLocalServicePage, getSeoRedirect, localServicePages } from "./local-seo";
+import { getLocalServicePage, localServicePages } from "./local-seo";
+import { getSeoRedirect } from "./seo-redirects";
 
 describe("local SEO routes", () => {
   it("defines bilingual service pages for local cleaning searches", () => {
