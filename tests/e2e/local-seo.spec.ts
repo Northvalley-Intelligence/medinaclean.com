@@ -28,7 +28,7 @@ test("legacy indexed pages use permanent redirects instead of 404s", async ({ pa
   const response = await page.request.get("/our-services", { maxRedirects: 0 });
 
   expect(response.status()).toBe(308);
-  expect(response.headers().location).toBe("https://medinaclean.com/en#services");
+  expect(response.headers().location).toBe("/en#services");
 });
 
 test("Marietta has a dedicated service-area page because Rosa serves Marietta ZIPs", async ({ page }) => {
