@@ -22,6 +22,7 @@ export const adminText = {
     crewNav: "Equipo",
     tasksNav: "Tareas",
     reviewsNav: "Reseñas",
+    videosNav: "Videos",
     setup: "Configuración privada",
     setupTitle: "El acceso de admin no está configurado.",
     setupCopy:
@@ -188,6 +189,23 @@ export const adminText = {
     noUnavailability: "No hay bloqueos del equipo.",
     delete: "Eliminar",
     update: "Actualizar"
+    ,
+    videosTitle: "Videos",
+    videosCopy: "Sube videos de trabajos reales a YouTube y muéstralos en el sitio.",
+    uploadVideo: "Subir video",
+    currentVideos: "Videos publicados",
+    noVideos: "No hay videos todavía.",
+    titleEn: "Título en inglés",
+    titleEs: "Título en español",
+    videoFile: "Archivo de video",
+    videoDescription: "Descripción",
+    privacy: "Privacidad",
+    privacyPublic: "Público",
+    privacyUnlisted: "No listado",
+    privacyPrivate: "Privado",
+    uploadToYouTube: "Subir a YouTube",
+    videoUploaded: "Video subido.",
+    watchVideo: "Ver video"
   },
   en: {
     rosaAdmin: "Rosa Admin",
@@ -202,6 +220,7 @@ export const adminText = {
     crewNav: "Crew",
     tasksNav: "Tasks",
     reviewsNav: "Reviews",
+    videosNav: "Videos",
     setup: "Private app setup",
     setupTitle: "Admin access is not configured.",
     setupCopy:
@@ -367,7 +386,23 @@ export const adminText = {
     upcomingUnavailability: "Upcoming unavailable times",
     noUnavailability: "No crew blocks.",
     delete: "Delete",
-    update: "Update"
+    update: "Update",
+    videosTitle: "Videos",
+    videosCopy: "Upload real job videos to YouTube and show them on the website.",
+    uploadVideo: "Upload video",
+    currentVideos: "Published videos",
+    noVideos: "No videos yet.",
+    titleEn: "English title",
+    titleEs: "Spanish title",
+    videoFile: "Video file",
+    videoDescription: "Description",
+    privacy: "Privacy",
+    privacyPublic: "Public",
+    privacyUnlisted: "Unlisted",
+    privacyPrivate: "Private",
+    uploadToYouTube: "Upload to YouTube",
+    videoUploaded: "Video uploaded.",
+    watchVideo: "Watch video"
   }
 } as const;
 

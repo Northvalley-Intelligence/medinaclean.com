@@ -6,12 +6,15 @@ import { ChatEstimateAgent } from "@/components/ChatEstimateAgent";
 import { ReviewForm } from "@/components/ReviewForm";
 import { copy, instagram, phone, pricing, projectVideos, type Locale, whatsapp } from "@/lib/content";
 import { localServicePages } from "@/lib/local-seo";
-import { getApprovedReviews } from "@/lib/supabase-rest";
+import { getApprovedReviews, getPublicSiteVideos } from "@/lib/supabase-rest";
+import { mapVideoRow, type PublicVideo } from "@/lib/video-records";
 
 export async function SitePage({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const otherLocale = locale === "en" ? "es" : "en";
   const approvedReviews = await getApprovedReviews(locale);
+  const siteVideos = await getPublicSiteVideos();
+  const videos = siteVideos.length > 0 ? siteVideos.map((video) => mapVideoRow(video, locale)) : fallbackVideos(locale);
   const serviceLinks = localServicePages.filter((page) => page.locale === locale && page.kind === "service");
 
   return (
@@ -197,17 +200,17 @@ export async function SitePage({ locale }: { locale: Locale }) {
             <p>{t.gallery.body}</p>
           </div>
           <div className="video-links">
-            {projectVideos.map((video, index) => (
+            {videos.map((video) => (
               <article className="video-card" key={video.id}>
                 <iframe
                   src={video.embedUrl}
-                  title={t.gallery.videos[index]}
+                  title={video.title}
                   loading="lazy"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
                 />
                 <div className="video-card-copy">
-                  <strong>{t.gallery.videos[index]}</strong>
+                  <strong>{video.title}</strong>
                   <a href={video.watchUrl} target="_blank" rel="noopener noreferrer">
                     {t.gallery.action}
                     <ExternalLink size={14} aria-hidden />
@@ -284,6 +287,17 @@ export async function SitePage({ locale }: { locale: Locale }) {
       </footer>
     </main>
   );
+}
+
+function fallbackVideos(locale: Locale): PublicVideo[] {
+  return projectVideos.map((video) => ({
+    id: video.id,
+    title: video.title[locale],
+    youtubeVideoId: video.id,
+    watchUrl: video.watchUrl,
+    embedUrl: video.embedUrl,
+    createdAt: "2026-01-01T00:00:00.000Z"
+  }));
 }
 
 function ReviewList({

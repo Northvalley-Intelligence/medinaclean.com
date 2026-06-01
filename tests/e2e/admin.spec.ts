@@ -41,6 +41,58 @@ test("admin navigation includes Rosa's task inbox", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Tareas" })).toBeVisible();
 });
 
+test("admin navigation includes Rosa's video uploads", async ({ page }) => {
+  await page.goto("/admin");
+  await page.getByLabel("Contraseña").fill("test-admin");
+  await page.getByRole("button", { name: "Entrar" }).click();
+
+  await page.getByRole("link", { name: "Videos" }).click();
+
+  await expect(page.getByRole("heading", { name: "Videos", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Subir video" })).toBeVisible();
+  await expect(page.getByLabel("Título en inglés")).toBeVisible();
+  await expect(page.getByLabel("Título en español")).toBeVisible();
+  await expect(page.getByLabel("Archivo de video")).toHaveAttribute("accept", "video/mp4,video/quicktime,video/webm");
+  await expect(page.getByLabel("Privacidad")).toHaveValue("public");
+});
+
+test("admin video upload submits public YouTube video details", async ({ page }) => {
+  await page.goto("/admin?lang=en");
+  await page.getByLabel("Password").fill("test-admin");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await page.getByRole("link", { name: "Videos" }).click();
+
+  await page.route("**/api/admin/videos", async (route) => {
+    await route.fulfill({
+      status: 303,
+      headers: { location: "/admin/videos?lang=en&uploaded=1" }
+    });
+  });
+
+  await page.getByLabel("English title").fill("Clean kitchen reveal");
+  await page.getByLabel("Spanish title").fill("Cocina limpia");
+  await page.getByLabel("Description").fill("Real Medina Clean project video.");
+  await page.getByLabel("Description").blur();
+  await page.getByLabel("Video file").setInputFiles({
+    name: "kitchen.mp4",
+    mimeType: "video/mp4",
+    buffer: Buffer.from("fake video")
+  });
+
+  const uploadRequest = page.waitForRequest((request) => request.url().includes("/api/admin/videos"));
+  await page.getByRole("button", { name: "Upload to YouTube" }).focus();
+  await page.keyboard.press("Enter");
+
+  const submitted = (await uploadRequest).postData() || "";
+  expect(submitted).toContain('name="titleEn"');
+  expect(submitted).toContain("Clean kitchen reveal");
+  expect(submitted).toContain('name="titleEs"');
+  expect(submitted).toContain("Cocina limpia");
+  expect(submitted).toContain('name="privacyStatus"');
+  expect(submitted).toContain("public");
+  expect(submitted).toContain('filename="kitchen.mp4"');
+});
+
 test("admin form validates required client name before submit", async ({ page }) => {
   await page.goto("/admin");
   await page.getByLabel("Contraseña").fill("test-admin");

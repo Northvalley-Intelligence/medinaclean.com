@@ -221,3 +221,31 @@ export async function getApprovedReviews(language: "en" | "es") {
 
   return (await response.json()) as ApprovedReview[];
 }
+
+export async function getPublicSiteVideos() {
+  const key = serviceKey || publishableKey;
+  if (!url || !key) {
+    return [];
+  }
+
+  const params = new URLSearchParams({
+    select: "id,created_at,title_en,title_es,youtube_video_id,youtube_url,embed_url,privacy_status,is_visible",
+    is_visible: "eq.true",
+    order: "created_at.desc"
+  });
+
+  const response = await fetch(`${url}/rest/v1/site_videos?${params.toString()}`, {
+    headers: {
+      apikey: key,
+      authorization: `Bearer ${key}`
+    },
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    console.error(`Supabase public videos fetch failed: ${await response.text()}`);
+    return [];
+  }
+
+  return (await response.json()) as import("@/lib/video-records").SiteVideoRow[];
+}

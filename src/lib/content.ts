@@ -22,16 +22,28 @@ type SiteCopy = {
 export const projectVideos = [
   {
     id: "DQs4E0SqXc8",
+    title: {
+      en: "Before cleaning walkthrough",
+      es: "Recorrido antes de limpiar"
+    },
     watchUrl: "https://youtube.com/shorts/DQs4E0SqXc8",
     embedUrl: "https://www.youtube-nocookie.com/embed/DQs4E0SqXc8"
   },
   {
     id: "k5D5DABbeyw",
+    title: {
+      en: "After cleaning result",
+      es: "Resultado después de limpiar"
+    },
     watchUrl: "https://youtube.com/shorts/k5D5DABbeyw",
     embedUrl: "https://www.youtube-nocookie.com/embed/k5D5DABbeyw"
   },
   {
     id: "gRXCFWNCid4",
+    title: {
+      en: "Quick bathroom cleaning before and after",
+      es: "Limpieza rápida de baño antes y después"
+    },
     watchUrl: "https://youtube.com/shorts/gRXCFWNCid4",
     embedUrl: "https://www.youtube-nocookie.com/embed/gRXCFWNCid4"
   }
