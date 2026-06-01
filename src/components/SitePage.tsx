@@ -1,15 +1,18 @@
 import { Building2, CalendarCheck, Camera, Construction, ExternalLink, Gift, Home, Hotel, MessageCircle, Phone, Star, Store } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { AppointmentForm } from "@/components/AppointmentForm";
 import { ChatEstimateAgent } from "@/components/ChatEstimateAgent";
 import { ReviewForm } from "@/components/ReviewForm";
 import { copy, instagram, phone, pricing, projectVideos, type Locale, whatsapp } from "@/lib/content";
+import { localServicePages } from "@/lib/local-seo";
 import { getApprovedReviews } from "@/lib/supabase-rest";
 
 export async function SitePage({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const otherLocale = locale === "en" ? "es" : "en";
   const approvedReviews = await getApprovedReviews(locale);
+  const serviceLinks = localServicePages.filter((page) => page.locale === locale && page.kind === "service");
 
   return (
     <main className="site-shell">
@@ -40,12 +43,12 @@ export async function SitePage({ locale }: { locale: Locale }) {
           </div>
           <div className="nav-actions">
             <div className="lang-switch" aria-label="Language">
-              <a className={locale === "en" ? "active" : ""} href="/en">
+              <Link className={locale === "en" ? "active" : ""} href="/en">
                 EN
-              </a>
-              <a className={locale === "es" ? "active" : ""} href="/es">
+              </Link>
+              <Link className={locale === "es" ? "active" : ""} href="/es">
                 ES
-              </a>
+              </Link>
             </div>
             {phone ? (
               <a className="button secondary" href={`tel:${phone}`}>
@@ -120,6 +123,11 @@ export async function SitePage({ locale }: { locale: Locale }) {
                   <Icon color="#d6337b" size={24} aria-hidden />
                   <h3>{title}</h3>
                   <p>{body}</p>
+                  {serviceLinks[index] ? (
+                    <a className="service-card-link" href={`/${locale}/${serviceLinks[index].slug}`}>
+                      {locale === "en" ? "Learn more" : "Ver detalles"}
+                    </a>
+                  ) : null}
                 </article>
               );
             })}
@@ -342,7 +350,17 @@ function JsonLd({ locale }: { locale: Locale }) {
     "@type": "CleaningService",
     name: "Medina Clean",
     url: "https://medinaclean.com",
-    areaServed: ["Woodstock GA", "30188", "Cherokee County GA", "Cobb County GA"],
+    areaServed: [
+      "Woodstock GA",
+      "30188",
+      "Marietta GA",
+      "Kennesaw GA",
+      "Acworth GA",
+      "Canton GA",
+      "Roswell GA",
+      "Cherokee County GA",
+      "Cobb County GA"
+    ],
     availableLanguage: ["English", "Spanish"],
     priceRange: "$$",
     serviceType: ["House cleaning", "Apartment cleaning", "Condo cleaning", "Deep cleaning", "Office cleaning"],

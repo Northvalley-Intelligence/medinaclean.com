@@ -5,7 +5,7 @@ test("public hero makes Medina Clean the primary heading without repeating the h
 
   await expect(page.getByRole("heading", { name: "Medina Clean", level: 1 })).toBeVisible();
   await expect(page.locator(".hero-logo")).toHaveCount(0);
-  await expect(page.getByText("post-construction cleaning near Woodstock, GA")).toBeVisible();
+  await expect(page.getByText("post-construction cleaning near Woodstock, Marietta")).toBeVisible();
 });
 
 test("website gallery previews before-and-after YouTube Shorts instead of placeholders", async ({ page }) => {
