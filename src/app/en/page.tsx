@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { SitePage } from "@/components/SitePage";
 
 export const metadata: Metadata = {
-  title: "Medina Clean | Cleaning Services near Woodstock, GA",
+  title: "Medina Clean | Cleaning Services near Woodstock and Marietta, GA",
   description:
-    "Schedule house, apartment, condo, deep cleaning, recurring cleaning, and small business cleaning near Woodstock, GA and ZIP 30188.",
+    "Schedule house, apartment, condo, deep cleaning, recurring cleaning, and small business cleaning near Woodstock, Marietta, Kennesaw, Acworth, Canton, and Roswell, GA.",
   alternates: {
     canonical: "/en",
     languages: {

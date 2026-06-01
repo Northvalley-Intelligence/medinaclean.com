@@ -86,15 +86,15 @@ export const copy = {
       call: "Call Rosa"
     },
     hero: {
-      eyebrow: "Cleaning near Woodstock, GA",
+      eyebrow: "Cleaning near Woodstock and Marietta, GA",
       title: "Medina Clean",
       body:
-        "House, condo, apartment, small business, and post-construction cleaning near Woodstock, GA with direct communication from Rosa Medina at Medina Clean.",
+        "House, condo, apartment, small business, and post-construction cleaning near Woodstock, Marietta, Kennesaw, Acworth, Canton, and Roswell, GA with direct communication from Rosa Medina at Medina Clean.",
       primary: "Schedule a cleaning",
       whatsapp: "WhatsApp"
     },
     stats: [
-      ["20 miles", "Service area from 30188"],
+      ["20 miles", "Woodstock, Marietta + nearby cities"],
       ["$50 credit", "For qualified new client referrals"],
       ["English + Spanish", "Clear communication for every home"]
     ],
@@ -179,15 +179,15 @@ export const copy = {
       call: "Llamar a Rosa"
     },
     hero: {
-      eyebrow: "Limpieza cerca de Woodstock, GA",
+      eyebrow: "Limpieza cerca de Woodstock y Marietta, GA",
       title: "Medina Clean",
       body:
-        "Limpieza para casas, condominios, apartamentos, pequeños negocios y después de construcción cerca de Woodstock, GA con comunicación directa con Rosa Medina de Medina Clean.",
+        "Limpieza para casas, condominios, apartamentos, pequeños negocios y después de construcción cerca de Woodstock, Marietta, Kennesaw, Acworth, Canton y Roswell, GA con comunicación directa con Rosa Medina de Medina Clean.",
       primary: "Pedir una cita",
       whatsapp: "WhatsApp"
     },
     stats: [
-      ["20 millas", "Área de servicio desde 30188"],
+      ["20 millas", "Woodstock, Marietta y ciudades cercanas"],
       ["$50 de crédito", "Por referir un cliente nuevo calificado"],
       ["Inglés + Español", "Comunicación clara para cada hogar"]
     ],
