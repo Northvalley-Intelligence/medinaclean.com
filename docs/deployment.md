@@ -30,6 +30,9 @@ Required GitHub repository secrets:
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `ROSA_ADMIN_PASSWORD`
 - `ADMIN_SESSION_SECRET`
+- `YOUTUBE_CLIENT_ID`
+- `YOUTUBE_CLIENT_SECRET`
+- `YOUTUBE_REFRESH_TOKEN`
 
 Optional GitHub repository secrets:
 
@@ -80,6 +83,9 @@ Required when Supabase is enabled:
 - `SUPABASE_REVIEW_BUCKET`
 - `ROSA_ADMIN_PASSWORD`
 - `ADMIN_SESSION_SECRET`
+- `YOUTUBE_CLIENT_ID`
+- `YOUTUBE_CLIENT_SECRET`
+- `YOUTUBE_REFRESH_TOKEN`
 
 Optional contact values:
 
