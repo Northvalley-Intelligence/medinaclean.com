@@ -10,7 +10,8 @@ export function AdminVideoUploadForm({ locale }: { locale: AdminLocale }) {
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    setReady(true);
+    const id = window.setTimeout(() => setReady(true), 0);
+    return () => window.clearTimeout(id);
   }, []);
 
   async function submitVideo(event: FormEvent<HTMLFormElement>) {
