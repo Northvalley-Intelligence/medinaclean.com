@@ -19,6 +19,10 @@ export type SiteVideoRow = {
   is_visible: boolean;
 };
 
+export type AdminSiteVideo = SiteVideoRow & {
+  youtubeAvailable: boolean;
+};
+
 export type YouTubeUploadConfig = {
   clientId: string;
   clientSecret: string;
@@ -29,12 +33,48 @@ type VideoPayload = {
   titleEn: string;
   titleEs: string;
   description: string;
+  serviceFocus: VideoServiceFocus;
   privacyStatus: "public" | "unlisted" | "private";
   file: File;
 };
 
-const maxVideoBytes = 200 * 1024 * 1024;
+export const maxVideoBytes = 25 * 1024 * 1024;
+const maxMultipartOverheadBytes = 1024 * 1024;
 const allowedVideoTypes = new Set(["video/mp4", "video/quicktime", "video/webm"]);
+const videoServiceFocuses = [
+  "kitchen_cleaning",
+  "bathroom_cleaning",
+  "deep_cleaning",
+  "recurring_cleaning",
+  "post_construction_cleaning",
+  "small_business_cleaning",
+  "house_cleaning",
+  "apartment_condo_cleaning"
+] as const;
+type VideoServiceFocus = "" | (typeof videoServiceFocuses)[number];
+
+const serviceFocusMetadata: Record<Exclude<VideoServiceFocus, "">, { label: string; hashtag: string; tag: string }> = {
+  kitchen_cleaning: { label: "kitchen cleaning", hashtag: "#KitchenCleaning", tag: "kitchen cleaning" },
+  bathroom_cleaning: { label: "bathroom cleaning", hashtag: "#BathroomCleaning", tag: "bathroom cleaning" },
+  deep_cleaning: { label: "deep cleaning", hashtag: "#DeepCleaning", tag: "deep cleaning" },
+  recurring_cleaning: { label: "recurring cleaning", hashtag: "#RecurringCleaning", tag: "recurring cleaning" },
+  post_construction_cleaning: {
+    label: "post-construction cleaning",
+    hashtag: "#PostConstructionCleaning",
+    tag: "post-construction cleaning"
+  },
+  small_business_cleaning: {
+    label: "small business cleaning",
+    hashtag: "#SmallBusinessCleaning",
+    tag: "small business cleaning"
+  },
+  house_cleaning: { label: "house cleaning", hashtag: "#HouseCleaning", tag: "house cleaning" },
+  apartment_condo_cleaning: {
+    label: "apartment and condo cleaning",
+    hashtag: "#ApartmentCleaning",
+    tag: "apartment cleaning"
+  }
+};
 
 export function mapVideoRow(row: SiteVideoRow, locale: "en" | "es"): PublicVideo {
   return {
@@ -47,21 +87,22 @@ export function mapVideoRow(row: SiteVideoRow, locale: "en" | "es"): PublicVideo
   };
 }
 
+export function mapAdminVideoRow(row: SiteVideoRow, youtubeAvailable = true): AdminSiteVideo {
+  return {
+    ...row,
+    youtubeAvailable
+  };
+}
+
 export function parseVideoUploadPayload(payload: Record<string, FormDataEntryValue | undefined>) {
-  const titleEn = String(payload.titleEn || "").trim();
-  const titleEs = String(payload.titleEs || "").trim();
+  const fallbackTitle = "Video de Medina Clean";
+  const titleEs = String(payload.titleEs || "").trim() || fallbackTitle;
+  const titleEn = String(payload.titleEn || "").trim() || titleEs;
   const description = String(payload.description || "").trim();
+  const serviceFocus = normalizeServiceFocus(String(payload.serviceFocus || ""));
   const privacyStatus = normalizePrivacyStatus(String(payload.privacyStatus || "public"));
   const file = payload.video;
   const errors: string[] = [];
-
-  if (!titleEn) {
-    errors.push("English title is required.");
-  }
-
-  if (!titleEs) {
-    errors.push("Spanish title is required.");
-  }
 
   if (!(file instanceof File) || file.size === 0) {
     errors.push("Video file is required.");
@@ -71,7 +112,7 @@ export function parseVideoUploadPayload(payload: Record<string, FormDataEntryVal
     }
 
     if (file.size > maxVideoBytes) {
-      errors.push("Video must be 200 MB or smaller.");
+      errors.push("Video must be 25 MB or smaller for this admin upload.");
     }
   }
 
@@ -85,10 +126,48 @@ export function parseVideoUploadPayload(payload: Record<string, FormDataEntryVal
       titleEn,
       titleEs,
       description,
+      serviceFocus,
       privacyStatus,
       file
     } satisfies VideoPayload
   };
+}
+
+export function isVideoUploadRequestTooLarge(contentLength: string | null) {
+  if (!contentLength) {
+    return false;
+  }
+
+  const bytes = Number(contentLength);
+  return Number.isFinite(bytes) && bytes > maxVideoBytes + maxMultipartOverheadBytes;
+}
+
+export function buildYouTubeVideoDescription(description: string, serviceFocus: VideoServiceFocus) {
+  const focus = serviceFocus ? `Video focus: ${serviceFocusMetadata[serviceFocus].label}.` : "";
+  const hashtags = [
+    "#Shorts",
+    "#MedinaClean",
+    "#WoodstockGA",
+    "#HouseCleaning",
+    "#DeepCleaning",
+    "#CleaningService",
+    serviceFocus ? serviceFocusMetadata[serviceFocus].hashtag : ""
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return [
+    description.trim(),
+    focus,
+    "Medina Clean provides house, apartment, condo, deep, recurring, small business, and post-construction cleaning near Woodstock, Marietta, Kennesaw, Acworth, Canton, and Roswell, GA.",
+    "Schedule or request an estimate: https://medinaclean.com/en#schedule",
+    "Servicio en español: https://medinaclean.com/es#schedule",
+    hashtags
+  ]
+    .filter(Boolean)
+    .join("\n\n")
+    .replace("GA.\n\nSchedule", "GA.\nSchedule")
+    .replace("schedule\n\nServicio", "schedule\nServicio");
 }
 
 export function getYouTubeUploadConfig(): YouTubeUploadConfig | null {
@@ -108,7 +187,8 @@ export async function uploadVideoToYouTube(payload: VideoPayload, config: YouTub
   const metadata = {
     snippet: {
       title: payload.titleEn,
-      description: payload.description,
+      description: buildYouTubeVideoDescription(payload.description, payload.serviceFocus),
+      tags: buildYouTubeVideoTags(payload.serviceFocus),
       categoryId: "22"
     },
     status: {
@@ -147,6 +227,17 @@ export async function uploadVideoToYouTube(payload: VideoPayload, config: YouTub
   };
 }
 
+export function buildYouTubeVideoTags(serviceFocus: VideoServiceFocus) {
+  return [
+    "Shorts",
+    "Medina Clean",
+    "Woodstock GA cleaning",
+    "house cleaning",
+    "deep cleaning",
+    serviceFocus ? serviceFocusMetadata[serviceFocus].tag : ""
+  ].filter(Boolean);
+}
+
 async function fetchYouTubeAccessToken(config: YouTubeUploadConfig) {
   const params = new URLSearchParams({
     client_id: config.clientId,
@@ -177,4 +268,10 @@ async function fetchYouTubeAccessToken(config: YouTubeUploadConfig) {
 
 function normalizePrivacyStatus(value: string): "public" | "unlisted" | "private" {
   return value === "unlisted" || value === "private" ? value : "public";
+}
+
+function normalizeServiceFocus(value: string): VideoServiceFocus {
+  return videoServiceFocuses.includes(value as Exclude<VideoServiceFocus, "">)
+    ? (value as Exclude<VideoServiceFocus, "">)
+    : "";
 }

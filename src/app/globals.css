@@ -575,6 +575,13 @@ h1 {
   font-weight: 750;
 }
 
+.admin-field-note {
+  margin: -4px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
 .admin-form input,
 .admin-form select,
 .admin-form textarea {
@@ -602,6 +609,35 @@ h1 {
 .admin-submit-button {
   width: 100%;
   margin-top: 14px;
+}
+
+.admin-submit-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.admin-upload-status {
+  min-height: 1.5em;
+  margin-top: 10px;
+}
+
+.admin-video-preview {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border: 0;
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.admin-video-preview.unavailable {
+  padding: 16px;
+  color: #7d152b;
+  border: 1px solid #f0b8c3;
+  background: #fff0f3;
+  font-weight: 800;
+  text-align: center;
 }
 
 .admin-form-row {
@@ -1291,18 +1327,25 @@ textarea {
 }
 
 .video-links {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
   gap: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 2px 14px;
+  scroll-padding-inline: 2px;
+  scroll-snap-type: x mandatory;
+  scrollbar-color: rgba(214, 51, 123, 0.45) rgba(255, 235, 241, 0.85);
 }
 
 .video-card {
   display: grid;
+  flex: 0 0 min(31.5%, 340px);
   overflow: hidden;
   border: 1px solid rgba(214, 51, 123, 0.26);
   border-radius: 8px;
   color: var(--ink);
   background: #fff;
+  scroll-snap-align: start;
   transition:
     border-color 160ms ease,
     transform 160ms ease,
@@ -1415,9 +1458,12 @@ textarea {
   .grid,
   .services-grid,
   .local-grid,
-  .review-list,
-  .video-links {
+  .review-list {
     grid-template-columns: 1fr;
+  }
+
+  .video-card {
+    flex-basis: min(72%, 360px);
   }
 
   .service-card,
@@ -1478,9 +1524,12 @@ textarea {
   .admin-form-row,
   .grid,
   .services-grid,
-  .review-list,
-  .video-links {
+  .review-list {
     grid-template-columns: 1fr;
+  }
+
+  .video-card {
+    flex-basis: 88%;
   }
 
   .nav-actions,

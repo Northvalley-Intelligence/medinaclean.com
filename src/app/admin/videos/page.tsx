@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { AdminLanguageSwitch } from "@/app/admin/_components/admin-language-switch";
 import { AdminNav } from "@/app/admin/_components/admin-nav";
+import { AdminVideoUploadForm } from "@/app/admin/_components/admin-video-upload-form";
 import { adminSessionCookie, isAdminConfigured, verifyAdminSession } from "@/lib/admin-auth";
 import { adminText, getAdminLocale, langQuery } from "@/lib/admin-i18n";
-import { isSupabaseServiceConfigured, selectServiceRows } from "@/lib/supabase-rest";
-import type { SiteVideoRow } from "@/lib/video-records";
+import { isSupabaseServiceConfigured, isYouTubeVideoAvailable, selectServiceRows } from "@/lib/supabase-rest";
+import { mapAdminVideoRow, type AdminSiteVideo, type SiteVideoRow } from "@/lib/video-records";
 
 export const metadata: Metadata = {
   title: "Rosa Videos",
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 type VideosPageProps = {
-  searchParams?: Promise<{ error?: string; uploaded?: string; lang?: string }>;
+  searchParams?: Promise<{ error?: string; uploaded?: string; updated?: string; lang?: string }>;
 };
 
 export default async function VideosPage({ searchParams }: VideosPageProps) {
@@ -41,11 +42,13 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
     );
   }
 
-  let videos: SiteVideoRow[] = [];
+  let videos: AdminSiteVideo[] = [];
   let loadError = "";
   if (isSupabaseServiceConfigured()) {
     try {
-      videos = await selectServiceRows<SiteVideoRow>("site_videos", "select=*&order=created_at.desc&limit=100");
+      const rows = await selectServiceRows<SiteVideoRow>("site_videos", "select=*&order=created_at.desc&limit=100");
+      const availability = await Promise.all(rows.map((video) => isYouTubeVideoAvailable(video.youtube_url)));
+      videos = rows.map((video, index) => mapAdminVideoRow(video, availability[index]));
     } catch (error) {
       loadError = error instanceof Error ? error.message : "Videos could not be loaded.";
     }
@@ -73,6 +76,7 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
       </header>
 
       {params?.uploaded ? <p className="admin-success">{t.videoUploaded}</p> : null}
+      {params?.updated ? <p className="admin-success">{t.videoUpdated}</p> : null}
       {params?.error || loadError ? <p className="admin-alert">{params?.error || loadError}</p> : null}
 
       <section className="admin-grid">
@@ -81,44 +85,7 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
             <h2>{t.uploadVideo}</h2>
             <span>YouTube</span>
           </div>
-          <form
-            id="admin-video-upload-form"
-            className="video-upload-form"
-            action="/api/admin/videos"
-            method="post"
-            encType="multipart/form-data"
-          >
-            <div className="admin-form">
-              <input name="lang" type="hidden" value={locale} />
-              <label>
-                {t.titleEn}
-                <input name="titleEn" required maxLength={120} placeholder="Before and after kitchen" />
-              </label>
-              <label>
-                {t.titleEs}
-                <input name="titleEs" required maxLength={120} placeholder="Antes y después cocina" />
-              </label>
-              <label>
-                {t.videoDescription}
-                <input name="description" maxLength={1000} />
-              </label>
-              <label>
-                {t.privacy}
-                <select name="privacyStatus" defaultValue="public">
-                  <option value="public">{t.privacyPublic}</option>
-                  <option value="unlisted">{t.privacyUnlisted}</option>
-                  <option value="private">{t.privacyPrivate}</option>
-                </select>
-              </label>
-              <label>
-                {t.videoFile}
-                <input name="video" type="file" accept="video/mp4,video/quicktime,video/webm" required />
-              </label>
-            </div>
-          </form>
-          <button className="button primary admin-submit-button" type="submit" form="admin-video-upload-form">
-            {t.uploadToYouTube}
-          </button>
+          <AdminVideoUploadForm locale={locale} />
         </section>
 
         <section className="admin-panel">
@@ -132,14 +99,40 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
             ) : (
               videos.map((video) => (
                 <article className="admin-review-card" key={video.id}>
+                  {video.youtubeAvailable ? (
+                    <iframe
+                      className="admin-video-preview"
+                      src={video.embed_url}
+                      title={locale === "es" ? video.title_es : video.title_en}
+                      loading="lazy"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <div className="admin-video-preview unavailable">{t.youtubeUnavailable}</div>
+                  )}
                   <div className="admin-review-meta">
                     <strong>{locale === "es" ? video.title_es : video.title_en}</strong>
-                    <span>{video.privacy_status}</span>
+                    <span>{video.is_visible ? t.visibleOnSite : t.hiddenFromSite}</span>
                   </div>
                   <small>{video.youtube_video_id}</small>
                   <a className="button secondary compact" href={video.youtube_url} target="_blank" rel="noreferrer">
                     {t.watchVideo}
                   </a>
+                  <form action={`/api/admin/videos/${video.id}`} method="post">
+                    <input name="lang" type="hidden" value={locale} />
+                    <input name="isVisible" type="hidden" value={video.is_visible ? "false" : "true"} />
+                    <button className="button secondary compact" type="submit">
+                      {video.is_visible ? t.hideVideo : t.showVideo}
+                    </button>
+                  </form>
+                  <form action={`/api/admin/videos/${video.id}`} method="post">
+                    <input name="lang" type="hidden" value={locale} />
+                    <input name="action" type="hidden" value="delete" />
+                    <button className="button secondary compact" type="submit" title={t.removeVideoRecordHint}>
+                      {t.removeVideoRecord}
+                    </button>
+                  </form>
                 </article>
               ))
             )}

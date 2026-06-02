@@ -2,7 +2,7 @@ export type Locale = "en" | "es";
 
 export const phone = process.env.NEXT_PUBLIC_ROSA_PHONE || "";
 export const whatsapp = process.env.NEXT_PUBLIC_ROSA_WHATSAPP || "#schedule";
-export const instagram = process.env.NEXT_PUBLIC_ROSA_INSTAGRAM || "#contact";
+export const instagram = process.env.NEXT_PUBLIC_ROSA_INSTAGRAM || "https://www.instagram.com/medinaclean845/";
 
 type SiteCopy = {
   nav: Record<string, string>;

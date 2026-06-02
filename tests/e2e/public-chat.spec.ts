@@ -1,11 +1,23 @@
 import { expect, test } from "@playwright/test";
 
 test("public hero makes Medina Clean the primary heading without repeating the hero logo", async ({ page }) => {
+  await page.route("**/googletagmanager.com/**", async (route) => route.abort());
   await page.goto("/en");
 
   await expect(page.getByRole("heading", { name: "Medina Clean", level: 1 })).toBeVisible();
   await expect(page.locator(".hero-logo")).toHaveCount(0);
   await expect(page.getByText("post-construction cleaning near Woodstock, Marietta")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Instagram" })).toHaveAttribute(
+    "href",
+    "https://www.instagram.com/medinaclean845/"
+  );
+  await expect(page.locator("script#google-tag-manager")).toHaveCount(1);
+  await expect
+    .poll(async () => page.locator("script#google-tag-manager").evaluate((script) => script.innerHTML))
+    .toContain("GTM-M3DMSPQW");
+  await expect
+    .poll(async () => page.locator("noscript").first().evaluate((element) => element.innerHTML))
+    .toContain("https://www.googletagmanager.com/ns.html?id=GTM-M3DMSPQW");
 });
 
 test("website gallery previews before-and-after YouTube Shorts instead of placeholders", async ({ page }) => {
@@ -13,24 +25,18 @@ test("website gallery previews before-and-after YouTube Shorts instead of placeh
 
   await expect(page.getByRole("heading", { name: "Before-and-after videos" })).toBeVisible();
   await expect(page.getByText("Before / after")).toHaveCount(0);
+  await expect(page.locator(".video-links")).toHaveCSS("overflow-x", "auto");
+  await expect(page.locator(".video-links")).toHaveCSS("scroll-snap-type", /x mandatory/);
 
-  const expectedVideos = [
-    ["DQs4E0SqXc8", "Before cleaning walkthrough", "https://youtube.com/shorts/DQs4E0SqXc8"],
-    ["k5D5DABbeyw", "After cleaning result", "https://youtube.com/shorts/k5D5DABbeyw"],
-    ["gRXCFWNCid4", "Quick bathroom cleaning before and after", "https://youtube.com/shorts/gRXCFWNCid4"]
-  ];
-
-  for (const [index, [id, title, href]] of expectedVideos.entries()) {
-    await expect(page.getByTitle(title)).toHaveAttribute(
-      "src",
-      `https://www.youtube-nocookie.com/embed/${id}`
-    );
-    await expect(page.locator(".video-card").nth(index).getByText(title)).toBeVisible();
-    await expect(page.locator(".video-card").nth(index).getByRole("link", { name: "Watch on YouTube" })).toHaveAttribute(
-      "href",
-      href
-    );
-  }
+  await expect(page.locator(".video-card").first()).toBeVisible();
+  await expect(page.locator(".video-card").first().locator("iframe")).toHaveAttribute(
+    "src",
+    /https:\/\/www\.youtube-nocookie\.com\/embed\//
+  );
+  await expect(page.locator(".video-card").first().getByRole("link", { name: "Watch on YouTube" })).toHaveAttribute(
+    "href",
+    /https:\/\/(www\.)?youtube\.com\//
+  );
   await expect(page.locator('iframe[src*="wQJ6qMZX0Ks"]')).toHaveCount(0);
 });
 

@@ -50,10 +50,33 @@ test("admin navigation includes Rosa's video uploads", async ({ page }) => {
 
   await expect(page.getByRole("heading", { name: "Videos", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Subir video" })).toBeVisible();
-  await expect(page.getByLabel("Título en inglés")).toBeVisible();
-  await expect(page.getByLabel("Título en español")).toBeVisible();
+  await expect(page.getByLabel("Título del video")).not.toHaveAttribute("required", "");
+  await expect(page.getByLabel("Título del video")).toHaveAttribute("placeholder", "Video de Medina Clean");
+  await expect(page.getByLabel("Título en inglés opcional")).not.toHaveAttribute("required", "");
+  await expect(page.getByLabel("Tipo de video opcional")).toHaveValue("");
+  await expect(page.getByLabel("Tipo de video opcional")).toContainText("Limpieza de cocina");
   await expect(page.getByLabel("Archivo de video")).toHaveAttribute("accept", "video/mp4,video/quicktime,video/webm");
+  await expect(page.getByText("Por ahora, suba videos de 25 MB o menos.")).toBeVisible();
+  await expect(page.getByText("Por defecto se prepara para YouTube Shorts.")).toBeVisible();
   await expect(page.getByLabel("Privacidad")).toHaveValue("public");
+});
+
+test("admin video list shows previews so Rosa can choose site visibility", async ({ page }) => {
+  await page.goto("/admin");
+  await page.getByLabel("Contraseña").fill("test-admin");
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.goto("/admin/videos");
+
+  await expect(page.locator(".admin-video-preview").first()).toBeVisible();
+  const firstPreview = page.locator(".admin-video-preview").first();
+  const tagName = await firstPreview.evaluate((element) => element.tagName.toLowerCase());
+  if (tagName === "iframe") {
+    await expect(firstPreview).toHaveAttribute("src", /youtube-nocookie\.com\/embed\//);
+  } else {
+    await expect(firstPreview).toContainText("Este video ya no está disponible en YouTube.");
+  }
+  await expect(page.getByRole("button", { name: /Ocultar del sitio|Mostrar en el sitio/ }).first()).toBeVisible();
+  await expect(page.getByRole("button", { name: "Quitar registro" }).first()).toBeVisible();
 });
 
 test("admin video upload submits public YouTube video details", async ({ page }) => {
@@ -61,6 +84,7 @@ test("admin video upload submits public YouTube video details", async ({ page })
   await page.getByLabel("Password").fill("test-admin");
   await page.getByRole("button", { name: "Sign in" }).click();
   await page.getByRole("link", { name: "Videos" }).click();
+  await expect(page.locator("#admin-video-upload-form")).toHaveAttribute("data-ready", "true");
 
   await page.route("**/api/admin/videos", async (route) => {
     await route.fulfill({
@@ -72,6 +96,7 @@ test("admin video upload submits public YouTube video details", async ({ page })
   await page.getByLabel("English title").fill("Clean kitchen reveal");
   await page.getByLabel("Spanish title").fill("Cocina limpia");
   await page.getByLabel("Description").fill("Real Medina Clean project video.");
+  await page.getByLabel("Optional video type").selectOption("kitchen_cleaning");
   await page.getByLabel("Description").blur();
   await page.getByLabel("Video file").setInputFiles({
     name: "kitchen.mp4",
@@ -88,9 +113,53 @@ test("admin video upload submits public YouTube video details", async ({ page })
   expect(submitted).toContain("Clean kitchen reveal");
   expect(submitted).toContain('name="titleEs"');
   expect(submitted).toContain("Cocina limpia");
+  expect(submitted).toContain('name="serviceFocus"');
+  expect(submitted).toContain("kitchen_cleaning");
   expect(submitted).toContain('name="privacyStatus"');
   expect(submitted).toContain("public");
   expect(submitted).toContain('filename="kitchen.mp4"');
+});
+
+test("admin video upload shows progress while YouTube is receiving the file", async ({ page }) => {
+  await page.goto("/admin");
+  await page.getByLabel("Contraseña").fill("test-admin");
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.getByRole("link", { name: "Videos" }).click();
+  await expect(page.locator("#admin-video-upload-form")).toHaveAttribute("data-ready", "true");
+
+  let releaseUpload: (() => void) | undefined;
+  await page.route("**/api/admin/videos", async (route) => {
+    await new Promise<void>((resolve) => {
+      releaseUpload = resolve;
+    });
+    await route.fulfill({
+      status: 303,
+      headers: { location: "/admin/videos?uploaded=1" }
+    });
+  });
+
+  await page.getByLabel("Archivo de video").setInputFiles({
+    name: "kitchen.mp4",
+    mimeType: "video/mp4",
+    buffer: Buffer.from("fake video")
+  });
+
+  await page.getByRole("button", { name: "Subir a YouTube" }).click({ noWaitAfter: true });
+  await expect(page.getByRole("button", { name: "Subiendo a YouTube..." })).toBeDisabled();
+  await expect(page.getByText("Mantenga esta página abierta.")).toBeVisible();
+
+  releaseUpload?.();
+  await expect(page).toHaveURL(/uploaded=1/);
+});
+
+test("admin video upload errors show as readable admin feedback", async ({ page }) => {
+  await page.goto("/admin?lang=en");
+  await page.getByLabel("Password").fill("test-admin");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await page.goto("/admin/videos?lang=en&error=The+video+form+could+not+be+read.");
+
+  await expect(page.getByText("The video form could not be read.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Upload video" })).toBeVisible();
 });
 
 test("admin form validates required client name before submit", async ({ page }) => {

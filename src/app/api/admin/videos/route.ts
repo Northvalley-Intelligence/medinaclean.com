@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { isAdminRequest } from "../../../../lib/admin-auth";
-import { insertServiceRow, isSupabaseServiceConfigured } from "../../../../lib/supabase-rest";
-import { getYouTubeUploadConfig, parseVideoUploadPayload, uploadVideoToYouTube } from "../../../../lib/video-records";
+import { insertServiceRow, isSupabaseServiceConfigured, selectServiceRows } from "../../../../lib/supabase-rest";
+import {
+  getYouTubeUploadConfig,
+  isVideoUploadRequestTooLarge,
+  parseVideoUploadPayload,
+  uploadVideoToYouTube
+} from "../../../../lib/video-records";
 
 export async function POST(request: Request) {
   if (!(await isAdminRequest(request))) {
@@ -9,7 +14,23 @@ export async function POST(request: Request) {
   }
 
   const isForm = request.headers.get("content-type")?.includes("multipart/form-data");
-  const payload = Object.fromEntries(await request.formData()) as Record<string, FormDataEntryValue>;
+  if (isVideoUploadRequestTooLarge(request.headers.get("content-length"))) {
+    return respond(request, { error: "Video must be 25 MB or smaller for this admin upload.", lang: "" }, 413, isForm);
+  }
+
+  let payload: Record<string, FormDataEntryValue>;
+  try {
+    payload = Object.fromEntries(await request.formData()) as Record<string, FormDataEntryValue>;
+  } catch (error) {
+    console.error(error);
+    return respond(
+      request,
+      { error: "The video form could not be read. Use a video 25 MB or smaller and try again.", lang: "" },
+      400,
+      isForm
+    );
+  }
+
   const lang = payload.lang === "en" ? "en" : "";
   const parsed = parseVideoUploadPayload(payload);
 
@@ -27,6 +48,7 @@ export async function POST(request: Request) {
   }
 
   try {
+    await selectServiceRows("site_videos", "select=id&limit=1");
     const upload = await uploadVideoToYouTube(parsed.value, youtubeConfig);
     await insertServiceRow("site_videos", {
       title_en: parsed.value.titleEn,
