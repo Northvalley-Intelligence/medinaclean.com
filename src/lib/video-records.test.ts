@@ -55,7 +55,7 @@ describe("video records", () => {
 
     expect(parsed).toEqual({
       ok: false,
-      errors: ["Video must be 25 MB or smaller for this admin upload."]
+      errors: ["Video must be 75 MB or smaller for this admin upload."]
     });
   });
 

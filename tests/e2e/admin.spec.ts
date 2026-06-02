@@ -56,7 +56,7 @@ test("admin navigation includes Rosa's video uploads", async ({ page }) => {
   await expect(page.getByLabel("Tipo de video opcional")).toHaveValue("");
   await expect(page.getByLabel("Tipo de video opcional")).toContainText("Limpieza de cocina");
   await expect(page.getByLabel("Archivo de video")).toHaveAttribute("accept", "video/mp4,video/quicktime,video/webm");
-  await expect(page.getByText("Por ahora, suba videos de 25 MB o menos.")).toBeVisible();
+  await expect(page.getByText("Por ahora, suba videos de 75 MB o menos.")).toBeVisible();
   await expect(page.getByText("Por defecto se prepara para YouTube Shorts.")).toBeVisible();
   await expect(page.getByLabel("Privacidad")).toHaveValue("public");
 });

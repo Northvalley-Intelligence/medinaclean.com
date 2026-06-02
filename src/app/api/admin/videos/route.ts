@@ -15,7 +15,7 @@ export async function POST(request: Request) {
 
   const isForm = request.headers.get("content-type")?.includes("multipart/form-data");
   if (isVideoUploadRequestTooLarge(request.headers.get("content-length"))) {
-    return respond(request, { error: "Video must be 25 MB or smaller for this admin upload.", lang: "" }, 413, isForm);
+    return respond(request, { error: "Video must be 75 MB or smaller for this admin upload.", lang: "" }, 413, isForm);
   }
 
   let payload: Record<string, FormDataEntryValue>;
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     console.error(error);
     return respond(
       request,
-      { error: "The video form could not be read. Use a video 25 MB or smaller and try again.", lang: "" },
+      { error: "The video form could not be read. Use a video 75 MB or smaller and try again.", lang: "" },
       400,
       isForm
     );
