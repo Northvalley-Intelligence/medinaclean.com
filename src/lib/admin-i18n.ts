@@ -23,6 +23,7 @@ export const adminText = {
     tasksNav: "Tareas",
     reviewsNav: "Reseñas",
     videosNav: "Videos",
+    adsNav: "Anuncios",
     setup: "Configuración privada",
     setupTitle: "El acceso de admin no está configurado.",
     setupCopy:
@@ -190,6 +191,30 @@ export const adminText = {
     delete: "Eliminar",
     update: "Actualizar"
     ,
+    adsTitle: "Anuncios",
+    adsCopy:
+      "Prepara campañas de Instagram y Facebook para traer clientes al chat de Medina Clean. No se gasta dinero desde este panel todavía.",
+    adsPlanner: "Plan de campaña",
+    adsManagerStatus: "Meta Ads Manager",
+    adsManagerCopy:
+      "MVP seguro: North Valley puede abrir este enlace en Meta Ads Manager, usar estos ZIPs y presupuesto, y revisar antes de publicar.",
+    campaignName: "Nombre de campaña",
+    dailyBudget: "Presupuesto diario",
+    adZipCodes: "ZIPs para mostrar anuncios",
+    adPlatforms: "Plataformas",
+    instagram: "Instagram",
+    facebook: "Facebook",
+    adLandingLink: "Enlace para el anuncio",
+    openChatLink: "Abrir enlace de chat",
+    adLandingHint: "Cuando alguien toca el anuncio, llega al chat para pedir estimado y dejar sus datos.",
+    recommendedCampaign: "Limpieza de casas en Woodstock",
+    launchChecklist: "Lista para publicar",
+    launchChecklistItems: [
+      "Usar objetivo Leads o Tráfico hacia sitio web.",
+      "Destino del anuncio: el enlace de chat generado abajo.",
+      "Ubicaciones: Instagram y Facebook, solo ZIPs seleccionados.",
+      "Presupuesto pequeño primero; pausar si Rosa no tiene espacio en calendario."
+    ],
     videosTitle: "Videos",
     videosCopy: "Sube videos de trabajos reales a YouTube y muéstralos en el sitio.",
     uploadVideo: "Subir video",
@@ -244,6 +269,7 @@ export const adminText = {
     tasksNav: "Tasks",
     reviewsNav: "Reviews",
     videosNav: "Videos",
+    adsNav: "Ads",
     setup: "Private app setup",
     setupTitle: "Admin access is not configured.",
     setupCopy:
@@ -410,6 +436,30 @@ export const adminText = {
     noUnavailability: "No crew blocks.",
     delete: "Delete",
     update: "Update",
+    adsTitle: "Ads",
+    adsCopy:
+      "Prepare Instagram and Facebook campaigns that send customers into Medina Clean's chat. This panel does not spend money yet.",
+    adsPlanner: "Campaign plan",
+    adsManagerStatus: "Meta Ads Manager",
+    adsManagerCopy:
+      "Safe MVP: North Valley can open this link in Meta Ads Manager, use these ZIPs and budget, and review before publishing.",
+    campaignName: "Campaign name",
+    dailyBudget: "Daily budget",
+    adZipCodes: "ZIPs to show ads",
+    adPlatforms: "Platforms",
+    instagram: "Instagram",
+    facebook: "Facebook",
+    adLandingLink: "Ad landing link",
+    openChatLink: "Open chat link",
+    adLandingHint: "When someone taps the ad, they land in chat to request an estimate and leave their details.",
+    recommendedCampaign: "Woodstock house cleaning",
+    launchChecklist: "Launch checklist",
+    launchChecklistItems: [
+      "Use the Leads or Traffic objective to website.",
+      "Ad destination: the generated chat link below.",
+      "Placements: Instagram and Facebook, only selected ZIPs.",
+      "Start with a small budget; pause if Rosa has no calendar space."
+    ],
     videosTitle: "Videos",
     videosCopy: "Upload real job videos to YouTube and show them on the website.",
     uploadVideo: "Upload video",

@@ -61,6 +61,31 @@ test("admin navigation includes Rosa's video uploads", async ({ page }) => {
   await expect(page.getByLabel("Privacidad")).toHaveValue("public");
 });
 
+test("admin ads planner prepares Meta campaigns that send clicks to chat", async ({ page }) => {
+  await page.goto("/admin");
+  await page.getByLabel("Contraseña").fill("test-admin");
+  await page.getByRole("button", { name: "Entrar" }).click();
+
+  await page.getByRole("link", { name: "Anuncios" }).click();
+
+  await expect(page.getByRole("heading", { name: "Anuncios", exact: true })).toBeVisible();
+  await expect(page.locator("#admin-ads-planner-form")).toHaveAttribute("data-ready", "true");
+  await expect(page.getByRole("heading", { name: "Meta Ads Manager" })).toBeVisible();
+  await expect(page.getByLabel("Presupuesto diario")).toHaveValue("20");
+  await expect(page.getByLabel("ZIPs para mostrar anuncios")).toContainText("30188");
+  await expect(page.getByLabel("Instagram")).toBeChecked();
+  await expect(page.getByLabel("Facebook")).toBeChecked();
+
+  await page.getByLabel("Nombre de campaña").fill("Woodstock limpieza recurrente");
+  await page.getByLabel("ZIPs para mostrar anuncios").fill("30188, 30189");
+
+  const landingLink = page.getByRole("link", { name: "Abrir enlace de chat" });
+  await expect(landingLink).toHaveAttribute(
+    "href",
+    /\/es\?utm_source=meta&utm_medium=paid_social&utm_campaign=woodstock-limpieza-recurrente&utm_content=instagram-facebook&zip=30188#chat/
+  );
+});
+
 test("admin video list shows previews so Rosa can choose site visibility", async ({ page }) => {
   await page.goto("/admin");
   await page.getByLabel("Contraseña").fill("test-admin");

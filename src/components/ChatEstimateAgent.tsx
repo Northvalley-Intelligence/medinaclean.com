@@ -203,6 +203,13 @@ export function ChatEstimateAgent({ locale }: { locale: Locale }) {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    const zip = new URLSearchParams(window.location.search).get("zip");
+    if (zip && /^\d{5}$/.test(zip)) {
+      window.setTimeout(() => setZipCode(zip), 0);
+    }
+  }, []);
+
+  useEffect(() => {
     return () => {
       if (pdfUrl) {
         URL.revokeObjectURL(pdfUrl);

@@ -2,7 +2,7 @@ import { adminText, type AdminLocale, langQuery } from "@/lib/admin-i18n";
 
 type AdminNavProps = {
   locale: AdminLocale;
-  current: "clients" | "calendar" | "crew" | "tasks" | "reviews" | "videos";
+  current: "clients" | "calendar" | "crew" | "tasks" | "reviews" | "videos" | "ads";
 };
 
 export function AdminNav({ locale, current }: AdminNavProps) {
@@ -26,6 +26,9 @@ export function AdminNav({ locale, current }: AdminNavProps) {
       </a>
       <a aria-current={current === "videos" ? "page" : undefined} href={`/admin/videos${langQuery(locale)}`}>
         {t.videosNav}
+      </a>
+      <a aria-current={current === "ads" ? "page" : undefined} href={`/admin/ads${langQuery(locale)}`}>
+        {t.adsNav}
       </a>
     </nav>
   );

@@ -214,6 +214,12 @@ test("website chat accepts the default 30188 ZIP when checking service area", as
   await expect(chat).toContainText("Great, that ZIP is in Rosa's current service area.");
 });
 
+test("website chat accepts ad landing ZIP from Meta campaign links", async ({ page }) => {
+  await page.goto("/en?utm_source=meta&utm_medium=paid_social&utm_campaign=woodstock-cleaning&zip=30189#chat");
+
+  await expect(page.locator("#chat").getByLabel("ZIP code")).toHaveValue("30189");
+});
+
 test("website chat validates phone and street address on blur", async ({ page }) => {
   await page.goto("/en");
 
