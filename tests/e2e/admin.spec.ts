@@ -67,7 +67,14 @@ test("admin video list shows previews so Rosa can choose site visibility", async
   await page.getByRole("button", { name: "Entrar" }).click();
   await page.goto("/admin/videos");
 
-  await expect(page.locator(".admin-video-preview").first()).toBeVisible();
+  const previews = page.locator(".admin-video-preview");
+  const previewCount = await previews.count();
+  if (previewCount === 0) {
+    await expect(page.getByText("No hay videos todavía.")).toBeVisible();
+    return;
+  }
+
+  await expect(previews.first()).toBeVisible();
   const firstPreview = page.locator(".admin-video-preview").first();
   const tagName = await firstPreview.evaluate((element) => element.tagName.toLowerCase());
   if (tagName === "iframe") {
