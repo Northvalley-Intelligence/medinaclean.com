@@ -164,6 +164,19 @@ create table if not exists public.ai_usage_events (
   metadata jsonb not null default '{}'::jsonb
 );
 
+create table if not exists public.site_videos (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  title_en text not null,
+  title_es text not null,
+  description text,
+  youtube_video_id text not null unique,
+  youtube_url text not null,
+  embed_url text not null,
+  privacy_status text not null default 'public' check (privacy_status in ('public', 'unlisted', 'private')),
+  is_visible boolean not null default true
+);
+
 alter table public.appointment_requests enable row level security;
 alter table public.reviews enable row level security;
 alter table public.referrals enable row level security;
@@ -174,6 +187,7 @@ alter table public.crew_unavailability enable row level security;
 alter table public.follow_up_tasks enable row level security;
 alter table public.time_blocks enable row level security;
 alter table public.ai_usage_events enable row level security;
+alter table public.site_videos enable row level security;
 
 drop policy if exists "public can submit appointment requests" on public.appointment_requests;
 create policy "public can submit appointment requests"
@@ -248,6 +262,19 @@ to service_role
 using (true)
 with check (true);
 
+drop policy if exists "public can read visible site videos" on public.site_videos;
+create policy "public can read visible site videos"
+on public.site_videos for select
+to anon
+using (is_visible = true);
+
+drop policy if exists "service role can manage site videos" on public.site_videos;
+create policy "service role can manage site videos"
+on public.site_videos for all
+to service_role
+using (true)
+with check (true);
+
 create index if not exists appointment_requests_created_at_idx on public.appointment_requests (created_at desc);
 create index if not exists reviews_status_created_at_idx on public.reviews (status, created_at desc);
 create index if not exists clients_status_created_at_idx on public.clients (status, created_at desc);
@@ -262,6 +289,7 @@ create index if not exists time_blocks_start_end_idx on public.time_blocks (star
 create index if not exists ai_usage_events_created_at_idx on public.ai_usage_events (created_at desc);
 create index if not exists ai_usage_events_provider_model_idx on public.ai_usage_events (provider, model, created_at desc);
 create index if not exists ai_usage_events_feature_idx on public.ai_usage_events (feature, created_at desc);
+create index if not exists site_videos_visible_created_idx on public.site_videos (is_visible, created_at desc);
 
 insert into public.crew_members (name, role, status, is_rosa, default_weekday_start, default_weekday_end, notes)
 select 'Rosa Medina', 'owner', 'active', true, '10:00', '17:00', 'Owner and default crew member for Medina Clean.'

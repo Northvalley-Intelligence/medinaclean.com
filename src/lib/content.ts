@@ -2,7 +2,7 @@ export type Locale = "en" | "es";
 
 export const phone = process.env.NEXT_PUBLIC_ROSA_PHONE || "";
 export const whatsapp = process.env.NEXT_PUBLIC_ROSA_WHATSAPP || "#schedule";
-export const instagram = process.env.NEXT_PUBLIC_ROSA_INSTAGRAM || "#contact";
+export const instagram = process.env.NEXT_PUBLIC_ROSA_INSTAGRAM || "https://www.instagram.com/medinaclean845/";
 
 type SiteCopy = {
   nav: Record<string, string>;
@@ -22,16 +22,28 @@ type SiteCopy = {
 export const projectVideos = [
   {
     id: "DQs4E0SqXc8",
+    title: {
+      en: "Before cleaning walkthrough",
+      es: "Recorrido antes de limpiar"
+    },
     watchUrl: "https://youtube.com/shorts/DQs4E0SqXc8",
     embedUrl: "https://www.youtube-nocookie.com/embed/DQs4E0SqXc8"
   },
   {
     id: "k5D5DABbeyw",
+    title: {
+      en: "After cleaning result",
+      es: "Resultado después de limpiar"
+    },
     watchUrl: "https://youtube.com/shorts/k5D5DABbeyw",
     embedUrl: "https://www.youtube-nocookie.com/embed/k5D5DABbeyw"
   },
   {
     id: "gRXCFWNCid4",
+    title: {
+      en: "Quick bathroom cleaning before and after",
+      es: "Limpieza rápida de baño antes y después"
+    },
     watchUrl: "https://youtube.com/shorts/gRXCFWNCid4",
     embedUrl: "https://www.youtube-nocookie.com/embed/gRXCFWNCid4"
   }

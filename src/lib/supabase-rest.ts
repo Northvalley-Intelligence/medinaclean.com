@@ -221,3 +221,52 @@ export async function getApprovedReviews(language: "en" | "es") {
 
   return (await response.json()) as ApprovedReview[];
 }
+
+export async function getPublicSiteVideos() {
+  const key = serviceKey || publishableKey;
+  if (!url || !key) {
+    return [];
+  }
+
+  const params = new URLSearchParams({
+    select: "id,created_at,title_en,title_es,youtube_video_id,youtube_url,embed_url,privacy_status,is_visible",
+    is_visible: "eq.true",
+    privacy_status: "in.(public,unlisted)",
+    order: "created_at.desc",
+    limit: "6"
+  });
+
+  const response = await fetch(`${url}/rest/v1/site_videos?${params.toString()}`, {
+    headers: {
+      apikey: key,
+      authorization: `Bearer ${key}`
+    },
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    console.error(`Supabase public videos fetch failed: ${await response.text()}`);
+    return [];
+  }
+
+  const rows = (await response.json()) as import("@/lib/video-records").SiteVideoRow[];
+  const availability = await Promise.all(rows.map((row) => isYouTubeVideoAvailable(row.youtube_url)));
+  return rows.filter((_, index) => availability[index]);
+}
+
+export async function isYouTubeVideoAvailable(videoUrl: string) {
+  const params = new URLSearchParams({
+    url: videoUrl,
+    format: "json"
+  });
+
+  try {
+    const response = await fetch(`https://www.youtube.com/oembed?${params.toString()}`, {
+      next: { revalidate: 21600 }
+    });
+    return response.ok;
+  } catch (error) {
+    console.error(`YouTube video availability check failed: ${error instanceof Error ? error.message : String(error)}`);
+    return true;
+  }
+}
