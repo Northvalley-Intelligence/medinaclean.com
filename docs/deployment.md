@@ -28,6 +28,8 @@ Required GitHub repository secrets:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `ROSA_ADMIN_PASSWORD`
+- `ADMIN_SESSION_SECRET`
 
 Optional GitHub repository secrets:
 
@@ -76,6 +78,8 @@ Required when Supabase is enabled:
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `SUPABASE_REVIEW_BUCKET`
+- `ROSA_ADMIN_PASSWORD`
+- `ADMIN_SESSION_SECRET`
 
 Optional contact values:
 
