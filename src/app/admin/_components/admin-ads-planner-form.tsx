@@ -4,6 +4,27 @@ import { useEffect, useMemo, useState } from "react";
 import { adminText, type AdminLocale } from "@/lib/admin-i18n";
 import { buildAdChatLandingUrl, buildAdPlan, defaultAdZipCodes, type AdPlatform } from "@/lib/ad-campaigns";
 
+type AdBackendResult =
+  | {
+      ok: true;
+      mode: "dry_run" | "publish_paused";
+      liveConfigured: boolean;
+      missingConfig?: string[];
+      draft: {
+        landingUrl: string;
+        campaign: { name?: string; objective?: string; status?: string };
+        adSet: { daily_budget?: number; status?: string };
+        ad?: { status?: string };
+      };
+      meta?: {
+        campaignId: string;
+        adSetId: string;
+        creativeId: string;
+        adId: string;
+      };
+    }
+  | { ok: false; errors: string[] };
+
 export function AdminAdsPlannerForm({ locale }: { locale: AdminLocale }) {
   const t = adminText[locale];
   const [campaignName, setCampaignName] = useState<string>(t.recommendedCampaign);
@@ -11,6 +32,8 @@ export function AdminAdsPlannerForm({ locale }: { locale: AdminLocale }) {
   const [zipCodes, setZipCodes] = useState(defaultAdZipCodes.join("\n"));
   const [platforms, setPlatforms] = useState<AdPlatform[]>(["instagram", "facebook"]);
   const [ready, setReady] = useState(false);
+  const [submittingMode, setSubmittingMode] = useState<"" | "dry_run" | "publish_paused">("");
+  const [backendResult, setBackendResult] = useState<AdBackendResult | null>(null);
 
   useEffect(() => {
     window.setTimeout(() => setReady(true), 0);
@@ -40,6 +63,33 @@ export function AdminAdsPlannerForm({ locale }: { locale: AdminLocale }) {
     setPlatforms((current) =>
       current.includes(platform) ? current.filter((item) => item !== platform) : [...current, platform]
     );
+  }
+
+  async function submitBackend(publishMode: "dry_run" | "publish_paused") {
+    setSubmittingMode(publishMode);
+    setBackendResult(null);
+    try {
+      const response = await fetch("/api/admin/ads", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          lang: locale,
+          campaignName,
+          dailyBudgetUsd,
+          zipCodes,
+          platforms,
+          publishMode
+        })
+      });
+      const result = (await response.json()) as AdBackendResult;
+      setBackendResult(result);
+    } catch {
+      setBackendResult({ ok: false, errors: [t.adBackendError] });
+    } finally {
+      setSubmittingMode("");
+    }
   }
 
   return (
@@ -111,6 +161,64 @@ export function AdminAdsPlannerForm({ locale }: { locale: AdminLocale }) {
           {t.openChatLink}
         </a>
       </div>
+      <div className="admin-actions">
+        <button
+          className="button secondary"
+          type="button"
+          disabled={!ready || submittingMode !== ""}
+          onClick={() => void submitBackend("dry_run")}
+        >
+          {submittingMode === "dry_run" ? "..." : t.prepareAdDraft}
+        </button>
+        <button
+          className="button primary"
+          type="button"
+          disabled={!ready || submittingMode !== ""}
+          onClick={() => void submitBackend("publish_paused")}
+        >
+          {submittingMode === "publish_paused" ? "..." : t.publishPausedAd}
+        </button>
+      </div>
+      {backendResult ? (
+        <div className={backendResult.ok ? "admin-result-box" : "admin-alert inline"} aria-live="polite">
+          {backendResult.ok ? (
+            <>
+              <strong>
+                {backendResult.mode === "publish_paused" && backendResult.meta
+                  ? t.adBackendPublished
+                  : t.adBackendDryRunReady}
+              </strong>
+              <p>{backendResult.liveConfigured ? t.adBackendConfigured : t.adBackendNotConfigured}</p>
+              {backendResult.missingConfig && backendResult.missingConfig.length > 0 ? (
+                <p>
+                  {t.adBackendMissingConfig} {backendResult.missingConfig.join(", ")}
+                </p>
+              ) : null}
+              <details>
+                <summary>{t.adDraftDetails}</summary>
+                <dl className="admin-result-list">
+                  <div>
+                    <dt>{t.campaignName}</dt>
+                    <dd>{backendResult.draft.campaign.name}</dd>
+                  </div>
+                  <div>
+                    <dt>{t.dailyBudget}</dt>
+                    <dd>${((backendResult.draft.adSet.daily_budget || 0) / 100).toFixed(2)}</dd>
+                  </div>
+                  <div>
+                    <dt>{t.adLandingLink}</dt>
+                    <dd>
+                      <a href={backendResult.draft.landingUrl}>{backendResult.draft.landingUrl}</a>
+                    </dd>
+                  </div>
+                </dl>
+              </details>
+            </>
+          ) : (
+            backendResult.errors.map((error) => <p key={error}>{error}</p>)
+          )}
+        </div>
+      ) : null}
     </form>
   );
 }

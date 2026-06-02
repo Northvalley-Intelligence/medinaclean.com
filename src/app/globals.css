@@ -694,6 +694,39 @@ h1 {
   color: var(--muted);
 }
 
+.admin-result-box details {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-result-box summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.admin-result-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.admin-result-list div {
+  display: grid;
+  gap: 4px;
+}
+
+.admin-result-list dt {
+  color: var(--rose-dark);
+  font-weight: 850;
+}
+
+.admin-result-list dd {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
 .admin-checklist {
   display: grid;
   gap: 10px;

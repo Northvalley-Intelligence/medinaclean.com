@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { buildAdChatLandingUrl, buildAdPlan, defaultAdZipCodes } from "./ad-campaigns";
+import {
+  buildAdChatLandingUrl,
+  buildAdPlan,
+  buildMetaAdDraft,
+  defaultAdZipCodes,
+  getMetaAdsConfig
+} from "./ad-campaigns";
 
 describe("ad campaigns", () => {
   it("builds a tracked chat landing URL for Meta ads", () => {
@@ -57,6 +63,88 @@ describe("ad campaigns", () => {
         "Add at least one 5-digit ZIP code.",
         "Choose Instagram, Facebook, or both."
       ]
+    });
+  });
+
+  it("builds a draft Meta campaign payload that sends clicks to the chat link", () => {
+    const result = buildAdPlan({
+      campaignName: "Woodstock deep cleaning",
+      dailyBudgetUsd: "20",
+      zipCodes: "30188\n30189",
+      platforms: ["instagram", "facebook"]
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+
+    const draft = buildMetaAdDraft({
+      plan: result.plan,
+      locale: "es",
+      baseUrl: "https://medinaclean.com"
+    });
+
+    expect(draft.landingUrl).toContain("zip=30188#chat");
+    expect(draft.campaign).toMatchObject({
+      name: "Woodstock deep cleaning",
+      objective: "OUTCOME_TRAFFIC",
+      status: "PAUSED",
+      special_ad_categories: []
+    });
+    expect(draft.adSet).toMatchObject({
+      daily_budget: 2000,
+      billing_event: "IMPRESSIONS",
+      optimization_goal: "LINK_CLICKS",
+      status: "PAUSED"
+    });
+    expect(draft.adSet.targeting.geo_locations.zips).toEqual([
+      { key: "US:30188" },
+      { key: "US:30189" }
+    ]);
+    expect(draft.creative.object_story_spec.link_data).toMatchObject({
+      link: draft.landingUrl,
+      call_to_action: {
+        type: "GET_QUOTE",
+        value: {
+          link: draft.landingUrl
+        }
+      }
+    });
+    expect(draft.ad).toMatchObject({
+      status: "PAUSED"
+    });
+  });
+
+  it("requires explicit live Meta configuration before backend publishing can spend money", () => {
+    expect(getMetaAdsConfig({})).toEqual({
+      ok: false,
+      missing: [
+        "META_ADS_LIVE_ENABLED",
+        "META_ACCESS_TOKEN",
+        "META_AD_ACCOUNT_ID",
+        "META_PAGE_ID",
+        "META_PIXEL_ID"
+      ]
+    });
+
+    expect(
+      getMetaAdsConfig({
+        META_ADS_LIVE_ENABLED: "true",
+        META_ACCESS_TOKEN: "token",
+        META_AD_ACCOUNT_ID: "act_123",
+        META_PAGE_ID: "page-123",
+        META_PIXEL_ID: "pixel-123"
+      })
+    ).toEqual({
+      ok: true,
+      config: {
+        accessToken: "token",
+        adAccountId: "act_123",
+        pageId: "page-123",
+        instagramActorId: undefined,
+        pixelId: "pixel-123",
+        apiVersion: "v24.0"
+      }
     });
   });
 });

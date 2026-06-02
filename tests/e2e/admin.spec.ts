@@ -62,6 +62,30 @@ test("admin navigation includes Rosa's video uploads", async ({ page }) => {
 });
 
 test("admin ads planner prepares Meta campaigns that send clicks to chat", async ({ page }) => {
+  const adRequests: unknown[] = [];
+  await page.route("**/api/admin/ads", async (route) => {
+    const body = JSON.parse(route.request().postData() || "{}");
+    adRequests.push(body);
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        ok: true,
+        mode: "dry_run",
+        liveConfigured: false,
+        missingConfig: ["META_ACCESS_TOKEN"],
+        draft: {
+          landingUrl:
+            "https://medinaclean.com/es?utm_source=meta&utm_medium=paid_social&utm_campaign=woodstock-limpieza-recurrente&utm_content=instagram-facebook&zip=30188#chat",
+          campaign: { name: "Woodstock limpieza recurrente", objective: "OUTCOME_TRAFFIC", status: "PAUSED" },
+          adSet: { daily_budget: 2000, status: "PAUSED" },
+          creative: { name: "Woodstock limpieza recurrente chat creative" },
+          ad: { status: "PAUSED" }
+        }
+      })
+    });
+  });
+
   await page.goto("/admin");
   await page.getByLabel("Contraseña").fill("test-admin");
   await page.getByRole("button", { name: "Entrar" }).click();
@@ -84,6 +108,20 @@ test("admin ads planner prepares Meta campaigns that send clicks to chat", async
     "href",
     /\/es\?utm_source=meta&utm_medium=paid_social&utm_campaign=woodstock-limpieza-recurrente&utm_content=instagram-facebook&zip=30188#chat/
   );
+
+  await page.getByRole("button", { name: "Preparar borrador seguro" }).click();
+  await expect(page.getByText("Borrador seguro listo. No se gastó dinero.")).toBeVisible();
+  await expect(page.getByText("META_ACCESS_TOKEN")).toBeVisible();
+  expect(adRequests).toEqual([
+    {
+      lang: "es",
+      campaignName: "Woodstock limpieza recurrente",
+      dailyBudgetUsd: "20",
+      zipCodes: "30188, 30189",
+      platforms: ["instagram", "facebook"],
+      publishMode: "dry_run"
+    }
+  ]);
 });
 
 test("admin video list shows previews so Rosa can choose site visibility", async ({ page }) => {
