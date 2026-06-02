@@ -38,7 +38,7 @@ type VideoPayload = {
   file: File;
 };
 
-export const maxVideoBytes = 25 * 1024 * 1024;
+export const maxVideoBytes = 75 * 1024 * 1024;
 const maxMultipartOverheadBytes = 1024 * 1024;
 const allowedVideoTypes = new Set(["video/mp4", "video/quicktime", "video/webm"]);
 const videoServiceFocuses = [
@@ -112,7 +112,7 @@ export function parseVideoUploadPayload(payload: Record<string, FormDataEntryVal
     }
 
     if (file.size > maxVideoBytes) {
-      errors.push("Video must be 25 MB or smaller for this admin upload.");
+      errors.push("Video must be 75 MB or smaller for this admin upload.");
     }
   }
 

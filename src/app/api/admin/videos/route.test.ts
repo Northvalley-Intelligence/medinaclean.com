@@ -105,7 +105,7 @@ describe("admin video upload route", () => {
         method: "POST",
         headers: {
           cookie: `rosa_admin_session=${session.cookie}`,
-          "content-length": String(27 * 1024 * 1024),
+          "content-length": String(77 * 1024 * 1024),
           "content-type": "multipart/form-data; boundary=video"
         },
         body: "--video\r\ncontent that should not be parsed"
@@ -114,7 +114,7 @@ describe("admin video upload route", () => {
 
     expect(response.status).toBe(303);
     expect(response.headers.get("location")).toContain(
-      "error=Video+must+be+25+MB+or+smaller+for+this+admin+upload."
+      "error=Video+must+be+75+MB+or+smaller+for+this+admin+upload."
     );
   });
 

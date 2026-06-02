@@ -213,7 +213,7 @@ export const adminText = {
     privacyPublic: "Público",
     privacyUnlisted: "No listado",
     privacyPrivate: "Privado",
-    videoUploadLimit: "Por ahora, suba videos de 25 MB o menos. YouTube guarda el video; Medina Clean solo guarda el enlace.",
+    videoUploadLimit: "Por ahora, suba videos de 75 MB o menos. YouTube guarda el video; Medina Clean solo guarda el enlace.",
     videoShortsDefault:
       "Por defecto se prepara para YouTube Shorts. Para que YouTube lo clasifique como Short, use un video vertical o cuadrado de 3 minutos o menos.",
     uploadToYouTube: "Subir a YouTube",
@@ -433,7 +433,7 @@ export const adminText = {
     privacyPublic: "Public",
     privacyUnlisted: "Unlisted",
     privacyPrivate: "Private",
-    videoUploadLimit: "For now, upload videos 25 MB or smaller. YouTube stores the video; Medina Clean only saves the link.",
+    videoUploadLimit: "For now, upload videos 75 MB or smaller. YouTube stores the video; Medina Clean only saves the link.",
     videoShortsDefault:
       "Uploads are prepared for YouTube Shorts by default. For YouTube to classify it as a Short, use a vertical or square video that is 3 minutes or less.",
     uploadToYouTube: "Upload to YouTube",
