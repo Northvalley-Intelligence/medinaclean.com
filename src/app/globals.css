@@ -553,6 +553,10 @@ h1 {
   background: #fff0f3;
 }
 
+.admin-alert.inline {
+  margin: 0;
+}
+
 .admin-success {
   color: #165c31;
   border: 1px solid #bfe8cc;
@@ -662,6 +666,74 @@ h1 {
 .admin-checks input {
   width: 18px;
   height: 18px;
+}
+
+.admin-checks legend {
+  margin-bottom: 8px;
+  color: var(--ink);
+  font-weight: 750;
+}
+
+.admin-result-box {
+  display: grid;
+  gap: 10px;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fffafb;
+}
+
+.admin-result-box span {
+  color: var(--rose-dark);
+  font-weight: 850;
+}
+
+.admin-result-box p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.admin-result-box details {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-result-box summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.admin-result-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.admin-result-list div {
+  display: grid;
+  gap: 4px;
+}
+
+.admin-result-list dt {
+  color: var(--rose-dark);
+  font-weight: 850;
+}
+
+.admin-result-list dd {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.admin-checklist {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--muted);
+  line-height: 1.55;
 }
 
 .client-list {

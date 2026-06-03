@@ -8,6 +8,8 @@ Follow the repository TDD and PR safety rules in `CODEX.md` for every feature an
 
 For every feature, bug fix, or content change, identify the expected behavior and the failing or missing verification before implementation. Run local verification before deploy. After deploy, verify the public production behavior directly before calling the work complete; if production verification cannot pass, state the blocker clearly. Keep GitHub CI responsibilities, Vercel responsibilities if ever introduced, and Cloudflare deploy/production verification responsibilities explicit in handoffs and final updates.
 
+Production deploys must come from `main` only. Do not manually deploy feature branches, PR branches, or local builds to production. Keep `main` and production in sync: merge through a PR after required checks pass, let the `main` push trigger the Cloudflare deploy, and then verify production. If Cloudflare build/deploy compatibility fails, do not merge or call the change complete; fix the PR until the Cloudflare build check and deployment path are healthy.
+
 For user-visible workflows, add or update Playwright tests in `tests/e2e/`. For database-backed behavior, use local Supabase per `docs/local-testing.md`; never point automated tests at production data.
 
 For user-facing forms, validate fields as soon as the user leaves the field when practical, and keep submit/server validation as the final safety net. Do not rely on submit-only validation for common fields such as phone, email, ZIP, street address, required names, dates, or prices. Show bilingual inline feedback for bilingual workflows.
