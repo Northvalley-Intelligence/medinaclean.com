@@ -39,3 +39,25 @@ test("Marietta has a dedicated service-area page because Rosa serves Marietta ZI
   await expect(page.getByText("30066, 30062, 30068, 30064, and 30067")).toBeVisible();
   await expect(page.getByText("Does Rosa clean in Marietta?")).toBeVisible();
 });
+
+test("local service pages expose matching language alternates and structured data", async ({ page }) => {
+  await page.goto("/en/house-cleaning-woodstock-ga");
+
+  await expect(page.locator('link[rel="alternate"][hreflang="es"]')).toHaveAttribute(
+    "href",
+    "https://medinaclean.com/es/limpieza-de-casas-woodstock-ga"
+  );
+  await expect(page.getByRole("link", { name: "ES", exact: true })).toHaveAttribute(
+    "href",
+    "/es/limpieza-de-casas-woodstock-ga"
+  );
+
+  const structuredData = await page.locator('script[type="application/ld+json"]').allTextContents();
+  const localServiceSchema = structuredData.map((value) => JSON.parse(value)).find((item) => item["@type"] === "CleaningService");
+
+  expect(localServiceSchema).toMatchObject({
+    name: "House cleaning - Medina Clean",
+    serviceType: ["House cleaning", "Recurring cleaning", "First-time cleaning", "Deep cleaning"],
+    areaServed: ["Woodstock", "30188", "Towne Lake area", "nearby Cherokee County homes"]
+  });
+});

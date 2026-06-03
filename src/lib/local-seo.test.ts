@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { getLocalServicePage, localServicePages } from "./local-seo";
+import {
+  buildLocalServiceJsonLd,
+  getLocalServiceAlternate,
+  getLocalServicePage,
+  localServicePages
+} from "./local-seo";
 import { getSeoRedirect } from "./seo-redirects";
 
 describe("local SEO routes", () => {
@@ -38,5 +43,25 @@ describe("local SEO routes", () => {
       url: "https://medinaclean.com/en/deep-cleaning-woodstock-ga"
     });
     expect(getSeoRedirect("https://medinaclean.com/en/deep-cleaning-woodstock-ga")).toBeNull();
+  });
+
+  it("pairs local service pages with matching bilingual alternates", () => {
+    const houseCleaning = getLocalServicePage("en", "house-cleaning-woodstock-ga");
+    const marietta = getLocalServicePage("en", "cleaning-services-marietta-ga");
+
+    expect(houseCleaning && getLocalServiceAlternate(houseCleaning)?.slug).toBe("limpieza-de-casas-woodstock-ga");
+    expect(marietta && getLocalServiceAlternate(marietta)?.slug).toBe("servicios-de-limpieza-marietta-ga");
+  });
+
+  it("builds page-specific CleaningService schema for local pages", () => {
+    const houseCleaning = getLocalServicePage("en", "house-cleaning-woodstock-ga");
+
+    expect(houseCleaning && buildLocalServiceJsonLd(houseCleaning, "+17775550123")).toMatchObject({
+      "@type": "CleaningService",
+      name: "House cleaning - Medina Clean",
+      telephone: "+17775550123",
+      serviceType: ["House cleaning", "Recurring cleaning", "First-time cleaning", "Deep cleaning"],
+      areaServed: ["Woodstock", "30188", "Towne Lake area", "nearby Cherokee County homes"]
+    });
   });
 });

@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.medinaclean.com" }],
+        destination: "https://medinaclean.com/:path*",
+        permanent: true
+      },
+      {
         source: "/",
         destination: "/en",
         permanent: true
@@ -32,12 +38,6 @@ const nextConfig: NextConfig = {
       {
         source: "/contactus",
         destination: "/en#schedule",
-        permanent: true
-      },
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "www.medinaclean.com" }],
-        destination: "https://medinaclean.com/:path*",
         permanent: true
       }
     ];
