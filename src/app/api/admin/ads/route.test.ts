@@ -14,6 +14,99 @@ describe("admin ads route", () => {
     expect(response.status).toBe(401);
   });
 
+  it("requires an admin session for Meta connection status", async () => {
+    const { GET } = await import("./route");
+    const response = await GET(new Request("https://medinaclean.com/api/admin/ads"));
+
+    expect(response.status).toBe(401);
+  });
+
+  it("reports missing Meta config without calling Meta", async () => {
+    vi.stubEnv("ROSA_ADMIN_PASSWORD", "test-admin");
+    vi.stubEnv("ADMIN_SESSION_SECRET", "test-secret");
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { createAdminSession } = await import("../../../../lib/admin-auth");
+    const { GET } = await import("./route");
+    const session = await createAdminSession("test-admin");
+    expect(session.ok).toBe(true);
+    if (!session.ok) {
+      return;
+    }
+
+    const response = await GET(
+      new Request("https://medinaclean.com/api/admin/ads", {
+        headers: {
+          cookie: `rosa_admin_session=${session.cookie}`
+        }
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      ok: true,
+      liveConfigured: false,
+      missingConfig: ["META_ADS_LIVE_ENABLED", "META_ACCESS_TOKEN", "META_AD_ACCOUNT_ID", "META_PAGE_ID"]
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("checks configured Meta account, page, and Instagram actor readiness", async () => {
+    vi.stubEnv("ROSA_ADMIN_PASSWORD", "test-admin");
+    vi.stubEnv("ADMIN_SESSION_SECRET", "test-secret");
+    vi.stubEnv("META_ADS_LIVE_ENABLED", "true");
+    vi.stubEnv("META_ACCESS_TOKEN", "meta-token");
+    vi.stubEnv("META_AD_ACCOUNT_ID", "act_123");
+    vi.stubEnv("META_PAGE_ID", "page-123");
+
+    const fetchMock = vi.fn(async (url: string | URL | Request) => {
+      const requestUrl = String(url);
+      expect(requestUrl).toContain("access_token=meta-token");
+
+      if (requestUrl.startsWith("https://graph.facebook.com/v24.0/act_123?")) {
+        return Response.json({ id: "act_123", name: "North Valley Ads", account_status: 1, currency: "USD" });
+      }
+
+      if (requestUrl.startsWith("https://graph.facebook.com/v24.0/page-123?")) {
+        return Response.json({
+          id: "page-123",
+          name: "Medina Clean",
+          instagram_business_account: { id: "ig-123", username: "medinaclean845" }
+        });
+      }
+
+      return new Response(`Unexpected request: ${requestUrl}`, { status: 500 });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { createAdminSession } = await import("../../../../lib/admin-auth");
+    const { GET } = await import("./route");
+    const session = await createAdminSession("test-admin");
+    expect(session.ok).toBe(true);
+    if (!session.ok) {
+      return;
+    }
+
+    const response = await GET(
+      new Request("https://medinaclean.com/api/admin/ads", {
+        headers: {
+          cookie: `rosa_admin_session=${session.cookie}`
+        }
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      ok: true,
+      liveConfigured: true,
+      account: { id: "act_123", name: "North Valley Ads", status: "active", currency: "USD" },
+      page: { id: "page-123", name: "Medina Clean" },
+      instagram: { id: "ig-123", username: "medinaclean845" }
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
   it("returns a dry-run Meta draft without calling Meta when live publishing is not configured", async () => {
     vi.stubEnv("ROSA_ADMIN_PASSWORD", "test-admin");
     vi.stubEnv("ADMIN_SESSION_SECRET", "test-secret");
@@ -52,13 +145,7 @@ describe("admin ads route", () => {
       ok: true,
       mode: "dry_run",
       liveConfigured: false,
-      missingConfig: [
-        "META_ADS_LIVE_ENABLED",
-        "META_ACCESS_TOKEN",
-        "META_AD_ACCOUNT_ID",
-        "META_PAGE_ID",
-        "META_PIXEL_ID"
-      ]
+      missingConfig: ["META_ADS_LIVE_ENABLED", "META_ACCESS_TOKEN", "META_AD_ACCOUNT_ID", "META_PAGE_ID"]
     });
     expect(body.draft.landingUrl).toContain("utm_source=meta");
     expect(body.draft.adSet.daily_budget).toBe(2000);
@@ -72,7 +159,6 @@ describe("admin ads route", () => {
     vi.stubEnv("META_ACCESS_TOKEN", "meta-token");
     vi.stubEnv("META_AD_ACCOUNT_ID", "act_123");
     vi.stubEnv("META_PAGE_ID", "page-123");
-    vi.stubEnv("META_PIXEL_ID", "pixel-123");
 
     const fetchMock = vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
       const requestUrl = String(url);
@@ -155,7 +241,6 @@ describe("admin ads route", () => {
     vi.stubEnv("META_ACCESS_TOKEN", "meta-token");
     vi.stubEnv("META_AD_ACCOUNT_ID", "act_123");
     vi.stubEnv("META_PAGE_ID", "page-123");
-    vi.stubEnv("META_PIXEL_ID", "pixel-123");
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
 

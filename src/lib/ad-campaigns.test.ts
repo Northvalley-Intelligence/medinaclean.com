@@ -97,6 +97,7 @@ describe("ad campaigns", () => {
       optimization_goal: "LINK_CLICKS",
       status: "PAUSED"
     });
+    expect(draft.adSet).not.toHaveProperty("promoted_object");
     expect(draft.adSet.targeting.geo_locations.zips).toEqual([
       { key: "US:30188" },
       { key: "US:30189" }
@@ -118,13 +119,7 @@ describe("ad campaigns", () => {
   it("requires explicit live Meta configuration before backend publishing can spend money", () => {
     expect(getMetaAdsConfig({})).toEqual({
       ok: false,
-      missing: [
-        "META_ADS_LIVE_ENABLED",
-        "META_ACCESS_TOKEN",
-        "META_AD_ACCOUNT_ID",
-        "META_PAGE_ID",
-        "META_PIXEL_ID"
-      ]
+      missing: ["META_ADS_LIVE_ENABLED", "META_ACCESS_TOKEN", "META_AD_ACCOUNT_ID", "META_PAGE_ID"]
     });
 
     expect(
@@ -132,8 +127,7 @@ describe("ad campaigns", () => {
         META_ADS_LIVE_ENABLED: "true",
         META_ACCESS_TOKEN: "token",
         META_AD_ACCOUNT_ID: "act_123",
-        META_PAGE_ID: "page-123",
-        META_PIXEL_ID: "pixel-123"
+        META_PAGE_ID: "page-123"
       })
     ).toEqual({
       ok: true,
@@ -142,7 +136,6 @@ describe("ad campaigns", () => {
         adAccountId: "act_123",
         pageId: "page-123",
         instagramActorId: undefined,
-        pixelId: "pixel-123",
         apiVersion: "v24.0"
       }
     });

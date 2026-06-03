@@ -25,6 +25,21 @@ type AdBackendResult =
     }
   | { ok: false; errors: string[] };
 
+type AdConnectionStatus =
+  | {
+      ok: true;
+      liveConfigured: false;
+      missingConfig: string[];
+    }
+  | {
+      ok: true;
+      liveConfigured: true;
+      account: { id: string; name: string; status: string; currency: string };
+      page: { id: string; name: string };
+      instagram?: { id: string; username?: string };
+    }
+  | { ok: false; errors: string[] };
+
 export function AdminAdsPlannerForm({ locale }: { locale: AdminLocale }) {
   const t = adminText[locale];
   const [campaignName, setCampaignName] = useState<string>(t.recommendedCampaign);
@@ -34,10 +49,33 @@ export function AdminAdsPlannerForm({ locale }: { locale: AdminLocale }) {
   const [ready, setReady] = useState(false);
   const [submittingMode, setSubmittingMode] = useState<"" | "dry_run" | "publish_paused">("");
   const [backendResult, setBackendResult] = useState<AdBackendResult | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<AdConnectionStatus | null>(null);
 
   useEffect(() => {
     window.setTimeout(() => setReady(true), 0);
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadConnectionStatus() {
+      try {
+        const response = await fetch("/api/admin/ads");
+        const result = (await response.json()) as AdConnectionStatus;
+        if (!cancelled) {
+          setConnectionStatus(result);
+        }
+      } catch {
+        if (!cancelled) {
+          setConnectionStatus({ ok: false, errors: [t.metaConnectionError] });
+        }
+      }
+    }
+
+    void loadConnectionStatus();
+    return () => {
+      cancelled = true;
+    };
+  }, [t.metaConnectionError]);
 
   const plan = useMemo(
     () => buildAdPlan({ campaignName, dailyBudgetUsd, zipCodes, platforms }),
@@ -95,6 +133,34 @@ export function AdminAdsPlannerForm({ locale }: { locale: AdminLocale }) {
   return (
     <form id="admin-ads-planner-form" className="admin-form" action="/admin/ads" method="get" data-ready={ready}>
       <input name="lang" type="hidden" value={locale} />
+      <div className="admin-result-box compact" aria-live="polite">
+        {!connectionStatus ? (
+          <p>{t.metaConnectionLoading}</p>
+        ) : connectionStatus.ok && connectionStatus.liveConfigured ? (
+          <>
+            <strong>
+              {t.metaConnectionReady} {connectionStatus.account.name} / {connectionStatus.page.name}
+            </strong>
+            <p>
+              {connectionStatus.account.currency} · {connectionStatus.account.status}
+            </p>
+            {connectionStatus.instagram ? (
+              <p>
+                {t.metaInstagramAccount} {connectionStatus.instagram.username || connectionStatus.instagram.id}
+              </p>
+            ) : null}
+          </>
+        ) : connectionStatus.ok ? (
+          <>
+            <strong>{t.metaConnectionMissing}</strong>
+            <p>
+              {t.adBackendMissingConfig} {connectionStatus.missingConfig.join(", ")}
+            </p>
+          </>
+        ) : (
+          connectionStatus.errors.map((error) => <p key={error}>{error}</p>)
+        )}
+      </div>
       <label>
         {t.campaignName}
         <input

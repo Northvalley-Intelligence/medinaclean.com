@@ -64,6 +64,21 @@ test("admin navigation includes Rosa's video uploads", async ({ page }) => {
 test("admin ads planner prepares Meta campaigns that send clicks to chat", async ({ page }) => {
   const adRequests: unknown[] = [];
   await page.route("**/api/admin/ads", async (route) => {
+    if (route.request().method() === "GET") {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          ok: true,
+          liveConfigured: true,
+          account: { id: "act_123", name: "North Valley Ads", status: "active", currency: "USD" },
+          page: { id: "page-123", name: "Medina Clean" },
+          instagram: { id: "ig-123", username: "medinaclean845" }
+        })
+      });
+      return;
+    }
+
     const body = JSON.parse(route.request().postData() || "{}");
     adRequests.push(body);
     await route.fulfill({
@@ -95,6 +110,8 @@ test("admin ads planner prepares Meta campaigns that send clicks to chat", async
   await expect(page.getByRole("heading", { name: "Anuncios", exact: true })).toBeVisible();
   await expect(page.locator("#admin-ads-planner-form")).toHaveAttribute("data-ready", "true");
   await expect(page.getByRole("heading", { name: "Meta Ads Manager" })).toBeVisible();
+  await expect(page.getByText("Meta conectado: North Valley Ads / Medina Clean")).toBeVisible();
+  await expect(page.getByText("Instagram: medinaclean845")).toBeVisible();
   await expect(page.getByLabel("Presupuesto diario")).toHaveValue("20");
   await expect(page.getByLabel("ZIPs para mostrar anuncios")).toContainText("30188");
   await expect(page.getByLabel("Instagram")).toBeChecked();
