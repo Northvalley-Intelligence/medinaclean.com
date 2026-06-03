@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LocalServicePage } from "@/components/LocalServicePage";
-import { getLocalServicePage, localServicePages } from "@/lib/local-seo";
+import { getLocalServiceAlternate, getLocalServicePage, localServicePages } from "@/lib/local-seo";
 
 type LocalServiceRouteProps = {
   params: Promise<{ slug: string }>;
@@ -19,6 +19,8 @@ export async function generateMetadata({ params }: LocalServiceRouteProps): Prom
     return {};
   }
 
+  const alternatePage = getLocalServiceAlternate(page);
+
   return {
     title: `${page.title} | Medina Clean`,
     description: page.description,
@@ -26,7 +28,7 @@ export async function generateMetadata({ params }: LocalServiceRouteProps): Prom
       canonical: `/en/${page.slug}`,
       languages: {
         en: `/en/${page.slug}`,
-        es: "/es/limpieza-profunda-woodstock-ga"
+        ...(alternatePage ? { es: `/${alternatePage.locale}/${alternatePage.slug}` } : {})
       }
     }
   };

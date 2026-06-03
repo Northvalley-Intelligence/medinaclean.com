@@ -15,6 +15,17 @@ export type LocalServicePage = {
   faqs: Array<{ question: string; answer: string }>;
 };
 
+const serviceSlugAlternates: Record<string, string> = {
+  "deep-cleaning-woodstock-ga": "limpieza-profunda-woodstock-ga",
+  "house-cleaning-woodstock-ga": "limpieza-de-casas-woodstock-ga",
+  "apartment-cleaning-woodstock-ga": "limpieza-de-apartamentos-woodstock-ga",
+  "recurring-cleaning-woodstock-ga": "limpieza-recurrente-woodstock-ga",
+  "limpieza-profunda-woodstock-ga": "deep-cleaning-woodstock-ga",
+  "limpieza-de-casas-woodstock-ga": "house-cleaning-woodstock-ga",
+  "limpieza-de-apartamentos-woodstock-ga": "apartment-cleaning-woodstock-ga",
+  "limpieza-recurrente-woodstock-ga": "recurring-cleaning-woodstock-ga"
+};
+
 export const localServicePages: LocalServicePage[] = [
   {
     kind: "service",
@@ -669,4 +680,59 @@ export const localServicePages: LocalServicePage[] = [
 
 export function getLocalServicePage(locale: Locale, slug: string) {
   return localServicePages.find((page) => page.locale === locale && page.slug === slug) || null;
+}
+
+export function getLocalServiceAlternate(page: LocalServicePage) {
+  const alternateLocale: Locale = page.locale === "en" ? "es" : "en";
+  const alternateSlug =
+    page.kind === "city" ? getCityAlternateSlug(page.slug, page.locale) : serviceSlugAlternates[page.slug];
+
+  return alternateSlug ? getLocalServicePage(alternateLocale, alternateSlug) : null;
+}
+
+export function buildLocalServiceJsonLd(page: LocalServicePage, phoneNumber = "") {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "CleaningService",
+    name: `${page.serviceName} - Medina Clean`,
+    url: `https://medinaclean.com/${page.locale}/${page.slug}`,
+    description: page.description,
+    provider: {
+      "@type": "LocalBusiness",
+      name: "Medina Clean",
+      url: "https://medinaclean.com",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Woodstock",
+        addressRegion: "GA",
+        postalCode: "30188",
+        addressCountry: "US"
+      }
+    },
+    serviceType: page.serviceTypes,
+    areaServed: page.neighborhoods,
+    availableLanguage: page.locale === "en" ? ["English", "Spanish"] : ["Spanish", "English"],
+    mainEntity: page.faqs.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer
+      }
+    }))
+  };
+
+  return phoneNumber ? { ...data, telephone: phoneNumber } : data;
+}
+
+function getCityAlternateSlug(slug: string, locale: Locale) {
+  if (locale === "en" && slug.startsWith("cleaning-services-")) {
+    return `servicios-de-limpieza-${slug.slice("cleaning-services-".length)}`;
+  }
+
+  if (locale === "es" && slug.startsWith("servicios-de-limpieza-")) {
+    return `cleaning-services-${slug.slice("servicios-de-limpieza-".length)}`;
+  }
+
+  return null;
 }

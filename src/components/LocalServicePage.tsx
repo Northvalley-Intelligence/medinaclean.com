@@ -1,15 +1,25 @@
 import { CalendarCheck, Home, Languages, MapPin } from "lucide-react";
 import Image from "next/image";
-import type { LocalServicePage as LocalServicePageContent } from "@/lib/local-seo";
+import { phone } from "@/lib/content";
+import {
+  buildLocalServiceJsonLd,
+  getLocalServiceAlternate,
+  type LocalServicePage as LocalServicePageContent
+} from "@/lib/local-seo";
 
 export function LocalServicePage({ page }: { page: LocalServicePageContent }) {
   const scheduleLabel = page.locale === "en" ? "Request an appointment" : "Pedir una cita";
   const homeLabel = page.locale === "en" ? "Medina Clean home" : "Inicio de Medina Clean";
   const otherLocale = page.locale === "en" ? "es" : "en";
-  const otherLocaleHref = page.locale === "en" ? "/es/limpieza-profunda-woodstock-ga" : "/en/deep-cleaning-woodstock-ga";
+  const alternatePage = getLocalServiceAlternate(page);
+  const otherLocaleHref = alternatePage ? `/${alternatePage.locale}/${alternatePage.slug}` : `/${otherLocale}`;
 
   return (
     <main className="site-shell local-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildLocalServiceJsonLd(page, phone)) }}
+      />
       <header className="local-header">
         <a className="brand" href={`/${page.locale}`} aria-label={homeLabel}>
           <Image
