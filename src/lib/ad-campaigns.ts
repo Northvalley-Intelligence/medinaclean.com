@@ -23,11 +23,27 @@ export type MetaAdsConfig = {
   adAccountId: string;
   pageId: string;
   instagramActorId?: string;
-  pixelId: string;
   apiVersion: string;
 };
 
 export type MetaAdDraft = ReturnType<typeof buildMetaAdDraft>;
+
+export type MetaAdsReadiness = {
+  account: {
+    id: string;
+    name: string;
+    status: "active" | "not_active" | "unknown";
+    currency: string;
+  };
+  page: {
+    id: string;
+    name: string;
+  };
+  instagram?: {
+    id: string;
+    username?: string;
+  };
+};
 
 const defaultMetaApiVersion = "v24.0";
 
@@ -104,7 +120,6 @@ export function buildMetaAdDraft(input: { plan: AdPlan; locale: AdminLocale; bas
   });
   const pageId = input.config?.pageId || "{{META_PAGE_ID}}";
   const instagramActorId = input.config?.instagramActorId;
-  const pixelId = input.config?.pixelId || "{{META_PIXEL_ID}}";
 
   const objectStorySpec: Record<string, unknown> = {
     page_id: pageId,
@@ -147,10 +162,6 @@ export function buildMetaAdDraft(input: { plan: AdPlan; locale: AdminLocale; bas
       optimization_goal: "LINK_CLICKS",
       bid_strategy: "LOWEST_COST_WITHOUT_CAP",
       destination_type: "WEBSITE",
-      promoted_object: {
-        pixel_id: pixelId,
-        custom_event_type: "LEAD"
-      },
       targeting: {
         geo_locations: {
           zips: input.plan.zipCodes.map((zip) => ({ key: `US:${zip}` }))
@@ -184,9 +195,6 @@ export function getMetaAdsConfig(env: Record<string, string | undefined> = proce
   if (!env.META_PAGE_ID) {
     missing.push("META_PAGE_ID");
   }
-  if (!env.META_PIXEL_ID) {
-    missing.push("META_PIXEL_ID");
-  }
 
   if (missing.length > 0) {
     return { ok: false as const, missing };
@@ -199,9 +207,51 @@ export function getMetaAdsConfig(env: Record<string, string | undefined> = proce
       adAccountId: env.META_AD_ACCOUNT_ID || "",
       pageId: env.META_PAGE_ID || "",
       instagramActorId: env.META_INSTAGRAM_ACTOR_ID || undefined,
-      pixelId: env.META_PIXEL_ID || "",
       apiVersion: env.META_API_VERSION || defaultMetaApiVersion
     }
+  };
+}
+
+export async function inspectMetaAdsReadiness(config: MetaAdsConfig): Promise<MetaAdsReadiness> {
+  const graphBaseUrl = `https://graph.facebook.com/${config.apiVersion}`;
+  const accountParams = new URLSearchParams({
+    fields: "id,name,account_status,currency",
+    access_token: config.accessToken
+  });
+  const pageParams = new URLSearchParams({
+    fields: "id,name,instagram_business_account{id,username}",
+    access_token: config.accessToken
+  });
+  const [account, page] = await Promise.all([
+    fetchMetaObject<{
+      id?: string;
+      name?: string;
+      account_status?: number;
+      currency?: string;
+    }>(`${graphBaseUrl}/${config.adAccountId}?${accountParams.toString()}`),
+    fetchMetaObject<{
+      id?: string;
+      name?: string;
+      instagram_business_account?: { id?: string; username?: string };
+    }>(`${graphBaseUrl}/${config.pageId}?${pageParams.toString()}`)
+  ]);
+
+  const instagram = page.instagram_business_account?.id
+    ? { id: page.instagram_business_account.id, username: page.instagram_business_account.username }
+    : undefined;
+
+  return {
+    account: {
+      id: account.id || config.adAccountId,
+      name: account.name || config.adAccountId,
+      status: account.account_status === 1 ? "active" : account.account_status ? "not_active" : "unknown",
+      currency: account.currency || "unknown"
+    },
+    page: {
+      id: page.id || config.pageId,
+      name: page.name || config.pageId
+    },
+    instagram
   };
 }
 
@@ -268,4 +318,14 @@ async function postMetaObject(url: string, body: Record<string, unknown>) {
   }
 
   return { id: payload.id };
+}
+
+async function fetchMetaObject<T>(url: string) {
+  const response = await fetch(url);
+  const payload = (await response.json().catch(() => ({}))) as T & { error?: { message?: string } };
+  if (!response.ok) {
+    throw new Error(payload.error?.message || "Meta Ads Manager connection could not be verified.");
+  }
+
+  return payload;
 }
