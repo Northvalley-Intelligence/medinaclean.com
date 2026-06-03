@@ -219,6 +219,7 @@ Current admin areas:
 - Review approval.
 - Public video upload and visibility management.
 - Ads planning workspace with draft/tracking-link generation.
+- Meta Ads readiness checks for account, page, and optional Instagram connection.
 
 ### Admin Request Flow
 
@@ -275,6 +276,42 @@ flowchart TD
   M --> N[Find next preferred recurring slot]
   N --> O[Respect crew availability, time blocks, and existing jobs]
   O --> K
+```
+
+### Meta Ads Readiness Flow
+
+The admin ads workspace is designed to prepare campaigns without accidentally spending money.
+
+Meta live publishing remains disabled unless all of these are true:
+
+- `META_ADS_LIVE_ENABLED=true`
+- `META_ACCESS_TOKEN` is configured.
+- `META_AD_ACCOUNT_ID` is configured.
+- `META_PAGE_ID` is configured.
+- Optional `META_INSTAGRAM_ACTOR_ID` is configured when Instagram placement needs a specific actor.
+- The Meta app, ad account, page permissions, and billing setup are ready in Meta Business Manager.
+
+The backend can inspect whether the configured ad account and page are reachable. If live publishing is unavailable, the admin UI still produces draft campaign details and tracked chat links.
+
+```mermaid
+flowchart TD
+  A[Rosa opens admin ads planner] --> B[GET /api/admin/ads]
+  B --> C{Meta config complete?}
+  C -- No --> D[Show missing configuration]
+  C -- Yes --> E[Call Meta Graph API]
+  E --> F{Account and page reachable?}
+  F -- No --> G[Show connection error]
+  F -- Yes --> H[Show account, currency, page, and Instagram status]
+
+  A --> I[Generate ad plan]
+  I --> J[Build ZIP-targeted campaign draft]
+  J --> K[Create tracked chat landing link]
+  K --> L{Publish mode}
+  L -- Dry run --> M[Return draft only]
+  L -- Publish paused --> N{Live enabled and credentials valid?}
+  N -- No --> O[Reject publish request]
+  N -- Yes --> P[Create Meta campaign, ad set, creative, and ad as PAUSED]
+  P --> Q[Rosa reviews in Meta before activating]
 ```
 
 ## Data Model
