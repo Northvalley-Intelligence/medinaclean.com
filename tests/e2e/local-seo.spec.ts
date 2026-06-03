@@ -47,7 +47,7 @@ test("local service pages expose matching language alternates and structured dat
     "href",
     "https://medinaclean.com/es/limpieza-de-casas-woodstock-ga"
   );
-  await expect(page.getByLabel("Language").getByRole("link", { name: "ES" })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "ES", exact: true })).toHaveAttribute(
     "href",
     "/es/limpieza-de-casas-woodstock-ga"
   );
