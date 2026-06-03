@@ -4,6 +4,7 @@ import {
   buildAdPlan,
   buildMetaAdDraft,
   getMetaAdsConfig,
+  inspectMetaAdsReadiness,
   publishPausedMetaAdDraft,
   type AdPlatform
 } from "../../../../lib/ad-campaigns";
@@ -17,6 +18,40 @@ type AdRequestBody = {
   platforms?: AdPlatform[];
   publishMode?: "dry_run" | "publish_paused";
 };
+
+export async function GET(request: Request) {
+  if (!(await isAdminRequest(request))) {
+    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  }
+
+  const config = getMetaAdsConfig();
+  if (!config.ok) {
+    return NextResponse.json({
+      ok: true,
+      liveConfigured: false,
+      missingConfig: config.missing
+    });
+  }
+
+  try {
+    const readiness = await inspectMetaAdsReadiness(config.config);
+    return NextResponse.json({
+      ok: true,
+      liveConfigured: true,
+      ...readiness
+    });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      {
+        ok: false,
+        liveConfigured: true,
+        errors: [error instanceof Error ? error.message : "Meta Ads Manager connection could not be verified."]
+      },
+      { status: 502 }
+    );
+  }
+}
 
 export async function POST(request: Request) {
   if (!(await isAdminRequest(request))) {

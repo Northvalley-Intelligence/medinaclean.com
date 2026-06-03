@@ -216,6 +216,11 @@ export const adminText = {
     adBackendConfigured: "Meta está configurado para crear campañas pausadas.",
     adBackendNotConfigured: "Meta no está configurado todavía. El panel solo prepara borradores seguros.",
     adDraftDetails: "Detalles del borrador",
+    metaConnectionLoading: "Revisando conexión de Meta...",
+    metaConnectionReady: "Meta conectado:",
+    metaConnectionMissing: "Meta todavía no está conectado.",
+    metaConnectionError: "No se pudo revisar la conexión de Meta.",
+    metaInstagramAccount: "Instagram:",
     recommendedCampaign: "Limpieza de casas en Woodstock",
     launchChecklist: "Lista para publicar",
     launchChecklistItems: [
@@ -470,6 +475,11 @@ export const adminText = {
     adBackendConfigured: "Meta is configured to create paused campaigns.",
     adBackendNotConfigured: "Meta is not configured yet. This panel only prepares safe drafts.",
     adDraftDetails: "Draft details",
+    metaConnectionLoading: "Checking Meta connection...",
+    metaConnectionReady: "Meta connected:",
+    metaConnectionMissing: "Meta is not connected yet.",
+    metaConnectionError: "The Meta connection could not be checked.",
+    metaInstagramAccount: "Instagram:",
     recommendedCampaign: "Woodstock house cleaning",
     launchChecklist: "Launch checklist",
     launchChecklistItems: [
