@@ -9,8 +9,11 @@ import {
   parseOpenAiChatResponse,
   shouldRejectModelReply,
   shouldUseDeterministicPricing,
+  type ChatEstimateResponse,
   type OpenAiUsage
 } from "@/lib/llm-chat";
+import { verifyTurnstileToken } from "@/lib/bot-protection";
+import { buildChatNotificationText, trySendSiteNotification } from "@/lib/site-notifications";
 import { insertServiceRow, isSupabaseServiceConfigured } from "@/lib/supabase-rest";
 
 export async function POST(request: Request) {
@@ -20,9 +23,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Message is required." }, { status: 400 });
   }
 
+  const turnstile = await verifyTurnstileToken({
+    token: chatRequest.turnstileToken,
+    clientIp: request.headers.get("cf-connecting-ip") || "local"
+  });
+  if (!turnstile.ok) {
+    return NextResponse.json({ error: "Please complete the verification and try again." }, { status: 403 });
+  }
+
   const deterministic = buildFallbackChatResponse(chatRequest);
   const configs = getChatModelAttemptConfigs(process.env, chatRequest.turnIndex);
   if (configs.length === 0) {
+    await notifyChat(chatRequest, deterministic);
     return NextResponse.json(deterministic);
   }
 
@@ -52,7 +64,7 @@ export async function POST(request: Request) {
         })
       );
 
-      return NextResponse.json({
+      const result = {
         reply:
           shouldUseDeterministicPricing(deterministic.reply) || shouldRejectModelReply(parsed.content)
             ? deterministic.reply
@@ -60,7 +72,9 @@ export async function POST(request: Request) {
         mode: "llm",
         provider: config.provider,
         model: config.model
-      });
+      } as const;
+      await notifyChat(chatRequest, result);
+      return NextResponse.json(result);
     } catch (error) {
       const errorCode = error instanceof Error ? error.message.slice(0, 80) : "provider_error";
       await logUsage(
@@ -76,6 +90,7 @@ export async function POST(request: Request) {
     }
   }
 
+  await notifyChat(chatRequest, deterministic);
   return NextResponse.json(deterministic);
 }
 
@@ -89,4 +104,19 @@ async function logUsage(event: ReturnType<typeof buildUsageEvent>) {
   } catch (error) {
     console.error("AI usage logging failed", error);
   }
+}
+
+async function notifyChat(chatRequest: NonNullable<ReturnType<typeof normalizeChatEstimateRequest>>, result: ChatEstimateResponse) {
+  await trySendSiteNotification({
+    subject: `New Medina Clean chat: ${chatRequest.locale}`,
+    text: buildChatNotificationText({
+      locale: chatRequest.locale,
+      message: chatRequest.message,
+      turnIndex: chatRequest.turnIndex,
+      reply: result.reply,
+      mode: result.mode,
+      provider: result.provider,
+      model: result.model
+    })
+  });
 }

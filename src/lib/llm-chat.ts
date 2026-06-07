@@ -7,6 +7,7 @@ export type ChatEstimateRequest = {
   message: string;
   locale: ChatLocale;
   turnIndex: number;
+  turnstileToken: string;
 };
 
 export type ChatEstimateResponse = {
@@ -66,7 +67,8 @@ export function normalizeChatEstimateRequest(body: unknown): ChatEstimateRequest
   return {
     message,
     locale: record.locale === "es" ? "es" : "en",
-    turnIndex: normalizeTurnIndex(record.turnIndex)
+    turnIndex: normalizeTurnIndex(record.turnIndex),
+    turnstileToken: clean(record.turnstileToken, 3000)
   };
 }
 

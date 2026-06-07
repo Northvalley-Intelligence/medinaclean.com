@@ -206,20 +206,26 @@ export async function getApprovedReviews(language: "en" | "es") {
     limit: "6"
   });
 
-  const response = await fetch(`${url}/rest/v1/reviews?${params.toString()}`, {
-    headers: {
-      apikey: key,
-      authorization: `Bearer ${key}`
-    },
-    cache: "no-store"
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${url}/rest/v1/reviews?${params.toString()}`, {
+      headers: {
+        apikey: key,
+        authorization: `Bearer ${key}`
+      },
+      next: { revalidate: 300 }
+    });
+  } catch (error) {
+    console.error("Supabase approved reviews fetch failed", error);
+    return [];
+  }
 
   if (!response.ok) {
     console.error(`Supabase approved reviews fetch failed: ${await response.text()}`);
     return [];
   }
 
-  return (await response.json()) as ApprovedReview[];
+  return (await response.json().catch(() => [])) as ApprovedReview[];
 }
 
 export async function getPublicSiteVideos() {
@@ -236,20 +242,26 @@ export async function getPublicSiteVideos() {
     limit: "6"
   });
 
-  const response = await fetch(`${url}/rest/v1/site_videos?${params.toString()}`, {
-    headers: {
-      apikey: key,
-      authorization: `Bearer ${key}`
-    },
-    cache: "no-store"
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${url}/rest/v1/site_videos?${params.toString()}`, {
+      headers: {
+        apikey: key,
+        authorization: `Bearer ${key}`
+      },
+      next: { revalidate: 300 }
+    });
+  } catch (error) {
+    console.error("Supabase public videos fetch failed", error);
+    return [];
+  }
 
   if (!response.ok) {
     console.error(`Supabase public videos fetch failed: ${await response.text()}`);
     return [];
   }
 
-  const rows = (await response.json()) as import("@/lib/video-records").SiteVideoRow[];
+  const rows = (await response.json().catch(() => [])) as import("@/lib/video-records").SiteVideoRow[];
   const availability = await Promise.all(rows.map((row) => isYouTubeVideoAvailable(row.youtube_url)));
   return rows.filter((_, index) => availability[index]);
 }

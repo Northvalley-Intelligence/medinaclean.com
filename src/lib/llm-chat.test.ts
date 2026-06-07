@@ -18,7 +18,8 @@ describe("llm chat", () => {
     expect(normalizeChatEstimateRequest({ message: "  3 bed 2 bath every 2 weeks  ", locale: "es", role: "admin" })).toEqual({
       message: "3 bed 2 bath every 2 weeks",
       locale: "es",
-      turnIndex: 0
+      turnIndex: 0,
+      turnstileToken: ""
     });
   });
 
@@ -32,7 +33,8 @@ describe("llm chat", () => {
     const response = buildFallbackChatResponse({
       locale: "en",
       message: "I have 3 bedrooms and 2 bathrooms for every 2 weeks in 30188.",
-      turnIndex: 0
+      turnIndex: 0,
+      turnstileToken: ""
     });
 
     expect(response.mode).toBe("deterministic_fallback");
@@ -60,7 +62,8 @@ describe("llm chat", () => {
     const response = buildFallbackChatResponse({
       locale: "en",
       message: "What cleaning material does Rosa use?",
-      turnIndex: 0
+      turnIndex: 0,
+      turnstileToken: ""
     });
 
     expect(response.reply).toBe(
@@ -72,7 +75,8 @@ describe("llm chat", () => {
     const response = buildFallbackChatResponse({
       locale: "en",
       message: "I am from los angels california, can you help?",
-      turnIndex: 0
+      turnIndex: 0,
+      turnstileToken: ""
     });
 
     expect(response.reply).toContain("Woodstock, GA");

@@ -3,7 +3,6 @@
 This site is built by Northvalley Intelligence LLC.
 
 - Website: https://northvalleyintel.com
-- Contact: contact@northvalleyintel.com
 
 ## Accounts
 
@@ -15,7 +14,8 @@ The site owner should create and own the Supabase and hosting projects. Codex sh
 - Hosting: Cloudflare Workers using the OpenNext adapter, staying on the free tier unless explicitly approved.
 - Domain/DNS: `medinaclean.com` is managed in Cloudflare.
 - Maps: no Google Maps billing. The site uses local ZIP validation only.
-- Email/SMS: not required for launch.
+- Email: internal notifications use Resend for accepted public chat, appointment, and review submissions.
+- SMS: not required for launch.
 
 ## GitHub Actions Deployment
 
@@ -33,12 +33,18 @@ Required GitHub repository secrets:
 - `YOUTUBE_CLIENT_ID`
 - `YOUTUBE_CLIENT_SECRET`
 - `YOUTUBE_REFRESH_TOKEN`
+- `RESEND_API_KEY`
+- `CHAT_NOTIFY_TO`
+- `TURNSTILE_SECRET_KEY`
 
 Optional GitHub repository secrets:
 
 - `NEXT_PUBLIC_ROSA_PHONE`
-- `NEXT_PUBLIC_ROSA_WHATSAPP`
-- `NEXT_PUBLIC_ROSA_INSTAGRAM`
+- `NEXT_PUBLIC_ROSA_PHONE_DISPLAY`
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+- `SITE_NOTIFY_TO`
+- `SITE_NOTIFY_FROM`
+- `CHAT_NOTIFY_FROM`
 
 Use `https://medinaclean.com` for `NEXT_PUBLIC_SITE_URL` in production.
 
@@ -87,11 +93,22 @@ Required when Supabase is enabled:
 - `YOUTUBE_CLIENT_SECRET`
 - `YOUTUBE_REFRESH_TOKEN`
 
-Optional contact values:
+Public contact values:
 
 - `NEXT_PUBLIC_ROSA_PHONE`
-- `NEXT_PUBLIC_ROSA_WHATSAPP`
-- `NEXT_PUBLIC_ROSA_INSTAGRAM`
+- `NEXT_PUBLIC_ROSA_PHONE_DISPLAY`
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+
+Notification values:
+
+- `RESEND_API_KEY`
+- `SITE_NOTIFY_TO`, or reuse `CHAT_NOTIFY_TO` / `ASSESSMENT_HOST_EMAIL`
+- `SITE_NOTIFY_FROM`, or reuse `CHAT_NOTIFY_FROM`
+
+Bot protection:
+
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+- `TURNSTILE_SECRET_KEY`
 
 ## Privacy Guardrails
 
