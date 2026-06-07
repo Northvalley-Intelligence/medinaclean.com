@@ -13,7 +13,7 @@ export default defineConfig({
   },
   webServer: {
     command:
-      "ROSA_ADMIN_PASSWORD=test-admin ADMIN_SESSION_SECRET=playwright-local-session-secret npm run dev -- -H localhost -p 3100",
+      "NEXT_PUBLIC_SITE_URL=https://medinaclean.com ROSA_ADMIN_PASSWORD=test-admin ADMIN_SESSION_SECRET=playwright-local-session-secret npm run dev -- -H localhost -p 3100",
     url: "http://localhost:3100",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000

@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
+import { buildReviewNotificationText, trySendSiteNotification } from "@/lib/site-notifications";
 import { insertRow, isSupabaseConfigured, uploadReviewPhoto } from "@/lib/supabase-rest";
 
 const maxPhotoBytes = 250 * 1024;
@@ -61,6 +62,16 @@ export async function POST(request: Request) {
       photo_path: photoPath,
       consent_to_publish: consent,
       status: "pending"
+    });
+    await trySendSiteNotification({
+      subject: `New Medina Clean review pending: ${name}`,
+      text: buildReviewNotificationText({
+        language,
+        name,
+        rating,
+        message,
+        hasPhoto: Boolean(photoPath)
+      })
     });
   } catch (error) {
     console.error(error);

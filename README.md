@@ -4,7 +4,6 @@ Bilingual, zero-subscription-fee-first website and lightweight operations app fo
 
 Built by Northvalley Intelligence LLC: https://northvalleyintel.com
 
-For similar projects: contact@northvalleyintel.com
 
 ## Project Thesis
 
@@ -157,7 +156,7 @@ flowchart TD
   H --> I[Request appointment]
   H --> J[Ask guided chat estimate]
   H --> K[Leave review]
-  H --> L[Call, WhatsApp, or Instagram]
+  H --> L[Call the public phone number]
 
   I --> M[Server validates name, phone, address, ZIP, service details, times]
   M --> N[(Supabase appointment_requests)]

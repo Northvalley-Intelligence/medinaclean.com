@@ -95,7 +95,7 @@ export const localServicePages: LocalServicePage[] = [
       },
       {
         question: "Can I text or call Rosa?",
-        answer: "Yes. The site supports phone and WhatsApp contact when Rosa's public contact number is configured."
+        answer: "Yes. The site shows the public Medina Clean phone number when it is configured."
       }
     ]
   },
@@ -239,7 +239,7 @@ export const localServicePages: LocalServicePage[] = [
       },
       {
         question: "¿Puedo llamar o escribir a Rosa?",
-        answer: "Sí. El sitio muestra teléfono y WhatsApp cuando el número público de Rosa está configurado."
+        answer: "Sí. El sitio muestra el número público de Medina Clean cuando está configurado."
       }
     ]
   },

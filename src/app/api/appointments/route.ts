@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { validateAppointmentRequestPayload } from "@/lib/appointment-request";
 import { extractZip, validateServiceArea } from "@/lib/service-area";
+import { buildAppointmentNotificationText, trySendSiteNotification } from "@/lib/site-notifications";
 import { insertRow, isSupabaseConfigured } from "@/lib/supabase-rest";
 
 export async function POST(request: Request) {
@@ -71,6 +72,22 @@ export async function POST(request: Request) {
 
   try {
     await insertRow("appointment_requests", row);
+    await trySendSiteNotification({
+      subject: `New Medina Clean appointment request: ${row.name}`,
+      text: buildAppointmentNotificationText({
+        language: row.language,
+        name: row.name,
+        phone: row.phone,
+        address: row.address,
+        zipCode: row.zip_code,
+        serviceType: row.service_type,
+        bedrooms: row.bedrooms,
+        bathrooms: row.bathrooms,
+        preferredTimes: [row.preferred_time_1, row.preferred_time_2, row.preferred_time_3],
+        notes: row.notes,
+        source: row.source
+      })
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

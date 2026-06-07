@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Locale } from "@/lib/content";
 import {
   buildChatAppointmentNotes,
@@ -16,6 +16,24 @@ import { normalizeUsPhone } from "@/lib/phone";
 import { validateServiceArea } from "@/lib/service-area";
 
 const chatTurnStorageKey = "medina-clean-chat-turn-index";
+const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
+
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (
+        element: HTMLElement,
+        options: {
+          sitekey: string;
+          callback: (token: string) => void;
+          "expired-callback": () => void;
+          "error-callback": () => void;
+        }
+      ) => string;
+      reset: (widgetId: string) => void;
+    };
+  }
+}
 
 const copy = {
   en: {
@@ -178,6 +196,9 @@ export function ChatEstimateAgent({ locale }: { locale: Locale }) {
   const [aiMessages, setAiMessages] = useState<Array<{ role: "user" | "assistant"; content: string; mode?: string }>>([]);
   const [aiInput, setAiInput] = useState("");
   const [aiSubmitting, setAiSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const turnstileWidgetId = useRef("");
   const [showNegotiation, setShowNegotiation] = useState(false);
   const [requestedAmount, setRequestedAmount] = useState("");
   const [readyEveryTwo, setReadyEveryTwo] = useState(false);
@@ -207,6 +228,40 @@ export function ChatEstimateAgent({ locale }: { locale: Locale }) {
     if (zip && /^\d{5}$/.test(zip)) {
       window.setTimeout(() => setZipCode(zip), 0);
     }
+  }, []);
+
+  useEffect(() => {
+    if (!turnstileSiteKey || !turnstileRef.current) {
+      return;
+    }
+
+    const scriptId = "cf-turnstile-script";
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+    }
+
+    const renderWidget = () => {
+      if (!window.turnstile || !turnstileRef.current || turnstileWidgetId.current) {
+        return;
+      }
+
+      turnstileWidgetId.current = window.turnstile.render(turnstileRef.current, {
+        sitekey: turnstileSiteKey,
+        callback: (token) => setTurnstileToken(token),
+        "expired-callback": () => setTurnstileToken(""),
+        "error-callback": () => setTurnstileToken("")
+      });
+    };
+
+    const interval = window.setInterval(renderWidget, 250);
+    renderWidget();
+
+    return () => window.clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -324,7 +379,7 @@ export function ChatEstimateAgent({ locale }: { locale: Locale }) {
   async function submitAiChat(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const message = aiInput.trim();
-    if (!message || aiSubmitting) {
+    if (!message || aiSubmitting || (turnstileSiteKey && !turnstileToken)) {
       return;
     }
 
@@ -338,7 +393,7 @@ export function ChatEstimateAgent({ locale }: { locale: Locale }) {
       const response = await fetch("/api/chat-estimate", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ locale, message, turnIndex })
+        body: JSON.stringify({ locale, message, turnIndex, turnstileToken })
       });
       const result = (await response.json().catch(() => ({}))) as { reply?: string; mode?: string; error?: string };
       if (!response.ok || !result.reply) {
@@ -353,6 +408,10 @@ export function ChatEstimateAgent({ locale }: { locale: Locale }) {
       setAiMessages((messages) => [...messages, { role: "assistant", content: String(t.aiError), mode: "error" }]);
     } finally {
       setAiSubmitting(false);
+      if (turnstileWidgetId.current && window.turnstile) {
+        window.turnstile.reset(turnstileWidgetId.current);
+        setTurnstileToken("");
+      }
     }
   }
 
@@ -484,10 +543,15 @@ export function ChatEstimateAgent({ locale }: { locale: Locale }) {
               value={aiInput}
             />
           </label>
-          <button className="button primary" disabled={aiSubmitting || !aiInput.trim()} type="submit">
+          <button className="button primary" disabled={aiSubmitting || !aiInput.trim() || Boolean(turnstileSiteKey && !turnstileToken)} type="submit">
             {aiSubmitting ? t.aiSending : t.aiSend}
           </button>
         </form>
+        {turnstileSiteKey ? (
+          <div className="turnstile-wrap">
+            <div ref={turnstileRef} />
+          </div>
+        ) : null}
       </section>
 
       <div className="chat-guided-label" id="guided-estimate">

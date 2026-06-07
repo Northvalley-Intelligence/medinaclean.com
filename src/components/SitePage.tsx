@@ -1,10 +1,10 @@
-import { Building2, CalendarCheck, Camera, Construction, ExternalLink, Gift, Home, Hotel, MessageCircle, Phone, Star, Store } from "lucide-react";
+import { Building2, CalendarCheck, Construction, ExternalLink, Gift, Home, Hotel, Phone, Star, Store } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { AppointmentForm } from "@/components/AppointmentForm";
 import { ChatEstimateAgent } from "@/components/ChatEstimateAgent";
 import { ReviewForm } from "@/components/ReviewForm";
-import { copy, instagram, phone, pricing, projectVideos, type Locale, whatsapp } from "@/lib/content";
+import { copy, phone, phoneDisplay, pricing, projectVideos, type Locale } from "@/lib/content";
 import { localServicePages } from "@/lib/local-seo";
 import { getApprovedReviews, getPublicSiteVideos } from "@/lib/supabase-rest";
 import { mapVideoRow, type PublicVideo } from "@/lib/video-records";
@@ -56,7 +56,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
             {phone ? (
               <a className="button secondary" href={`tel:${phone}`}>
                 <Phone size={17} aria-hidden />
-                {t.nav.call}
+                {phoneDisplay}
               </a>
             ) : null}
           </div>
@@ -72,14 +72,6 @@ export async function SitePage({ locale }: { locale: Locale }) {
             <a className="button primary" href="#schedule">
               <CalendarCheck size={18} aria-hidden />
               {t.hero.primary}
-            </a>
-            <a className="button ghost" href={whatsapp}>
-              <MessageCircle size={18} aria-hidden />
-              {t.hero.whatsapp}
-            </a>
-            <a className="button ghost" href={instagram}>
-              <Camera size={18} aria-hidden />
-              Instagram
             </a>
           </div>
         </div>
@@ -266,11 +258,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
               height={1024}
             />
             <p>{t.privacy}</p>
-            <p>
-              Built by <a href="https://northvalleyintel.com">Northvalley Intelligence LLC</a> (
-              <a href="https://northvalleyintel.com">northvalleyintel.com</a>). For similar projects, contact{" "}
-              <a href="mailto:contact@northvalleyintel.com">contact@northvalleyintel.com</a>.
-            </p>
+            <p>Built by <a href="https://northvalleyintel.com">Northvalley Intelligence LLC</a>.</p>
           </div>
           <div className="nav-actions">
             <a className="button secondary" href={`/${otherLocale}`}>
@@ -279,7 +267,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
             {phone ? (
               <a className="button secondary" href={`tel:${phone}`}>
                 <Phone size={17} aria-hidden />
-                {phone}
+                {phoneDisplay}
               </a>
             ) : null}
           </div>

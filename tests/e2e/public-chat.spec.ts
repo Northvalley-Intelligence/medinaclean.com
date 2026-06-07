@@ -7,10 +7,9 @@ test("public hero makes Medina Clean the primary heading without repeating the h
   await expect(page.getByRole("heading", { name: "Medina Clean", level: 1 })).toBeVisible();
   await expect(page.locator(".hero-logo")).toHaveCount(0);
   await expect(page.getByText("post-construction cleaning near Woodstock, Marietta")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Instagram" })).toHaveAttribute(
-    "href",
-    "https://www.instagram.com/medinaclean845/"
-  );
+  await expect(page.getByRole("link", { name: "(470) 781-4143" }).first()).toHaveAttribute("href", "tel:+14707814143");
+  await expect(page.getByRole("link", { name: "Instagram" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "WhatsApp" })).toHaveCount(0);
   await expect(page.locator("script#google-tag-manager")).toHaveCount(1);
   await expect
     .poll(async () => page.locator("script#google-tag-manager").evaluate((script) => script.innerHTML))

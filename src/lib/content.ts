@@ -1,8 +1,7 @@
 export type Locale = "en" | "es";
 
-export const phone = process.env.NEXT_PUBLIC_ROSA_PHONE || "";
-export const whatsapp = process.env.NEXT_PUBLIC_ROSA_WHATSAPP || "#schedule";
-export const instagram = process.env.NEXT_PUBLIC_ROSA_INSTAGRAM || "https://www.instagram.com/medinaclean845/";
+export const phone = process.env.NEXT_PUBLIC_ROSA_PHONE || "+14707814143";
+export const phoneDisplay = process.env.NEXT_PUBLIC_ROSA_PHONE_DISPLAY || "(470) 781-4143";
 
 type SiteCopy = {
   nav: Record<string, string>;
@@ -95,15 +94,14 @@ export const copy = {
       chat: "Chat estimate",
       reviews: "Reviews",
       schedule: "Schedule",
-      call: "Call Rosa"
+      call: "Phone"
     },
     hero: {
       eyebrow: "Cleaning near Woodstock and Marietta, GA",
       title: "Medina Clean",
       body:
         "House, condo, apartment, small business, and post-construction cleaning near Woodstock, Marietta, Kennesaw, Acworth, Canton, and Roswell, GA with direct communication from Rosa Medina at Medina Clean.",
-      primary: "Schedule a cleaning",
-      whatsapp: "WhatsApp"
+      primary: "Schedule a cleaning"
     },
     stats: [
       ["20 miles", "Woodstock, Marietta + nearby cities"],
@@ -188,15 +186,14 @@ export const copy = {
       chat: "Estimado por chat",
       reviews: "Reseñas",
       schedule: "Cita",
-      call: "Llamar a Rosa"
+      call: "Teléfono"
     },
     hero: {
       eyebrow: "Limpieza cerca de Woodstock y Marietta, GA",
       title: "Medina Clean",
       body:
         "Limpieza para casas, condominios, apartamentos, pequeños negocios y después de construcción cerca de Woodstock, Marietta, Kennesaw, Acworth, Canton y Roswell, GA con comunicación directa con Rosa Medina de Medina Clean.",
-      primary: "Pedir una cita",
-      whatsapp: "WhatsApp"
+      primary: "Pedir una cita"
     },
     stats: [
       ["20 millas", "Woodstock, Marietta y ciudades cercanas"],
