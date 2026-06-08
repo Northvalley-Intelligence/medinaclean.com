@@ -1,4 +1,16 @@
-import { Building2, CalendarCheck, Construction, ExternalLink, Gift, Home, Hotel, Phone, Star, Store } from "lucide-react";
+import {
+  Building2,
+  CalendarCheck,
+  Construction,
+  ExternalLink,
+  Gift,
+  Home,
+  Hotel,
+  Phone,
+  PlayCircle,
+  Star,
+  Store
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { AppointmentForm } from "@/components/AppointmentForm";
@@ -194,13 +206,19 @@ export async function SitePage({ locale }: { locale: Locale }) {
           <div className="video-links">
             {videos.map((video) => (
               <article className="video-card" key={video.id}>
-                <iframe
-                  src={video.embedUrl}
-                  title={video.title}
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                />
+                <a className="video-thumb-link" href={video.watchUrl} target="_blank" rel="noopener noreferrer">
+                  {/* External YouTube thumbnails avoid loading the embedded player that can show a sign-in wall. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    className="video-thumbnail"
+                    src={youtubeThumbnailUrl(video.youtubeVideoId)}
+                    alt={video.title}
+                    loading="lazy"
+                  />
+                  <span className="video-play" aria-hidden>
+                    <PlayCircle size={42} />
+                  </span>
+                </a>
                 <div className="video-card-copy">
                   <strong>{video.title}</strong>
                   <a href={video.watchUrl} target="_blank" rel="noopener noreferrer">
@@ -286,6 +304,10 @@ function fallbackVideos(locale: Locale): PublicVideo[] {
     embedUrl: video.embedUrl,
     createdAt: "2026-01-01T00:00:00.000Z"
   }));
+}
+
+function youtubeThumbnailUrl(videoId: string) {
+  return `https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg`;
 }
 
 function ReviewList({

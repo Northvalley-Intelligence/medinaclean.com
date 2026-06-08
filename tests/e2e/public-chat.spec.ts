@@ -28,15 +28,16 @@ test("website gallery previews before-and-after YouTube Shorts instead of placeh
   await expect(page.locator(".video-links")).toHaveCSS("scroll-snap-type", /x mandatory/);
 
   await expect(page.locator(".video-card").first()).toBeVisible();
-  await expect(page.locator(".video-card").first().locator("iframe")).toHaveAttribute(
+  await expect(page.locator(".video-card iframe")).toHaveCount(0);
+  await expect(page.locator(".video-card").first().locator("img.video-thumbnail")).toHaveAttribute(
     "src",
-    /https:\/\/www\.youtube-nocookie\.com\/embed\//
+    /https:\/\/i\.ytimg\.com\/vi\//
   );
   await expect(page.locator(".video-card").first().getByRole("link", { name: "Watch on YouTube" })).toHaveAttribute(
     "href",
     /https:\/\/(www\.)?youtube\.com\//
   );
-  await expect(page.locator('iframe[src*="wQJ6qMZX0Ks"]')).toHaveCount(0);
+  await expect(page.locator('img[src*="wQJ6qMZX0Ks"]')).toHaveCount(0);
 });
 
 test("website services use a balanced desktop layout with distinct icons", async ({ page }) => {
