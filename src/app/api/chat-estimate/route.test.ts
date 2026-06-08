@@ -28,6 +28,10 @@ describe("chat estimate route", () => {
 
   it("sends an internal email after an accepted deterministic chat response", async () => {
     vi.stubEnv("TURNSTILE_SECRET_KEY", "");
+    vi.stubEnv("AI_CHAT_ENABLED", "");
+    vi.stubEnv("AI_CHAT_PROVIDER_CHAIN", "");
+    vi.stubEnv("GEMINI_API_KEY", "");
+    vi.stubEnv("OPENROUTER_API_KEY", "");
     vi.stubEnv("RESEND_API_KEY", "resend-token");
     vi.stubEnv("CHAT_NOTIFY_TO", "ferosh@northvalleyintel.com");
     const fetchMock = vi.fn(async () => Response.json({ id: "email-1" }));
