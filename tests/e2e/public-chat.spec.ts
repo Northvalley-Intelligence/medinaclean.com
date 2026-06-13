@@ -10,6 +10,8 @@ test("public hero makes Medina Clean the primary heading without repeating the h
   await expect(page.getByRole("link", { name: "(470) 781-4143" }).first()).toHaveAttribute("href", "tel:+14707814143");
   await expect(page.getByRole("link", { name: "Instagram" })).toHaveCount(0);
   await expect(page.getByRole("link", { name: "WhatsApp" })).toHaveCount(0);
+  await expect(page.locator(".footer-logo-plate")).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await expect(page.locator(".footer-logo-plate .footer-logo")).toBeVisible();
   await expect(page.locator("script#google-tag-manager")).toHaveCount(1);
   await expect
     .poll(async () => page.locator("script#google-tag-manager").evaluate((script) => script.innerHTML))

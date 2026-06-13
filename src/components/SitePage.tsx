@@ -268,13 +268,15 @@ export async function SitePage({ locale }: { locale: Locale }) {
       <footer className="footer" id="contact">
         <div className="footer-inner">
           <div>
-            <Image
-              className="footer-logo"
-              src="/brand/medina-clean-logo.png"
-              alt="Medina Clean"
-              width={1536}
-              height={1024}
-            />
+            <div className="footer-logo-plate" aria-label="Medina Clean">
+              <Image
+                className="footer-logo"
+                src="/brand/medina-clean-logo.png"
+                alt="Medina Clean"
+                width={1536}
+                height={1024}
+              />
+            </div>
             <p>{t.privacy}</p>
             <p>Built by <a href="https://northvalleyintel.com">Northvalley Intelligence LLC</a>.</p>
           </div>

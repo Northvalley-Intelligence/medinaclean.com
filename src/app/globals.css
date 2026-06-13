@@ -118,9 +118,22 @@ textarea {
 
 .footer-logo {
   display: block;
-  width: 220px;
+  width: 188px;
   height: auto;
+}
+
+.footer-logo-plate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: min(236px, 100%);
+  min-height: 92px;
   margin-bottom: 10px;
+  padding: 12px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.18);
 }
 
 .hero-logo {
