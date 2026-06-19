@@ -6,6 +6,7 @@ import {
   Gift,
   Home,
   Hotel,
+  MapPin,
   Phone,
   PlayCircle,
   Star,
@@ -18,12 +19,14 @@ import { ChatEstimateAgent } from "@/components/ChatEstimateAgent";
 import { ReviewForm } from "@/components/ReviewForm";
 import { copy, phone, phoneDisplay, pricing, projectVideos, type Locale } from "@/lib/content";
 import { localServicePages } from "@/lib/local-seo";
+import { googleMapsSearchUrl, openGraphImage } from "@/lib/site-seo";
 import { getApprovedReviews, getPublicSiteVideos } from "@/lib/supabase-rest";
 import { mapVideoRow, type PublicVideo } from "@/lib/video-records";
 
 export async function SitePage({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const otherLocale = locale === "en" ? "es" : "en";
+  const aboutHref = locale === "en" ? "/en/about-rosa-medina" : "/es/sobre-rosa-medina";
   const approvedReviews = await getApprovedReviews(locale);
   const siteVideos = await getPublicSiteVideos();
   const videos = siteVideos.length > 0 ? siteVideos.map((video) => mapVideoRow(video, locale)) : fallbackVideos(locale);
@@ -51,6 +54,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
           </a>
           <div className="nav-links">
             <a href="#services">{t.nav.services}</a>
+            <a href={aboutHref}>{t.nav.about}</a>
             <a href="#pricing">{t.nav.pricing}</a>
             <a href="#chat">{t.nav.chat}</a>
             <a href="#reviews">{t.nav.reviews}</a>
@@ -87,7 +91,15 @@ export async function SitePage({ locale }: { locale: Locale }) {
             </a>
           </div>
         </div>
-        <div className="hero-panel" role="img" aria-label="Clean home interior with pink cleaning accents">
+        <div className="hero-panel" role="img" aria-label="Clean home interior prepared for Medina Clean customers">
+          <Image
+            className="hero-panel-image"
+            src="/gallery/hero-clean-home.png"
+            alt=""
+            fill
+            priority
+            sizes="(max-width: 920px) 100vw, 44vw"
+          />
           <div className="hero-panel-inner">
             <strong>Woodstock, GA</strong>
             <span>30188 + nearby homes and businesses</span>
@@ -102,6 +114,33 @@ export async function SitePage({ locale }: { locale: Locale }) {
             <span>{label}</span>
           </div>
         ))}
+      </section>
+
+      <section className="section trust-section" id="about">
+        <div className="section-inner trust-grid">
+          <div className="trust-copy">
+            <p className="eyebrow">{locale === "en" ? "Local trust" : "Confianza local"}</p>
+            <h2>{t.trust.title}</h2>
+            <p>{t.trust.body}</p>
+            <div className="trust-actions">
+              <a className="button primary" href={aboutHref}>
+                {t.trust.aboutCta}
+              </a>
+              <a className="button secondary" href={googleMapsSearchUrl} target="_blank" rel="noopener noreferrer">
+                <MapPin size={17} aria-hidden />
+                {t.trust.mapsCta}
+              </a>
+            </div>
+          </div>
+          <div className="trust-card-grid">
+            {t.trust.items.map(([title, body]) => (
+              <article className="card trust-card" key={title}>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
       </section>
 
       <section className="section alt reviews-section" id="reviews">
@@ -371,11 +410,18 @@ function ReviewList({
 }
 
 function JsonLd({ locale }: { locale: Locale }) {
-  const data = {
+  const cleaningService = {
     "@context": "https://schema.org",
     "@type": "CleaningService",
+    "@id": "https://medinaclean.com/#cleaning-service",
     name: "Medina Clean",
     url: "https://medinaclean.com",
+    image: openGraphImage.url,
+    hasMap: googleMapsSearchUrl,
+    founder: {
+      "@type": "Person",
+      name: "Rosa Medina"
+    },
     areaServed: [
       "Woodstock GA",
       "30188",
@@ -389,7 +435,15 @@ function JsonLd({ locale }: { locale: Locale }) {
     ],
     availableLanguage: ["English", "Spanish"],
     priceRange: "$$",
-    serviceType: ["House cleaning", "Apartment cleaning", "Condo cleaning", "Deep cleaning", "Office cleaning"],
+    serviceType: [
+      "House cleaning",
+      "Apartment cleaning",
+      "Condo cleaning",
+      "Deep cleaning",
+      "Recurring cleaning",
+      "Small business cleaning",
+      "Post-construction cleanup"
+    ],
     address: {
       "@type": "PostalAddress",
       addressLocality: "Woodstock",
@@ -409,7 +463,33 @@ function JsonLd({ locale }: { locale: Locale }) {
     }
   };
 
-  const jsonLd = phone ? { ...data, telephone: phone } : data;
+  const contactPoint = phone
+    ? {
+        "@type": "ContactPoint",
+        telephone: phone,
+        contactType: "customer service",
+        availableLanguage: ["English", "Spanish"]
+      }
+    : undefined;
 
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />;
+  const serviceJsonLd = phone ? { ...cleaningService, telephone: phone, contactPoint } : cleaningService;
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: copy[locale].faq.items.map(([question, answer]) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: answer
+      }
+    }))
+  };
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+    </>
+  );
 }

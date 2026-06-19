@@ -57,7 +57,77 @@ test("local service pages expose matching language alternates and structured dat
 
   expect(localServiceSchema).toMatchObject({
     name: "House cleaning - Medina Clean",
+    hasMap: /google\.com\/maps\/search/,
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: "+14707814143",
+      contactType: "customer service",
+      availableLanguage: ["English", "Spanish"]
+    },
     serviceType: ["House cleaning", "Recurring cleaning", "First-time cleaning", "Deep cleaning"],
     areaServed: ["Woodstock", "30188", "Towne Lake area", "nearby Cherokee County homes"]
   });
+
+  await expect(page.getByRole("link", { name: "Call Medina Clean" })).toHaveAttribute("href", "tel:+14707814143");
+  await expect(page.getByRole("link", { name: "Search Medina Clean on Google Maps" })).toHaveAttribute(
+    "href",
+    /google\.com\/maps\/search/
+  );
+});
+
+test("homepage exposes crawlable trust, booking, and sharing signals from the assessment", async ({ page }) => {
+  await page.goto("/en");
+
+  await expect(page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "Request an appointment" })).toHaveAttribute(
+    "href",
+    "#schedule"
+  );
+  await expect(page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "About Rosa" })).toHaveAttribute(
+    "href",
+    "/en/about-rosa-medina"
+  );
+  await expect(page.getByRole("link", { name: "Search Medina Clean on Google Maps" })).toHaveAttribute(
+    "href",
+    /google\.com\/maps\/search/
+  );
+  await expect(page.getByText("owner-led cleaning with direct communication from Rosa Medina")).toBeVisible();
+  await expect(page.getByText("real Medina Clean project videos")).toBeVisible();
+  await expect(page.getByText("credentials, insurance, certifications, and awards")).toBeVisible();
+
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+    "content",
+    "https://medinaclean.com/gallery/hero-clean-home.png"
+  );
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
+  await expect(page.locator('link[rel="icon"]').first()).toHaveAttribute("href", "/favicon.ico");
+});
+
+test("about pages give visitors and answer engines owner and proof context", async ({ page }) => {
+  await page.goto("/en/about-rosa-medina");
+
+  await expect(page).toHaveTitle(/About Rosa Medina/);
+  await expect(page.getByRole("heading", { name: "About Rosa Medina and Medina Clean", level: 1 })).toBeVisible();
+  await expect(page.getByText("local cleaning business led by Rosa Medina")).toBeVisible();
+  await expect(page.getByText("current public website and booking workflow launched in 2026")).toBeVisible();
+  await expect(page.getByText("No license, insurance, certification, or award claim is published")).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "About navigation" }).getByRole("link", { name: "Request an appointment" })).toHaveAttribute(
+    "href",
+    "/en#schedule"
+  );
+  await expect(page.locator('link[rel="alternate"][hreflang="es"]')).toHaveAttribute(
+    "href",
+    "https://medinaclean.com/es/sobre-rosa-medina"
+  );
+});
+
+test("llms.txt gives AI answer engines accurate public Medina Clean facts", async ({ page }) => {
+  const response = await page.request.get("/llms.txt");
+  expect(response.ok()).toBe(true);
+  expect(response.headers()["content-type"]).toContain("text/plain");
+
+  const body = await response.text();
+  expect(body).toContain("# Medina Clean");
+  expect(body).toContain("Woodstock, GA");
+  expect(body).toContain("Rosa confirms the final price");
+  expect(body).toContain("Do not claim licenses, insurance, certifications, awards, or years in business");
 });

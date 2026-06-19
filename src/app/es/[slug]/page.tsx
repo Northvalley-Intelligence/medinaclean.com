@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LocalServicePage } from "@/components/LocalServicePage";
 import { getLocalServiceAlternate, getLocalServicePage, localServicePages } from "@/lib/local-seo";
+import { openGraphImage, twitterCard } from "@/lib/site-seo";
 
 type LocalServiceRouteProps = {
   params: Promise<{ slug: string }>;
@@ -30,7 +31,17 @@ export async function generateMetadata({ params }: LocalServiceRouteProps): Prom
         ...(alternatePage ? { en: `/${alternatePage.locale}/${alternatePage.slug}` } : {}),
         es: `/es/${page.slug}`
       }
-    }
+    },
+    openGraph: {
+      type: "website",
+      url: `https://medinaclean.com/es/${page.slug}`,
+      title: `${page.title} | Medina Clean`,
+      description: page.description,
+      images: [openGraphImage],
+      locale: "es_US",
+      alternateLocale: alternatePage ? "en_US" : undefined
+    },
+    twitter: twitterCard
   };
 }
 

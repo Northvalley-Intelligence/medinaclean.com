@@ -369,18 +369,23 @@ h1 {
 }
 
 .hero-panel {
+  position: relative;
   align-self: stretch;
   min-height: 460px;
   border: 1px solid var(--line);
   border-radius: 8px;
   overflow: hidden;
   box-shadow: var(--shadow);
-  background:
-    linear-gradient(rgba(255, 244, 248, 0.58), rgba(255, 244, 248, 0.2)),
-    url("/gallery/hero-clean-home.png") center/cover;
+  background: var(--soft);
+}
+
+.hero-panel-image {
+  object-fit: cover;
 }
 
 .hero-panel-inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   height: 100%;
   flex-direction: column;
@@ -388,6 +393,134 @@ h1 {
   padding: 24px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(33, 21, 28, 0.62));
   color: white;
+}
+
+.trust-section {
+  border-top: 1px solid var(--line);
+}
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.82fr) minmax(0, 1.18fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.trust-copy {
+  display: grid;
+  gap: 16px;
+}
+
+.trust-copy h2,
+.about-hero h1 {
+  font-size: clamp(2.35rem, 5vw, 4.7rem);
+  line-height: 0.98;
+}
+
+.trust-copy p,
+.about-hero p,
+.about-sections p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.trust-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.trust-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.trust-card {
+  min-height: 164px;
+}
+
+.trust-card h3 {
+  margin-top: 0;
+}
+
+.about-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.72fr);
+  gap: 36px;
+  align-items: center;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 64px 22px 50px;
+}
+
+.about-hero-media {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 1;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: var(--shadow);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.42fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.about-sections {
+  display: grid;
+  gap: 22px;
+}
+
+.about-sections article {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 22px;
+}
+
+.about-sections article:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.about-sections h2,
+.fact-card h2 {
+  margin: 0;
+}
+
+.fact-card {
+  position: sticky;
+  top: 126px;
+}
+
+.fact-card dl {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0 0;
+}
+
+.fact-card div {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+}
+
+.fact-card div:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.fact-card dt {
+  color: var(--rose-dark);
+  font-weight: 850;
+}
+
+.fact-card dd {
+  margin: 4px 0 0;
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .stat-row {
@@ -1549,7 +1682,10 @@ textarea {
   }
 
   .hero,
+  .about-hero,
   .forms,
+  .trust-grid,
+  .about-grid,
   .admin-grid,
   .admin-detail-grid,
   .admin-calendar-shell,
@@ -1567,6 +1703,7 @@ textarea {
 
   .grid,
   .services-grid,
+  .trust-card-grid,
   .local-grid,
   .review-list {
     grid-template-columns: 1fr;
@@ -1593,6 +1730,10 @@ textarea {
 
   .admin-header-actions {
     justify-content: flex-start;
+  }
+
+  .fact-card {
+    position: static;
   }
 
   .calendar-month {
@@ -1630,6 +1771,7 @@ textarea {
 
   .nav-actions,
   .hero-actions,
+  .trust-actions,
   .field-grid,
   .admin-form-row,
   .grid,

@@ -7,6 +7,13 @@ type SiteCopy = {
   nav: Record<string, string>;
   hero: Record<string, string>;
   stats: string[][];
+  trust: {
+    title: string;
+    body: string;
+    items: string[][];
+    aboutCta: string;
+    mapsCta: string;
+  };
   services: { title: string; body: string; items: string[][] };
   pricing: { title: string; body: string; headers: string[]; note: string };
   chat: { title: string; body: string };
@@ -15,6 +22,16 @@ type SiteCopy = {
   reviews: { title: string; body: string; empty: string; formTitle: string };
   schedule: { title: string; body: string; formTitle: string; submit: string };
   faq: { title: string; items: string[][] };
+  aboutPage: {
+    title: string;
+    eyebrow: string;
+    intro: string;
+    sections: string[][];
+    facts: string[][];
+    scheduleCta: string;
+    mapsCta: string;
+    homeCta: string;
+  };
   privacy: string;
 };
 
@@ -90,10 +107,11 @@ export const copy = {
   en: {
     nav: {
       services: "Services",
+      about: "About Rosa",
       pricing: "Pricing",
       chat: "Chat estimate",
       reviews: "Reviews",
-      schedule: "Schedule",
+      schedule: "Request an appointment",
       call: "Phone"
     },
     hero: {
@@ -108,6 +126,31 @@ export const copy = {
       ["$50 credit", "For qualified new client referrals"],
       ["English + Spanish", "Clear communication for every home"]
     ],
+    trust: {
+      title: "Why choose Medina Clean?",
+      body:
+        "Customers choose Medina Clean for owner-led cleaning with direct communication from Rosa Medina, clear starting rates, local service-area review, and real proof from completed jobs.",
+      items: [
+        [
+          "Owner-led and local",
+          "Rosa Medina reviews appointment requests, service scope, timing, and final pricing directly before a cleaning is accepted."
+        ],
+        [
+          "Clear booking process",
+          "The website explains ZIP limits, starting rates, add-ons, first-cleaning assumptions, and the fact that requests are private until Rosa confirms."
+        ],
+        [
+          "Real project proof",
+          "The gallery points to real Medina Clean project videos and approved customer reviews are shown only after Rosa approves them."
+        ],
+        [
+          "Factual trust claims",
+          "The website does not claim credentials, insurance, certifications, and awards unless Rosa has confirmed the exact proof. Ask before booking if a document is required."
+        ]
+      ],
+      aboutCta: "About Rosa",
+      mapsCta: "Search Medina Clean on Google Maps"
+    },
     services: {
       title: "Cleaning for the spaces people actually live and work in.",
       body:
@@ -173,8 +216,46 @@ export const copy = {
         [
           "Can I book recurring cleaning?",
           "Yes. Every-two-week and every-three-week recurring deep cleaning rates are available after the first service."
+        ],
+        [
+          "How long has Medina Clean been online?",
+          "The current public website and booking workflow launched in 2026. Medina Clean does not publish a years-in-business claim until Rosa confirms the founded year."
         ]
       ]
+    },
+    aboutPage: {
+      title: "About Rosa Medina and Medina Clean",
+      eyebrow: "Owner-led cleaning near Woodstock, GA",
+      intro:
+        "Medina Clean is a local cleaning business led by Rosa Medina for homes, apartments, condos, small businesses, and post-construction cleaning near Woodstock, GA and ZIP 30188.",
+      sections: [
+        [
+          "Direct communication with Rosa",
+          "Visitors can call, use the guided estimate, or request an appointment from the website. Rosa reviews the ZIP, exact address, property condition, preferred times, and final price before confirming service."
+        ],
+        [
+          "Proof from real work",
+          "The public gallery links to real Medina Clean project videos, including before-and-after cleaning results. Reviews appear publicly only after Rosa approves them and the client gives permission."
+        ],
+        [
+          "Transparent trust claims",
+          "No license, insurance, certification, or award claim is published unless Rosa has confirmed the exact proof. If a client needs a specific document before booking, they should ask Rosa during scheduling."
+        ],
+        [
+          "Business timeline",
+          "The current public website and booking workflow launched in 2026. A years-in-business or founded-year claim is not published until Rosa confirms the accurate date."
+        ]
+      ],
+      facts: [
+        ["Business", "Medina Clean"],
+        ["Owner contact", "Direct communication with Rosa Medina"],
+        ["Service center", "Woodstock, GA 30188"],
+        ["Languages", "English and Spanish"],
+        ["Services", "House, apartment, condo, deep, recurring, small business, and post-construction cleaning"]
+      ],
+      scheduleCta: "Request an appointment",
+      mapsCta: "Search Medina Clean on Google Maps",
+      homeCta: "Medina Clean home"
     },
     privacy:
       "Privacy: appointment requests and pending reviews are private. Approved reviews may be shown publicly only with consent."
@@ -182,10 +263,11 @@ export const copy = {
   es: {
     nav: {
       services: "Servicios",
+      about: "Sobre Rosa",
       pricing: "Precios",
       chat: "Estimado por chat",
       reviews: "Reseñas",
-      schedule: "Cita",
+      schedule: "Pedir una cita",
       call: "Teléfono"
     },
     hero: {
@@ -200,6 +282,31 @@ export const copy = {
       ["$50 de crédito", "Por referir un cliente nuevo calificado"],
       ["Inglés + Español", "Comunicación clara para cada hogar"]
     ],
+    trust: {
+      title: "¿Por qué elegir Medina Clean?",
+      body:
+        "Clientes eligen Medina Clean por limpieza dirigida por la dueña, comunicación directa con Rosa Medina, precios iniciales claros, revisión local del área de servicio y prueba real de trabajos terminados.",
+      items: [
+        [
+          "Dueña local",
+          "Rosa Medina revisa solicitudes, alcance del servicio, horarios y precio final directamente antes de aceptar una limpieza."
+        ],
+        [
+          "Proceso claro",
+          "El sitio explica límites de ZIP, precios iniciales, extras, condiciones de primera limpieza y que las solicitudes son privadas hasta que Rosa confirma."
+        ],
+        [
+          "Prueba de trabajos reales",
+          "La galería muestra videos reales de trabajos de Medina Clean y las reseñas públicas aparecen solo después de la aprobación de Rosa."
+        ],
+        [
+          "Afirmaciones verificadas",
+          "Credenciales, seguro, certificaciones y premios no se publican a menos que Rosa confirme la prueba exacta. Pregunte antes de reservar si necesita un documento."
+        ]
+      ],
+      aboutCta: "Sobre Rosa",
+      mapsCta: "Buscar Medina Clean en Google Maps"
+    },
     services: {
       title: "Limpieza para los espacios donde la gente vive y trabaja.",
       body:
@@ -265,8 +372,46 @@ export const copy = {
         [
           "¿Puedo reservar limpieza recurrente?",
           "Sí. Hay precios recurrentes cada dos semanas y cada tres semanas después del primer servicio."
+        ],
+        [
+          "¿Cuánto tiempo lleva Medina Clean en línea?",
+          "El sitio público y el flujo de citas actuales se lanzaron en 2026. Medina Clean no publica años en negocio hasta que Rosa confirme el año correcto."
         ]
       ]
+    },
+    aboutPage: {
+      title: "Sobre Rosa Medina y Medina Clean",
+      eyebrow: "Limpieza dirigida por la dueña cerca de Woodstock, GA",
+      intro:
+        "Medina Clean es un negocio local de limpieza dirigido por Rosa Medina para casas, apartamentos, condominios, pequeños negocios y limpieza después de construcción cerca de Woodstock, GA y ZIP 30188.",
+      sections: [
+        [
+          "Comunicación directa con Rosa",
+          "Visitantes pueden llamar, usar el estimado guiado o pedir una cita desde el sitio. Rosa revisa el ZIP, dirección exacta, condición de la propiedad, horarios preferidos y precio final antes de confirmar."
+        ],
+        [
+          "Prueba de trabajo real",
+          "La galería pública enlaza videos reales de trabajos de Medina Clean, incluyendo resultados de antes y después. Las reseñas aparecen públicamente solo después de que Rosa las aprueba y el cliente da permiso."
+        ],
+        [
+          "Afirmaciones transparentes",
+          "No se publica ninguna afirmación de licencia, seguro, certificación o premio a menos que Rosa confirme la prueba exacta. Si un cliente necesita un documento específico antes de reservar, debe preguntarle a Rosa durante la programación."
+        ],
+        [
+          "Línea de tiempo del negocio",
+          "El sitio público y el flujo de citas actuales se lanzaron en 2026. No se publica una afirmación de años en negocio o año de fundación hasta que Rosa confirme la fecha correcta."
+        ]
+      ],
+      facts: [
+        ["Negocio", "Medina Clean"],
+        ["Contacto de la dueña", "Comunicación directa con Rosa Medina"],
+        ["Centro de servicio", "Woodstock, GA 30188"],
+        ["Idiomas", "Inglés y español"],
+        ["Servicios", "Casas, apartamentos, condominios, limpieza profunda, recurrente, pequeños negocios y después de construcción"]
+      ],
+      scheduleCta: "Pedir una cita",
+      mapsCta: "Buscar Medina Clean en Google Maps",
+      homeCta: "Inicio de Medina Clean"
     },
     privacy:
       "Privacidad: las solicitudes de cita y reseñas pendientes son privadas. Las reseñas aprobadas se muestran públicamente solo con permiso."

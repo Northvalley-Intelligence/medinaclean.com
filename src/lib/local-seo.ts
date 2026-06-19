@@ -1,4 +1,5 @@
 import type { Locale } from "@/lib/content";
+import { googleMapsSearchUrl, openGraphImage } from "@/lib/site-seo";
 
 export type LocalServicePage = {
   kind: "service" | "city";
@@ -697,10 +698,13 @@ export function buildLocalServiceJsonLd(page: LocalServicePage, phoneNumber = ""
     name: `${page.serviceName} - Medina Clean`,
     url: `https://medinaclean.com/${page.locale}/${page.slug}`,
     description: page.description,
+    image: openGraphImage.url,
+    hasMap: googleMapsSearchUrl,
     provider: {
       "@type": "LocalBusiness",
       name: "Medina Clean",
       url: "https://medinaclean.com",
+      hasMap: googleMapsSearchUrl,
       address: {
         "@type": "PostalAddress",
         addressLocality: "Woodstock",
@@ -722,7 +726,18 @@ export function buildLocalServiceJsonLd(page: LocalServicePage, phoneNumber = ""
     }))
   };
 
-  return phoneNumber ? { ...data, telephone: phoneNumber } : data;
+  return phoneNumber
+    ? {
+        ...data,
+        telephone: phoneNumber,
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: phoneNumber,
+          contactType: "customer service",
+          availableLanguage: ["English", "Spanish"]
+        }
+      }
+    : data;
 }
 
 function getCityAlternateSlug(slug: string, locale: Locale) {
