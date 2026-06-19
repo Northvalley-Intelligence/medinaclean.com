@@ -1,11 +1,12 @@
-import { CalendarCheck, Home, Languages, MapPin } from "lucide-react";
+import { CalendarCheck, ExternalLink, Home, Languages, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
-import { phone } from "@/lib/content";
+import { phone, phoneDisplay } from "@/lib/content";
 import {
   buildLocalServiceJsonLd,
   getLocalServiceAlternate,
   type LocalServicePage as LocalServicePageContent
 } from "@/lib/local-seo";
+import { googleMapsSearchUrl } from "@/lib/site-seo";
 
 export function LocalServicePage({ page }: { page: LocalServicePageContent }) {
   const scheduleLabel = page.locale === "en" ? "Request an appointment" : "Pedir una cita";
@@ -36,6 +37,12 @@ export function LocalServicePage({ page }: { page: LocalServicePageContent }) {
             <Languages size={17} aria-hidden />
             {otherLocale.toUpperCase()}
           </a>
+          {phone ? (
+            <a className="button secondary" href={`tel:${phone}`} aria-label="Call Medina Clean">
+              <Phone size={17} aria-hidden />
+              {phoneDisplay}
+            </a>
+          ) : null}
           <a className="button primary" href={`/${page.locale}#schedule`}>
             <CalendarCheck size={17} aria-hidden />
             {scheduleLabel}
@@ -114,6 +121,10 @@ export function LocalServicePage({ page }: { page: LocalServicePageContent }) {
             <a className="button primary" href={`/${page.locale}#schedule`}>
               <CalendarCheck size={18} aria-hidden />
               {scheduleLabel}
+            </a>
+            <a className="button secondary" href={googleMapsSearchUrl} target="_blank" rel="noopener noreferrer">
+              <ExternalLink size={17} aria-hidden />
+              {page.locale === "en" ? "Search Medina Clean on Google Maps" : "Buscar Medina Clean en Google Maps"}
             </a>
           </article>
         </div>

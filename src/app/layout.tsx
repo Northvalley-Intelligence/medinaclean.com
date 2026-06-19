@@ -6,6 +6,7 @@ import {
   getGoogleAnalyticsMeasurementId,
   googleTagManagerId
 } from "@/lib/analytics";
+import { openGraphImage, twitterCard } from "@/lib/site-seo";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
     "Pink-themed local cleaning service for homes, apartments, condos, and small businesses near Woodstock, Marietta, Kennesaw, Acworth, Canton, and Roswell, GA.",
   icons: {
     icon: [
+      { url: "/favicon.ico", sizes: "any" },
       { url: "/favicon.png", sizes: "32x32", type: "image/png" },
       { url: "/brand/medina-clean-logo.png", type: "image/png" }
     ],
@@ -37,8 +39,10 @@ export const metadata: Metadata = {
     title: "Medina Clean",
     description: "Residential and small business cleaning near Woodstock, Marietta, Kennesaw, Acworth, Canton, and Roswell, GA.",
     locale: "en_US",
-    alternateLocale: "es_US"
-  }
+    alternateLocale: "es_US",
+    images: [openGraphImage]
+  },
+  twitter: twitterCard
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

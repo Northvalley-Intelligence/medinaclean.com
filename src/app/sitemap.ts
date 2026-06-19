@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { localServicePages } from "@/lib/local-seo";
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://medinaclean.com";
+import { siteUrl } from "@/lib/site-seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -16,6 +15,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1
+    },
+    {
+      url: `${siteUrl}/en/about-rosa-medina`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8
+    },
+    {
+      url: `${siteUrl}/es/sobre-rosa-medina`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8
     },
     ...localServicePages.map((page) => ({
       url: `${siteUrl}/${page.locale}/${page.slug}`,

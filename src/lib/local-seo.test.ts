@@ -60,6 +60,13 @@ describe("local SEO routes", () => {
       "@type": "CleaningService",
       name: "House cleaning - Medina Clean",
       telephone: "+17775550123",
+      hasMap: expect.stringContaining("google.com/maps/search"),
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: "+17775550123",
+        contactType: "customer service",
+        availableLanguage: ["English", "Spanish"]
+      },
       serviceType: ["House cleaning", "Recurring cleaning", "First-time cleaning", "Deep cleaning"],
       areaServed: ["Woodstock", "30188", "Towne Lake area", "nearby Cherokee County homes"]
     });
