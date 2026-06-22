@@ -31,6 +31,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
   const siteVideos = await getPublicSiteVideos();
   const videos = siteVideos.length > 0 ? siteVideos.map((video) => mapVideoRow(video, locale)) : fallbackVideos(locale);
   const serviceLinks = localServicePages.filter((page) => page.locale === locale && page.kind === "service");
+  const cityLinks = localServicePages.filter((page) => page.locale === locale && page.kind === "city");
 
   return (
     <main className="site-shell">
@@ -178,6 +179,26 @@ export async function SitePage({ locale }: { locale: Locale }) {
               );
             })}
           </div>
+        </div>
+      </section>
+
+      <section className="section service-area-section" id="service-area">
+        <div className="section-inner service-area-grid">
+          <div className="section-head">
+            <h2>{t.serviceAreas.title}</h2>
+            <p>{t.serviceAreas.body}</p>
+            <p className="note">{t.serviceAreas.note}</p>
+          </div>
+          <ul className="service-area-list" aria-label={t.serviceAreas.title}>
+            {cityLinks.map((page) => (
+              <li key={page.slug}>
+                <a href={`/${locale}/${page.slug}`}>
+                  <MapPin size={17} aria-hidden />
+                  <span>{page.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

@@ -1166,6 +1166,46 @@ h1 {
   min-height: 210px;
 }
 
+.service-area-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(280px, 1.1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.service-area-grid .section-head {
+  display: grid;
+  align-items: start;
+  margin-bottom: 0;
+}
+
+.service-area-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.service-area-list a {
+  display: flex;
+  min-height: 56px;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--rose-dark);
+  background: white;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.service-area-list svg {
+  flex: 0 0 auto;
+}
+
 .card {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1686,6 +1726,7 @@ textarea {
   .forms,
   .trust-grid,
   .about-grid,
+  .service-area-grid,
   .admin-grid,
   .admin-detail-grid,
   .admin-calendar-shell,
@@ -1776,6 +1817,7 @@ textarea {
   .admin-form-row,
   .grid,
   .services-grid,
+  .service-area-list,
   .review-list {
     grid-template-columns: 1fr;
   }

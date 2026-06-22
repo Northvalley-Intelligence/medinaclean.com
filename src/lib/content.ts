@@ -15,6 +15,7 @@ type SiteCopy = {
     mapsCta: string;
   };
   services: { title: string; body: string; items: string[][] };
+  serviceAreas: { title: string; body: string; note: string };
   pricing: { title: string; body: string; headers: string[]; note: string };
   chat: { title: string; body: string };
   referral: { title: string; topline: string; body: string };
@@ -162,6 +163,13 @@ export const copy = {
         ["Small businesses", "Office and light commercial cleaning reviewed case by case."],
         ["Post-construction cleanup", "Dust, debris, and project cleanup estimated after Rosa reviews the property onsite."]
       ]
+    },
+    serviceAreas: {
+      title: "Cleaning service areas near Woodstock",
+      body:
+        "Medina Clean publishes city pages for eligible ZIP codes near Rosa's current route so customers and search engines can verify house cleaning, apartment cleaning, deep cleaning, recurring cleaning, and small business cleaning coverage before sending a request.",
+      note:
+        "Rosa still reviews the exact address, travel time, property condition, and schedule before accepting any appointment."
     },
     pricing: {
       title: "Starting rate guide",
@@ -318,6 +326,13 @@ export const copy = {
         ["Pequeños negocios", "Limpieza de oficina y comercial ligera revisada caso por caso."],
         ["Limpieza después de construcción", "Polvo, residuos y limpieza de proyecto se estiman después de que Rosa revise la propiedad."]
       ]
+    },
+    serviceAreas: {
+      title: "Áreas de limpieza cerca de Woodstock",
+      body:
+        "Medina Clean publica páginas por ciudad para ZIPs elegibles cerca de la ruta actual de Rosa, con limpieza de casas, apartamentos, limpieza profunda, limpieza recurrente y pequeños negocios antes de enviar una solicitud.",
+      note:
+        "Rosa siempre revisa la dirección exacta, tiempo de viaje, condición de la propiedad y horario antes de aceptar una cita."
     },
     pricing: {
       title: "Guía de precios iniciales",
