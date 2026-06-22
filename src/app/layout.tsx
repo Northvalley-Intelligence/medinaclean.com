@@ -32,6 +32,11 @@ export const metadata: Metadata = {
       es: "/es"
     }
   },
+  verification: {
+    other: {
+      "msvalidate.01": "7F36D3DB13BB994DD9C10CA3F85AEDEA"
+    }
+  },
   openGraph: {
     type: "website",
     url: "https://medinaclean.com",

@@ -100,6 +100,10 @@ test("homepage exposes crawlable trust, booking, and sharing signals from the as
   );
   await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
   await expect(page.locator('link[rel="icon"]').first()).toHaveAttribute("href", "/favicon.ico");
+  await expect(page.locator('meta[name="msvalidate.01"]')).toHaveAttribute(
+    "content",
+    "7F36D3DB13BB994DD9C10CA3F85AEDEA"
+  );
 });
 
 test("homepage links real service-area demand pages with crawlable demand phrases", async ({ page }) => {
