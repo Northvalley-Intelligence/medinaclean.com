@@ -102,6 +102,66 @@ test("homepage exposes crawlable trust, booking, and sharing signals from the as
   await expect(page.locator('link[rel="icon"]').first()).toHaveAttribute("href", "/favicon.ico");
 });
 
+test("homepage links real service-area demand pages with crawlable demand phrases", async ({ page }) => {
+  await page.goto("/en");
+
+  await expect(page.getByRole("heading", { name: "Cleaning service areas near Woodstock", level: 2 })).toBeVisible();
+  await expect(
+    page.getByText(
+      "house cleaning, apartment cleaning, deep cleaning, recurring cleaning, and small business cleaning coverage"
+    )
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Cleaning Services in Marietta, GA" })).toHaveAttribute(
+    "href",
+    "/en/cleaning-services-marietta-ga"
+  );
+  await expect(page.getByRole("link", { name: "Cleaning Services in Kennesaw, GA" })).toHaveAttribute(
+    "href",
+    "/en/cleaning-services-kennesaw-ga"
+  );
+  await expect(page.getByRole("link", { name: "Cleaning Services in Acworth, GA" })).toHaveAttribute(
+    "href",
+    "/en/cleaning-services-acworth-ga"
+  );
+  await expect(page.getByRole("link", { name: "Cleaning Services in Canton, GA" })).toHaveAttribute(
+    "href",
+    "/en/cleaning-services-canton-ga"
+  );
+  await expect(page.getByRole("link", { name: "Cleaning Services near Roswell, GA" })).toHaveAttribute(
+    "href",
+    "/en/cleaning-services-roswell-ga"
+  );
+});
+
+test("Spanish homepage links service-area demand pages with Spanish crawlable copy", async ({ page }) => {
+  await page.goto("/es");
+
+  await expect(page.getByRole("heading", { name: "Áreas de limpieza cerca de Woodstock", level: 2 })).toBeVisible();
+  await expect(
+    page.getByText("limpieza de casas, apartamentos, limpieza profunda, limpieza recurrente y pequeños negocios")
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Servicios de limpieza en Marietta, GA" })).toHaveAttribute(
+    "href",
+    "/es/servicios-de-limpieza-marietta-ga"
+  );
+  await expect(page.getByRole("link", { name: "Servicios de limpieza en Kennesaw, GA" })).toHaveAttribute(
+    "href",
+    "/es/servicios-de-limpieza-kennesaw-ga"
+  );
+  await expect(page.getByRole("link", { name: "Servicios de limpieza en Acworth, GA" })).toHaveAttribute(
+    "href",
+    "/es/servicios-de-limpieza-acworth-ga"
+  );
+  await expect(page.getByRole("link", { name: "Servicios de limpieza en Canton, GA" })).toHaveAttribute(
+    "href",
+    "/es/servicios-de-limpieza-canton-ga"
+  );
+  await expect(page.getByRole("link", { name: "Servicios de limpieza cerca de Roswell, GA" })).toHaveAttribute(
+    "href",
+    "/es/servicios-de-limpieza-roswell-ga"
+  );
+});
+
 test("about pages give visitors and answer engines owner and proof context", async ({ page }) => {
   await page.goto("/en/about-rosa-medina");
 
