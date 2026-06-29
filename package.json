@@ -32,17 +32,17 @@
     "postcss": "8.5.15"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "^1.19.11",
-    "@playwright/test": "^1.60.0",
-    "@types/node": "25.9.1",
+    "@opennextjs/cloudflare": "^1.20.1",
+    "@playwright/test": "^1.61.1",
+    "@types/node": "26.0.1",
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
-    "@vitest/coverage-v8": "4.1.7",
-    "eslint": "9.39.4",
-    "eslint-config-next": "16.2.6",
-    "supabase": "^2.101.0",
+    "@vitest/coverage-v8": "4.1.9",
+    "eslint": "10.6.0",
+    "eslint-config-next": "16.2.9",
+    "supabase": "^2.108.0",
     "typescript": "6.0.3",
-    "vitest": "4.1.7",
-    "wrangler": "^4.95.0"
+    "vitest": "4.1.9",
+    "wrangler": "^4.105.0"
   }
 }
