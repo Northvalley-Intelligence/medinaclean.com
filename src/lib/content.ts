@@ -18,7 +18,16 @@ type SiteCopy = {
   serviceAreas: { title: string; body: string; note: string };
   pricing: { title: string; body: string; headers: string[]; note: string };
   chat: { title: string; body: string };
-  assistants: { eyebrow: string; title: string; body: string; items: string[][]; note: string };
+  assistants: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    items: string[][];
+    connectTitle: string;
+    connectBody: string;
+    endpoint: string;
+    note: string;
+  };
   appInfo: {
     eyebrow: string;
     title: string;
@@ -205,15 +214,19 @@ export const copy = {
         "Ask a quick question, then use the guided form to check the ZIP and send Rosa your contact details."
     },
     assistants: {
-      eyebrow: "Early access",
+      eyebrow: "Now on Claude",
       title: "Book from your AI assistant",
       body:
-        "Medina Clean is becoming agent-native: soon you can check the service area, get a starting estimate, and send Rosa an appointment request without leaving your AI assistant. The assistant only sends a request — Rosa reviews the address and timing and contacts you to confirm.",
+        "Medina Clean is agent-native: from your AI assistant you can check the service area, get a starting estimate, and send Rosa an appointment request without leaving the chat. The assistant only sends a request — Rosa reviews the address and timing and contacts you to confirm.",
       items: [
-        ["Claude", "Featured — connect Medina Clean and book in chat."],
-        ["Google Gemini", "Optional — planned support."],
+        ["Claude", "Live — add the Medina Clean connector and book in chat."],
+        ["Google Gemini", "Planned support."],
         ["ChatGPT", "Coming soon."]
       ],
+      connectTitle: "Add it to your assistant",
+      connectBody:
+        "In Claude, add a custom connector using this remote MCP server URL (works in any MCP-compatible assistant):",
+      endpoint: "https://medinaclean.com/mcp",
       note: "An assistant can request an appointment; it never confirms one. Rosa always confirms the final price and schedule."
     },
     appInfo: {
@@ -401,15 +414,19 @@ export const copy = {
         "Haga una pregunta rápida y use el formulario guiado para revisar el ZIP y enviar sus datos a Rosa."
     },
     assistants: {
-      eyebrow: "Acceso anticipado",
+      eyebrow: "Ahora en Claude",
       title: "Reserve desde su asistente de IA",
       body:
-        "Medina Clean será agent-native: pronto podrá revisar el área de servicio, obtener un estimado inicial y enviarle a Rosa una solicitud de cita sin salir de su asistente de IA. El asistente solo envía una solicitud; Rosa revisa la dirección y los horarios y le contacta para confirmar.",
+        "Medina Clean es agent-native: desde su asistente de IA puede revisar el área de servicio, obtener un estimado inicial y enviarle a Rosa una solicitud de cita sin salir del chat. El asistente solo envía una solicitud; Rosa revisa la dirección y los horarios y le contacta para confirmar.",
       items: [
-        ["Claude", "Destacado — conecte Medina Clean y reserve en el chat."],
-        ["Google Gemini", "Opcional — compatibilidad planeada."],
+        ["Claude", "Disponible — agregue el conector de Medina Clean y reserve en el chat."],
+        ["Google Gemini", "Compatibilidad planeada."],
         ["ChatGPT", "Próximamente."]
       ],
+      connectTitle: "Agréguelo a su asistente",
+      connectBody:
+        "En Claude, agregue un conector personalizado con esta URL del servidor MCP remoto (funciona en cualquier asistente compatible con MCP):",
+      endpoint: "https://medinaclean.com/mcp",
       note: "Un asistente puede solicitar una cita; nunca la confirma. Rosa siempre confirma el precio final y el horario."
     },
     appInfo: {
