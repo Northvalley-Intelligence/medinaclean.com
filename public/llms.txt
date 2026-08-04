@@ -29,6 +29,12 @@ Customer actions:
 - Spanish appointment requests: https://medinaclean.com/es#schedule
 - Phone: +1 470-781-4143
 
+AI assistant booking (agent-native / MCP):
+- Medina Clean runs a Model Context Protocol (MCP) server so AI assistants can check the service area, give an instant starting estimate, and submit an appointment request to Rosa from inside a chat.
+- MCP endpoint: https://mcp.medinaclean.com/mcp
+- Tools: check_service_area, list_services, get_pricing_rules, get_estimate, request_appointment.
+- An assistant can REQUEST an appointment; it never confirms one. Rosa reviews the exact address, timing, and property, then contacts the customer to confirm.
+
 Trust and privacy:
 - Appointment requests and pending reviews are private.
 - Reviews and review photos are public only after approval and consent.

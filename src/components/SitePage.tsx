@@ -9,6 +9,7 @@ import {
   MapPin,
   Phone,
   PlayCircle,
+  Sparkles,
   Star,
   Store
 } from "lucide-react";
@@ -58,6 +59,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
             <a href={aboutHref}>{t.nav.about}</a>
             <a href="#pricing">{t.nav.pricing}</a>
             <a href="#chat">{t.nav.chat}</a>
+            <a href="#assistants">{locale === "en" ? "AI booking" : "Reserva IA"}</a>
             <a href="#reviews">{t.nav.reviews}</a>
             <a href="#schedule">{t.nav.schedule}</a>
           </div>
@@ -244,6 +246,26 @@ export async function SitePage({ locale }: { locale: Locale }) {
         </div>
       </section>
 
+      <section className="section" id="assistants">
+        <div className="section-inner">
+          <div className="section-head">
+            <p className="eyebrow">{t.assistants.eyebrow}</p>
+            <h2>{t.assistants.title}</h2>
+            <p>{t.assistants.body}</p>
+          </div>
+          <div className="services-grid">
+            {t.assistants.items.map(([platform, status]) => (
+              <article className="card service-card" key={platform}>
+                <Sparkles color="#d6337b" size={22} aria-hidden />
+                <h3>{platform}</h3>
+                <p>{status}</p>
+              </article>
+            ))}
+          </div>
+          <p className="note">{t.assistants.note}</p>
+        </div>
+      </section>
+
       <section className="section alt" id="referral">
         <div className="section-inner">
           <div className="referral">
@@ -325,6 +347,33 @@ export async function SitePage({ locale }: { locale: Locale }) {
         </div>
       </section>
 
+      <section className="section alt" id="app-info">
+        <div className="section-inner">
+          <div className="section-head">
+            <p className="eyebrow">{t.appInfo.eyebrow}</p>
+            <h2>{t.appInfo.title}</h2>
+            <p>
+              <strong>{t.appInfo.appName}</strong> — {t.appInfo.purpose}
+            </p>
+          </div>
+          <h3>{t.appInfo.dataTitle}</h3>
+          <div className="services-grid">
+            {t.appInfo.scopes.map(([scope, why]) => (
+              <article className="card service-card" key={scope}>
+                <h3>{scope}</h3>
+                <p>{why}</p>
+              </article>
+            ))}
+          </div>
+          <p className="note">{t.appInfo.privacyNote}</p>
+          <p>
+            <a className="button secondary" href="/privacy">
+              {t.appInfo.privacyCta}
+            </a>
+          </p>
+        </div>
+      </section>
+
       <footer className="footer" id="contact">
         <div className="footer-inner">
           <div>
@@ -338,6 +387,11 @@ export async function SitePage({ locale }: { locale: Locale }) {
               />
             </div>
             <p>{t.privacy}</p>
+            <p className="footer-links">
+              <a href="#app-info">{t.appInfo.eyebrow}</a>
+              <span aria-hidden> · </span>
+              <a href="/privacy">{t.appInfo.privacyCta}</a>
+            </p>
             <p>Built by <a href="https://northvalleyintel.com">Northvalley Intelligence LLC</a>.</p>
           </div>
           <div className="nav-actions">
