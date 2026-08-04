@@ -214,28 +214,28 @@ export const copy = {
         "Ask a quick question, then use the guided form to check the ZIP and send Rosa your contact details."
     },
     assistants: {
-      eyebrow: "Now on Claude",
+      eyebrow: "Book from your AI assistant",
       title: "Book from your AI assistant",
       body:
-        "Medina Clean is agent-native: from your AI assistant you can check the service area, get a starting estimate, and send Rosa an appointment request without leaving the chat. The assistant only sends a request — Rosa reviews the address and timing and contacts you to confirm.",
+        "Medina Clean works with any MCP-compatible AI assistant — Claude, ChatGPT, and Gemini. Add the connector below and book right from your chat: check the service area, get a starting estimate, and send Rosa an appointment request. The assistant only sends a request — Rosa reviews the address and timing and contacts you to confirm.",
       items: [
-        ["Claude", "Live — add the Medina Clean connector and book in chat."],
-        ["Google Gemini", "Planned support."],
-        ["ChatGPT", "Coming soon."]
+        ["Claude", "Live — add a custom connector with the URL and book in chat."],
+        ["ChatGPT", "Add it in Settings → Connectors (Developer Mode)."],
+        ["Google Gemini", "Add it in Connected Apps with the URL."]
       ],
       connectTitle: "Add it to your assistant",
       connectBody:
-        "In Claude, add a custom connector using this remote MCP server URL (works in any MCP-compatible assistant):",
+        "In your assistant's connector settings, add this remote MCP server URL:",
       endpoint: "https://medinaclean.com/mcp",
       note: "An assistant can request an appointment; it never confirms one. Rosa always confirms the final price and schedule."
     },
     appInfo: {
       eyebrow: "About this app",
-      title: "How Medina Clean uses Google data",
+      title: "About Medina Clean",
       appName: "Medina Clean",
       purpose:
-        "Medina Clean is a bilingual cleaning-service website and a private operations app that Rosa Medina uses to manage appointment requests, scheduling, and project videos for her local cleaning business near Woodstock, GA.",
-      dataTitle: "Google user data we request and why",
+        "Medina Clean is the public website and private operations app for Medina Clean, a home and small-business cleaning service run by Rosa Medina near Woodstock, GA. Customers use it to check the service area, get starting estimates, read reviews, and send Rosa an appointment request. Rosa uses the private admin app to manage appointment requests, scheduling, crew, and cleaning project videos.",
+      dataTitle: "Google user data this app requests and why",
       scopes: [
         [
           "Google Calendar",
@@ -414,28 +414,28 @@ export const copy = {
         "Haga una pregunta rápida y use el formulario guiado para revisar el ZIP y enviar sus datos a Rosa."
     },
     assistants: {
-      eyebrow: "Ahora en Claude",
+      eyebrow: "Reserve desde su asistente de IA",
       title: "Reserve desde su asistente de IA",
       body:
-        "Medina Clean es agent-native: desde su asistente de IA puede revisar el área de servicio, obtener un estimado inicial y enviarle a Rosa una solicitud de cita sin salir del chat. El asistente solo envía una solicitud; Rosa revisa la dirección y los horarios y le contacta para confirmar.",
+        "Medina Clean funciona con cualquier asistente de IA compatible con MCP — Claude, ChatGPT y Gemini. Agregue el conector y reserve desde su chat: revise el área de servicio, obtenga un estimado inicial y envíele a Rosa una solicitud de cita. El asistente solo envía una solicitud; Rosa revisa la dirección y los horarios y le contacta para confirmar.",
       items: [
-        ["Claude", "Disponible — agregue el conector de Medina Clean y reserve en el chat."],
-        ["Google Gemini", "Compatibilidad planeada."],
-        ["ChatGPT", "Próximamente."]
+        ["Claude", "Disponible — agregue un conector personalizado con la URL y reserve en el chat."],
+        ["ChatGPT", "Agréguelo en Configuración → Conectores (Modo desarrollador)."],
+        ["Google Gemini", "Agréguelo en Apps conectadas con la URL."]
       ],
       connectTitle: "Agréguelo a su asistente",
       connectBody:
-        "En Claude, agregue un conector personalizado con esta URL del servidor MCP remoto (funciona en cualquier asistente compatible con MCP):",
+        "En la configuración de conectores de su asistente, agregue esta URL del servidor MCP remoto:",
       endpoint: "https://medinaclean.com/mcp",
       note: "Un asistente puede solicitar una cita; nunca la confirma. Rosa siempre confirma el precio final y el horario."
     },
     appInfo: {
       eyebrow: "Acerca de esta app",
-      title: "Cómo Medina Clean usa los datos de Google",
+      title: "Acerca de Medina Clean",
       appName: "Medina Clean",
       purpose:
-        "Medina Clean es un sitio web bilingüe de servicios de limpieza y una app privada de operaciones que Rosa Medina usa para gestionar solicitudes de citas, horarios y videos de proyectos de su negocio local de limpieza cerca de Woodstock, GA.",
-      dataTitle: "Datos de Google que solicitamos y por qué",
+        "Medina Clean es el sitio web público y la app privada de operaciones de Medina Clean, un servicio de limpieza de hogares y pequeños negocios de Rosa Medina cerca de Woodstock, GA. Los clientes la usan para revisar el área de servicio, obtener estimados iniciales, leer reseñas y enviarle a Rosa una solicitud de cita. Rosa usa la app privada de administración para gestionar solicitudes de citas, horarios, equipo y videos de proyectos de limpieza.",
+      dataTitle: "Datos de usuario de Google que esta app solicita y por qué",
       scopes: [
         [
           "Google Calendar",
