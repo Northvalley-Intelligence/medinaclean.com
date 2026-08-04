@@ -19,13 +19,6 @@ export function getSeoRedirect(inputUrl: string) {
     };
   }
 
-  if (url.pathname === "/") {
-    return {
-      status: 308,
-      url: new URL(`/en${url.search}`, "https://medinaclean.com").toString()
-    };
-  }
-
   if (isWww) {
     url.hostname = "medinaclean.com";
     return { status: 308, url: url.toString() };

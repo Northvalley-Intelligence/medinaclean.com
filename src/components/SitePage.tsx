@@ -119,6 +119,31 @@ export async function SitePage({ locale }: { locale: Locale }) {
         ))}
       </section>
 
+      <section className="section alt" id="app-info">
+        <div className="section-inner">
+          <div className="section-head">
+            <p className="eyebrow">{t.appInfo.eyebrow}</p>
+            <h2>{t.appInfo.title}</h2>
+            <p>{t.appInfo.purpose}</p>
+          </div>
+          <h3>{t.appInfo.dataTitle}</h3>
+          <div className="services-grid">
+            {t.appInfo.scopes.map(([scope, why]) => (
+              <article className="card service-card" key={scope}>
+                <h3>{scope}</h3>
+                <p>{why}</p>
+              </article>
+            ))}
+          </div>
+          <p className="note">{t.appInfo.privacyNote}</p>
+          <p>
+            <a className="button secondary" href="/privacy">
+              {t.appInfo.privacyCta}
+            </a>
+          </p>
+        </div>
+      </section>
+
       <section className="section trust-section" id="about">
         <div className="section-inner trust-grid">
           <div className="trust-copy">
@@ -348,31 +373,6 @@ export async function SitePage({ locale }: { locale: Locale }) {
             <h2>{t.reviews.formTitle}</h2>
             <ReviewForm locale={locale} />
           </article>
-        </div>
-      </section>
-
-      <section className="section alt" id="app-info">
-        <div className="section-inner">
-          <div className="section-head">
-            <p className="eyebrow">{t.appInfo.eyebrow}</p>
-            <h2>{t.appInfo.title}</h2>
-            <p>{t.appInfo.purpose}</p>
-          </div>
-          <h3>{t.appInfo.dataTitle}</h3>
-          <div className="services-grid">
-            {t.appInfo.scopes.map(([scope, why]) => (
-              <article className="card service-card" key={scope}>
-                <h3>{scope}</h3>
-                <p>{why}</p>
-              </article>
-            ))}
-          </div>
-          <p className="note">{t.appInfo.privacyNote}</p>
-          <p>
-            <a className="button secondary" href="/privacy">
-              {t.appInfo.privacyCta}
-            </a>
-          </p>
         </div>
       </section>
 

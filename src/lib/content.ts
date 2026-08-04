@@ -292,8 +292,8 @@ export const copy = {
           "Yes. Every-two-week and every-three-week recurring deep cleaning rates are available after the first service."
         ],
         [
-          "How long has Medina Clean been online?",
-          "The current public website and booking workflow launched in 2026. Medina Clean does not publish a years-in-business claim until Rosa confirms the founded year."
+          "Who runs Medina Clean?",
+          "Medina Clean is owner-led by Rosa Medina. She personally reviews and confirms every appointment — the address, timing, and property — before a cleaning, and handles communication directly with each customer."
         ]
       ]
     },
@@ -316,8 +316,8 @@ export const copy = {
           "No license, insurance, certification, or award claim is published unless Rosa has confirmed the exact proof. If a client needs a specific document before booking, they should ask Rosa during scheduling."
         ],
         [
-          "Business timeline",
-          "The current public website and booking workflow launched in 2026. A years-in-business or founded-year claim is not published until Rosa confirms the accurate date."
+          "Owner-led and local",
+          "Medina Clean is an owner-led cleaning service run by Rosa Medina for homes and small businesses near Woodstock, GA and nearby communities. Rosa reviews and confirms every appointment personally before service."
         ]
       ],
       facts: [
@@ -492,8 +492,8 @@ export const copy = {
           "Sí. Hay precios recurrentes cada dos semanas y cada tres semanas después del primer servicio."
         ],
         [
-          "¿Cuánto tiempo lleva Medina Clean en línea?",
-          "El sitio público y el flujo de citas actuales se lanzaron en 2026. Medina Clean no publica años en negocio hasta que Rosa confirme el año correcto."
+          "¿Quién dirige Medina Clean?",
+          "Medina Clean es dirigido por su dueña, Rosa Medina. Ella revisa y confirma personalmente cada cita —dirección, horarios y propiedad— antes de una limpieza, y se comunica directamente con cada cliente."
         ]
       ]
     },
@@ -516,8 +516,8 @@ export const copy = {
           "No se publica ninguna afirmación de licencia, seguro, certificación o premio a menos que Rosa confirme la prueba exacta. Si un cliente necesita un documento específico antes de reservar, debe preguntarle a Rosa durante la programación."
         ],
         [
-          "Línea de tiempo del negocio",
-          "El sitio público y el flujo de citas actuales se lanzaron en 2026. No se publica una afirmación de años en negocio o año de fundación hasta que Rosa confirme la fecha correcta."
+          "Dirigido por la dueña y local",
+          "Medina Clean es un servicio de limpieza dirigido por su dueña, Rosa Medina, para casas y pequeños negocios cerca de Woodstock, GA y comunidades cercanas. Rosa revisa y confirma personalmente cada cita antes del servicio."
         ]
       ],
       facts: [
