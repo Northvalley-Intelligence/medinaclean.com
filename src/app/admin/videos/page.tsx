@@ -90,6 +90,39 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
 
         <section className="admin-panel">
           <div className="admin-panel-title">
+            <h2>{t.addExistingVideoTitle}</h2>
+            <span>URL</span>
+          </div>
+          <form className="admin-form" action="/api/admin/videos/link" method="post">
+            <input name="lang" type="hidden" value={locale} />
+            <label>
+              {t.videoUrlLabel}
+              <input name="url" type="url" required placeholder="https://youtube.com/shorts/..." />
+            </label>
+            <label>
+              {t.titleEs}
+              <input name="titleEs" maxLength={120} placeholder="Video de Medina Clean" />
+            </label>
+            <label>
+              {t.titleEn}
+              <input name="titleEn" maxLength={120} placeholder="Before and after kitchen" />
+            </label>
+            <label>
+              {t.privacy}
+              <select name="privacyStatus" defaultValue="public">
+                <option value="public">{t.privacyPublic}</option>
+                <option value="unlisted">{t.privacyUnlisted}</option>
+              </select>
+            </label>
+            <p className="admin-field-note">{t.addExistingVideoHint}</p>
+            <button className="button primary" type="submit">
+              {t.addVideoButton}
+            </button>
+          </form>
+        </section>
+
+        <section className="admin-panel">
+          <div className="admin-panel-title">
             <h2>{t.currentVideos}</h2>
             <span>{videos.length}</span>
           </div>

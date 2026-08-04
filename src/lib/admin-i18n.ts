@@ -267,7 +267,11 @@ export const adminText = {
     showVideo: "Mostrar en el sitio",
     removeVideoRecord: "Quitar registro",
     removeVideoRecordHint: "Solo quita este video de la lista de Medina Clean. No borra nada en YouTube.",
-    youtubeUnavailable: "Este video ya no está disponible en YouTube."
+    youtubeUnavailable: "Este video ya no está disponible en YouTube.",
+    addExistingVideoTitle: "Agregar un video existente de YouTube",
+    addExistingVideoHint: "Pegue el enlace de un video de YouTube que ya existe (público o no listado) para mostrarlo en el sitio.",
+    videoUrlLabel: "Enlace de YouTube",
+    addVideoButton: "Agregar video"
   },
   en: {
     rosaAdmin: "Rosa Admin",
@@ -526,7 +530,11 @@ export const adminText = {
     showVideo: "Show on site",
     removeVideoRecord: "Remove record",
     removeVideoRecordHint: "Only removes this video from Medina Clean's list. It does not delete anything on YouTube.",
-    youtubeUnavailable: "This video is no longer available on YouTube."
+    youtubeUnavailable: "This video is no longer available on YouTube.",
+    addExistingVideoTitle: "Add an existing YouTube video",
+    addExistingVideoHint: "Paste the link to a YouTube video that already exists (public or unlisted) to show it on the site.",
+    videoUrlLabel: "YouTube link",
+    addVideoButton: "Add video"
   }
 } as const;
 
