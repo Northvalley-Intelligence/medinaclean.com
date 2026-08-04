@@ -262,6 +262,10 @@ export async function SitePage({ locale }: { locale: Locale }) {
               </article>
             ))}
           </div>
+          <p className="note">
+            <strong>{t.assistants.connectTitle}:</strong> {t.assistants.connectBody}{" "}
+            <code>{t.assistants.endpoint}</code>
+          </p>
           <p className="note">{t.assistants.note}</p>
         </div>
       </section>
