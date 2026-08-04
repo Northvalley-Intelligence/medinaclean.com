@@ -9,6 +9,7 @@ import {
   MapPin,
   Phone,
   PlayCircle,
+  Sparkles,
   Star,
   Store
 } from "lucide-react";
@@ -58,6 +59,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
             <a href={aboutHref}>{t.nav.about}</a>
             <a href="#pricing">{t.nav.pricing}</a>
             <a href="#chat">{t.nav.chat}</a>
+            <a href="#assistants">{locale === "en" ? "AI booking" : "Reserva IA"}</a>
             <a href="#reviews">{t.nav.reviews}</a>
             <a href="#schedule">{t.nav.schedule}</a>
           </div>
@@ -241,6 +243,26 @@ export async function SitePage({ locale }: { locale: Locale }) {
             <p>{t.chat.body}</p>
           </div>
           <ChatEstimateAgent locale={locale} />
+        </div>
+      </section>
+
+      <section className="section" id="assistants">
+        <div className="section-inner">
+          <div className="section-head">
+            <p className="eyebrow">{t.assistants.eyebrow}</p>
+            <h2>{t.assistants.title}</h2>
+            <p>{t.assistants.body}</p>
+          </div>
+          <div className="services-grid">
+            {t.assistants.items.map(([platform, status]) => (
+              <article className="card service-card" key={platform}>
+                <Sparkles color="#d6337b" size={22} aria-hidden />
+                <h3>{platform}</h3>
+                <p>{status}</p>
+              </article>
+            ))}
+          </div>
+          <p className="note">{t.assistants.note}</p>
         </div>
       </section>
 

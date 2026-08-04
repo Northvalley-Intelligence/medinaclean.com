@@ -18,6 +18,7 @@ type SiteCopy = {
   serviceAreas: { title: string; body: string; note: string };
   pricing: { title: string; body: string; headers: string[]; note: string };
   chat: { title: string; body: string };
+  assistants: { eyebrow: string; title: string; body: string; items: string[][]; note: string };
   referral: { title: string; topline: string; body: string };
   gallery: { title: string; body: string; videos: string[]; action: string };
   reviews: { title: string; body: string; empty: string; formTitle: string };
@@ -184,6 +185,18 @@ export const copy = {
       body:
         "Ask a quick question, then use the guided form to check the ZIP and send Rosa your contact details."
     },
+    assistants: {
+      eyebrow: "Early access",
+      title: "Book from your AI assistant",
+      body:
+        "Medina Clean is becoming agent-native: soon you can check the service area, get a starting estimate, and send Rosa an appointment request without leaving your AI assistant. The assistant only sends a request — Rosa reviews the address and timing and contacts you to confirm.",
+      items: [
+        ["Claude", "Featured — connect Medina Clean and book in chat."],
+        ["Google Gemini", "Optional — planned support."],
+        ["ChatGPT", "Coming soon."]
+      ],
+      note: "An assistant can request an appointment; it never confirms one. Rosa always confirms the final price and schedule."
+    },
     referral: {
       title: "$50 referral credit",
       topline: "Know someone who needs cleaning?",
@@ -346,6 +359,18 @@ export const copy = {
       title: "Reciba un estimado guiado",
       body:
         "Haga una pregunta rápida y use el formulario guiado para revisar el ZIP y enviar sus datos a Rosa."
+    },
+    assistants: {
+      eyebrow: "Acceso anticipado",
+      title: "Reserve desde su asistente de IA",
+      body:
+        "Medina Clean será agent-native: pronto podrá revisar el área de servicio, obtener un estimado inicial y enviarle a Rosa una solicitud de cita sin salir de su asistente de IA. El asistente solo envía una solicitud; Rosa revisa la dirección y los horarios y le contacta para confirmar.",
+      items: [
+        ["Claude", "Destacado — conecte Medina Clean y reserve en el chat."],
+        ["Google Gemini", "Opcional — compatibilidad planeada."],
+        ["ChatGPT", "Próximamente."]
+      ],
+      note: "Un asistente puede solicitar una cita; nunca la confirma. Rosa siempre confirma el precio final y el horario."
     },
     referral: {
       title: "$50 de crédito por referir",
