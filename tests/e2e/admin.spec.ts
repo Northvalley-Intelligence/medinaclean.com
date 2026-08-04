@@ -50,15 +50,16 @@ test("admin navigation includes Rosa's video uploads", async ({ page }) => {
 
   await expect(page.getByRole("heading", { name: "Videos", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Subir video" })).toBeVisible();
-  await expect(page.getByLabel("Título del video")).not.toHaveAttribute("required", "");
-  await expect(page.getByLabel("Título del video")).toHaveAttribute("placeholder", "Video de Medina Clean");
-  await expect(page.getByLabel("Título en inglés opcional")).not.toHaveAttribute("required", "");
+  const uploadForm = page.locator("#admin-video-upload-form");
+  await expect(uploadForm.getByLabel("Título del video")).not.toHaveAttribute("required", "");
+  await expect(uploadForm.getByLabel("Título del video")).toHaveAttribute("placeholder", "Video de Medina Clean");
+  await expect(uploadForm.getByLabel("Título en inglés opcional")).not.toHaveAttribute("required", "");
   await expect(page.getByLabel("Tipo de video opcional")).toHaveValue("");
   await expect(page.getByLabel("Tipo de video opcional")).toContainText("Limpieza de cocina");
   await expect(page.getByLabel("Archivo de video")).toHaveAttribute("accept", "video/mp4,video/quicktime,video/webm");
   await expect(page.getByText("Por ahora, suba videos de 75 MB o menos.")).toBeVisible();
   await expect(page.getByText("Por defecto se prepara para YouTube Shorts.")).toBeVisible();
-  await expect(page.getByLabel("Privacidad")).toHaveValue("public");
+  await expect(uploadForm.getByLabel("Privacidad")).toHaveValue("public");
 });
 
 test("admin ads planner prepares Meta campaigns that send clicks to chat", async ({ page }) => {
@@ -180,8 +181,8 @@ test("admin video upload submits public YouTube video details", async ({ page })
     });
   });
 
-  await page.getByLabel("English title").fill("Clean kitchen reveal");
-  await page.getByLabel("Spanish title").fill("Cocina limpia");
+  await page.locator("#admin-video-upload-form").getByLabel("English title").fill("Clean kitchen reveal");
+  await page.locator("#admin-video-upload-form").getByLabel("Spanish title").fill("Cocina limpia");
   await page.getByLabel("Description").fill("Real Medina Clean project video.");
   await page.getByLabel("Optional video type").selectOption("kitchen_cleaning");
   await page.getByLabel("Description").blur();
