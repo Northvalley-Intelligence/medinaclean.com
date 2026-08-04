@@ -100,8 +100,9 @@ textarea {
 
 .brand-logo {
   display: block;
-  width: 172px;
-  height: 58px;
+  width: auto;
+  height: 74px;
+  max-width: 260px;
   object-fit: contain;
   object-position: left center;
 }
@@ -261,6 +262,16 @@ textarea {
   font-size: 0.94rem;
 }
 
+.nav-links a {
+  white-space: nowrap;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+
+.nav-links a:hover {
+  color: var(--rose-dark);
+}
+
 .nav-actions {
   display: flex;
   align-items: center;
@@ -297,6 +308,7 @@ textarea {
   padding: 10px 15px;
   cursor: pointer;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .button.primary {
@@ -1709,6 +1721,37 @@ textarea {
 
 .footer strong {
   color: white;
+}
+
+@media (max-width: 1040px) {
+  .nav {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .nav-links {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* Tappable chips so the links clearly read as menu items on tablet/phone. */
+  .nav-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--rose-dark);
+    font-weight: 600;
+  }
+
+  .nav-actions {
+    width: 100%;
+  }
 }
 
 @media (max-width: 920px) {
