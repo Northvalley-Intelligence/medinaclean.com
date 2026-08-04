@@ -149,6 +149,8 @@ export const copy = {
       title: "Medina Clean",
       body:
         "House, condo, apartment, small business, and post-construction cleaning near Woodstock, Marietta, Kennesaw, Acworth, Canton, and Roswell, GA with direct communication from Rosa Medina at Medina Clean.",
+      appPurpose:
+        "Medina Clean is the website and booking & operations app for Rosa Medina's cleaning service. Customers request cleanings and read reviews; Rosa uses Google Calendar to schedule appointments and YouTube to publish her cleaning project videos.",
       primary: "Schedule a cleaning"
     },
     stats: [
@@ -349,6 +351,8 @@ export const copy = {
       title: "Medina Clean",
       body:
         "Limpieza para casas, condominios, apartamentos, pequeños negocios y después de construcción cerca de Woodstock, Marietta, Kennesaw, Acworth, Canton y Roswell, GA con comunicación directa con Rosa Medina de Medina Clean.",
+      appPurpose:
+        "Medina Clean es el sitio web y la app de reservas y operaciones del servicio de limpieza de Rosa Medina. Los clientes piden limpiezas y leen reseñas; Rosa usa Google Calendar para agendar citas y YouTube para publicar los videos de sus proyectos de limpieza.",
       primary: "Pedir una cita"
     },
     stats: [
