@@ -74,6 +74,15 @@ export const projectVideos = [
     },
     watchUrl: "https://youtube.com/shorts/gRXCFWNCid4",
     embedUrl: "https://www.youtube-nocookie.com/embed/gRXCFWNCid4"
+  },
+  {
+    id: "bF2KS3gXMeM",
+    title: {
+      en: "Recent Medina Clean project",
+      es: "Proyecto reciente de Medina Clean"
+    },
+    watchUrl: "https://youtube.com/shorts/bF2KS3gXMeM",
+    embedUrl: "https://www.youtube-nocookie.com/embed/bF2KS3gXMeM"
   }
 ];
 
