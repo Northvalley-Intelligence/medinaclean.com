@@ -73,7 +73,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
               </Link>
             </div>
             {phone ? (
-              <a className="button secondary" href={`tel:${phone}`}>
+              <a className="button primary" href={`tel:${phone}`}>
                 <Phone size={17} aria-hidden />
                 {phoneDisplay}
               </a>
