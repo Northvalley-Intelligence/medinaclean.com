@@ -33,7 +33,8 @@ describe("next redirects", () => {
       destination: "https://medinaclean.com/:path*",
       permanent: true
     });
-    expect(redirects.findIndex((redirect) => redirect.source === "/" && !("has" in redirect))).toBeGreaterThan(1);
+    // The bare-root "/" no longer redirects — it serves the homepage directly (OAuth static-URL rule).
+    expect(redirects.findIndex((redirect) => redirect.source === "/" && !("has" in redirect))).toBe(-1);
     expect(redirects.findIndex((redirect) => redirect.source === "/contactus")).toBeGreaterThan(0);
   });
 });
