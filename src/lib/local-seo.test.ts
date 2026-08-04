@@ -34,9 +34,10 @@ describe("local SEO routes", () => {
   });
 
   it("canonicalizes the root and www host without changing already-canonical service pages", () => {
-    expect(getSeoRedirect("https://medinaclean.com/")).toEqual({
+    expect(getSeoRedirect("https://medinaclean.com/")).toBeNull();
+    expect(getSeoRedirect("https://www.medinaclean.com/")).toEqual({
       status: 308,
-      url: "https://medinaclean.com/en"
+      url: "https://medinaclean.com/"
     });
     expect(getSeoRedirect("https://www.medinaclean.com/en/deep-cleaning-woodstock-ga")).toEqual({
       status: 308,

@@ -22,11 +22,6 @@ const nextConfig: NextConfig = {
         permanent: true
       },
       {
-        source: "/",
-        destination: "/en",
-        permanent: true
-      },
-      {
         source: "/our-services",
         destination: "/en#services",
         permanent: true

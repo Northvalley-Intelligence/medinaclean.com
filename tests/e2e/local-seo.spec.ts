@@ -172,7 +172,7 @@ test("about pages give visitors and answer engines owner and proof context", asy
   await expect(page).toHaveTitle(/About Rosa Medina/);
   await expect(page.getByRole("heading", { name: "About Rosa Medina and Medina Clean", level: 1 })).toBeVisible();
   await expect(page.getByText("local cleaning business led by Rosa Medina")).toBeVisible();
-  await expect(page.getByText("current public website and booking workflow launched in 2026")).toBeVisible();
+  await expect(page.getByText("owner-led cleaning service run by Rosa Medina")).toBeVisible();
   await expect(page.getByText("No license, insurance, certification, or award claim is published")).toBeVisible();
   await expect(page.getByRole("navigation", { name: "About navigation" }).getByRole("link", { name: "Request an appointment" })).toHaveAttribute(
     "href",
