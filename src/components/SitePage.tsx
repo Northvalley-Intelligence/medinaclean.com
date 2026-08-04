@@ -87,6 +87,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
           <p className="eyebrow">{t.hero.eyebrow}</p>
           <h1>{t.hero.title}</h1>
           <p className="hero-copy">{t.hero.body}</p>
+          <p className="hero-purpose">{t.hero.appPurpose}</p>
           <div className="hero-actions">
             <a className="button primary" href="#schedule">
               <CalendarCheck size={18} aria-hidden />

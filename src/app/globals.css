@@ -373,6 +373,14 @@ h1 {
   line-height: 1.65;
 }
 
+.hero-purpose {
+  max-width: 640px;
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;

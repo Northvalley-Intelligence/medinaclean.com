@@ -7,6 +7,10 @@ test("root home page is static (no redirect) and explains the app purpose", asyn
   await page.goto("/");
 
   expect(new URL(page.url()).pathname).toBe("/");
+
+  // Purpose + Google data use stated above the fold in the hero (Google OAuth reviewer sees it immediately).
+  await expect(page.locator(".hero-purpose")).toContainText("Google Calendar to schedule appointments");
+
   const appInfo = page.locator("#app-info");
   await expect(appInfo.getByRole("heading", { name: "About Medina Clean" })).toBeVisible();
   await expect(appInfo.getByText("public website and private operations app")).toBeVisible();
