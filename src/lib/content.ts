@@ -19,6 +19,16 @@ type SiteCopy = {
   pricing: { title: string; body: string; headers: string[]; note: string };
   chat: { title: string; body: string };
   assistants: { eyebrow: string; title: string; body: string; items: string[][]; note: string };
+  appInfo: {
+    eyebrow: string;
+    title: string;
+    appName: string;
+    purpose: string;
+    dataTitle: string;
+    scopes: string[][];
+    privacyCta: string;
+    privacyNote: string;
+  };
   referral: { title: string; topline: string; body: string };
   gallery: { title: string; body: string; videos: string[]; action: string };
   reviews: { title: string; body: string; empty: string; formTitle: string };
@@ -197,6 +207,27 @@ export const copy = {
       ],
       note: "An assistant can request an appointment; it never confirms one. Rosa always confirms the final price and schedule."
     },
+    appInfo: {
+      eyebrow: "About this app",
+      title: "How Medina Clean uses Google data",
+      appName: "Medina Clean",
+      purpose:
+        "Medina Clean is a bilingual cleaning-service website and a private operations app that Rosa Medina uses to manage appointment requests, scheduling, and project videos for her local cleaning business near Woodstock, GA.",
+      dataTitle: "Google user data we request and why",
+      scopes: [
+        [
+          "Google Calendar",
+          "To create and update appointment calendar events and send scheduling invites for the cleanings Rosa accepts."
+        ],
+        [
+          "YouTube (upload)",
+          "So Rosa can publish her own Medina Clean cleaning project videos to her YouTube channel from the private admin app."
+        ]
+      ],
+      privacyCta: "Read our privacy policy",
+      privacyNote:
+        "We do not sell your data. Google user data is used only to provide the features above and is handled as described in our privacy policy."
+    },
     referral: {
       title: "$50 referral credit",
       topline: "Know someone who needs cleaning?",
@@ -371,6 +402,27 @@ export const copy = {
         ["ChatGPT", "Próximamente."]
       ],
       note: "Un asistente puede solicitar una cita; nunca la confirma. Rosa siempre confirma el precio final y el horario."
+    },
+    appInfo: {
+      eyebrow: "Acerca de esta app",
+      title: "Cómo Medina Clean usa los datos de Google",
+      appName: "Medina Clean",
+      purpose:
+        "Medina Clean es un sitio web bilingüe de servicios de limpieza y una app privada de operaciones que Rosa Medina usa para gestionar solicitudes de citas, horarios y videos de proyectos de su negocio local de limpieza cerca de Woodstock, GA.",
+      dataTitle: "Datos de Google que solicitamos y por qué",
+      scopes: [
+        [
+          "Google Calendar",
+          "Para crear y actualizar eventos de citas en el calendario y enviar invitaciones de horario para las limpiezas que Rosa acepta."
+        ],
+        [
+          "YouTube (subir)",
+          "Para que Rosa publique sus propios videos de proyectos de limpieza de Medina Clean en su canal de YouTube desde la app privada de administración."
+        ]
+      ],
+      privacyCta: "Lea nuestra política de privacidad",
+      privacyNote:
+        "No vendemos sus datos. Los datos de usuario de Google se usan solo para ofrecer las funciones anteriores y se manejan según nuestra política de privacidad."
     },
     referral: {
       title: "$50 de crédito por referir",

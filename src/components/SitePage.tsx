@@ -347,6 +347,33 @@ export async function SitePage({ locale }: { locale: Locale }) {
         </div>
       </section>
 
+      <section className="section alt" id="app-info">
+        <div className="section-inner">
+          <div className="section-head">
+            <p className="eyebrow">{t.appInfo.eyebrow}</p>
+            <h2>{t.appInfo.title}</h2>
+            <p>
+              <strong>{t.appInfo.appName}</strong> — {t.appInfo.purpose}
+            </p>
+          </div>
+          <h3>{t.appInfo.dataTitle}</h3>
+          <div className="services-grid">
+            {t.appInfo.scopes.map(([scope, why]) => (
+              <article className="card service-card" key={scope}>
+                <h3>{scope}</h3>
+                <p>{why}</p>
+              </article>
+            ))}
+          </div>
+          <p className="note">{t.appInfo.privacyNote}</p>
+          <p>
+            <a className="button secondary" href="/privacy">
+              {t.appInfo.privacyCta}
+            </a>
+          </p>
+        </div>
+      </section>
+
       <footer className="footer" id="contact">
         <div className="footer-inner">
           <div>
@@ -360,6 +387,11 @@ export async function SitePage({ locale }: { locale: Locale }) {
               />
             </div>
             <p>{t.privacy}</p>
+            <p className="footer-links">
+              <a href="#app-info">{t.appInfo.eyebrow}</a>
+              <span aria-hidden> · </span>
+              <a href="/privacy">{t.appInfo.privacyCta}</a>
+            </p>
             <p>Built by <a href="https://northvalleyintel.com">Northvalley Intelligence LLC</a>.</p>
           </div>
           <div className="nav-actions">
