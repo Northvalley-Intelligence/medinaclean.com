@@ -356,9 +356,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
           <div className="section-head">
             <p className="eyebrow">{t.appInfo.eyebrow}</p>
             <h2>{t.appInfo.title}</h2>
-            <p>
-              <strong>{t.appInfo.appName}</strong> — {t.appInfo.purpose}
-            </p>
+            <p>{t.appInfo.purpose}</p>
           </div>
           <h3>{t.appInfo.dataTitle}</h3>
           <div className="services-grid">
