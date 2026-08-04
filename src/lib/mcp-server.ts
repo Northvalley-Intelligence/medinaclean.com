@@ -3,6 +3,13 @@ import { z } from "zod";
 import { getMcpEstimate } from "./mcp-estimate";
 import { checkServiceArea, getPricingRules, listServices } from "./mcp-readonly-tools";
 import { requestAppointment } from "./mcp-request-appointment";
+import {
+  APPOINTMENT_FORM_TEMPLATE_URI,
+  ESTIMATE_CARD_TEMPLATE_URI,
+  UI_TEMPLATE_MIME_TYPE,
+  appointmentRequestTemplateHtml,
+  estimateCardTemplateHtml
+} from "./mcp-ui";
 
 // GEN-001 TASK-007 — the agent-native MCP server. Registers the five tools over the existing
 // business logic (TASK-005/006/008/009). Descriptions are action-oriented and carry chaining hints
@@ -18,6 +25,16 @@ function toolResult(result: unknown) {
   return { content: [{ type: "text" as const, text: JSON.stringify(result) }] };
 }
 
+// For tools that drive an inline UI: return structuredContent (with language) so the output-template
+// resource can render the card/form before the model's text.
+function toolResultWithUi(result: Record<string, unknown>, language: "en" | "es") {
+  const structured = { ...result, language };
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(structured) }],
+    structuredContent: structured
+  };
+}
+
 export function buildMcpServer(): McpServer {
   const server = new McpServer(
     { name: "medina-clean", version: "1.0.0" },
@@ -25,6 +42,24 @@ export function buildMcpServer(): McpServer {
       instructions:
         "Book a Medina Clean house cleaning near Woodstock, GA. Typical flow: call check_service_area with the ZIP, then get_estimate for a starting price, then request_appointment. request_appointment only REQUESTS an appointment — Rosa reviews and confirms; it never confirms a booking."
     }
+  );
+
+  // Inline UI templates (TASK-011) rendered from tool structuredContent by UI-capable assistants.
+  server.registerResource(
+    "estimate-card",
+    ESTIMATE_CARD_TEMPLATE_URI,
+    { title: "Estimate card", mimeType: UI_TEMPLATE_MIME_TYPE },
+    async (uri) => ({
+      contents: [{ uri: uri.href, mimeType: UI_TEMPLATE_MIME_TYPE, text: estimateCardTemplateHtml() }]
+    })
+  );
+  server.registerResource(
+    "appointment-request",
+    APPOINTMENT_FORM_TEMPLATE_URI,
+    { title: "Appointment request", mimeType: UI_TEMPLATE_MIME_TYPE },
+    async (uri) => ({
+      contents: [{ uri: uri.href, mimeType: UI_TEMPLATE_MIME_TYPE, text: appointmentRequestTemplateHtml() }]
+    })
   );
 
   server.registerTool(
@@ -69,6 +104,7 @@ export function buildMcpServer(): McpServer {
       title: "Get a starting estimate",
       description:
         "Give an instant STARTING estimate (Rosa confirms the final price after seeing the property). Run check_service_area first. small_business and post-construction return no auto-quote (Rosa estimates onsite). Every priced estimate carries assumptions/disclaimers.",
+      _meta: { "openai/outputTemplate": ESTIMATE_CARD_TEMPLATE_URI },
       inputSchema: {
         bedrooms: z.number().int().min(1).max(5).describe("Number of bedrooms (1-5)."),
         bathrooms: z.number().min(1).max(6).describe("Number of bathrooms (1-6)."),
@@ -83,7 +119,7 @@ export function buildMcpServer(): McpServer {
       }
     },
     async ({ bedrooms, bathrooms, frequency, addons, condition }) =>
-      toolResult(getMcpEstimate({ bedrooms, bathrooms, frequency, addons, condition }))
+      toolResultWithUi(getMcpEstimate({ bedrooms, bathrooms, frequency, addons, condition }), "en")
   );
 
   server.registerTool(
@@ -92,6 +128,7 @@ export function buildMcpServer(): McpServer {
       title: "Request an appointment",
       description:
         "Submit an appointment REQUEST to Rosa. This does NOT confirm the appointment — Rosa reviews the address, timing, and property before accepting, then contacts the customer. Run check_service_area first. Collect name, phone, address, ZIP, service type, bedrooms, bathrooms, and up to three preferred times.",
+      _meta: { "openai/outputTemplate": APPOINTMENT_FORM_TEMPLATE_URI },
       inputSchema: {
         name: z.string().describe("Customer full name."),
         phone: z.string().describe("US phone number Rosa can call/text."),
@@ -111,7 +148,7 @@ export function buildMcpServer(): McpServer {
         secret: z.string().optional().describe("Optional shared secret if the deployment requires one.")
       }
     },
-    async (input) => toolResult(await requestAppointment(input))
+    async (input) => toolResultWithUi(await requestAppointment(input), input.language === "es" ? "es" : "en")
   );
 
   return server;

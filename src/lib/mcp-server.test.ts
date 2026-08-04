@@ -42,6 +42,25 @@ describe("buildMcpServer", () => {
     expect(parse(result as never)).toMatchObject({ estimate: 200, currency: "USD" });
   });
 
+  it("registers the inline UI templates as resources (TASK-011)", async () => {
+    const { resources } = await client.listResources();
+    const uris = resources.map((r) => r.uri);
+    expect(uris).toContain("ui://medina-clean/estimate-card");
+    expect(uris).toContain("ui://medina-clean/appointment-request");
+  });
+
+  it("get_estimate carries structuredContent and an output-template for the inline card", async () => {
+    const { tools } = await client.listTools();
+    const estimateTool = tools.find((t) => t.name === "get_estimate");
+    expect(estimateTool?._meta?.["openai/outputTemplate"]).toBe("ui://medina-clean/estimate-card");
+
+    const result = (await client.callTool({
+      name: "get_estimate",
+      arguments: { bedrooms: 3, bathrooms: 2, frequency: "biweekly" }
+    })) as { structuredContent?: Record<string, unknown> };
+    expect(result.structuredContent).toMatchObject({ estimate: 150, language: "en" });
+  });
+
   it("check_service_area gates the home ZIP", async () => {
     const result = await client.callTool({ name: "check_service_area", arguments: { zip: "30188" } });
     expect(parse(result as never)).toMatchObject({ eligible: true, zip: "30188" });
