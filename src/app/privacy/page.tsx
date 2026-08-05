@@ -37,12 +37,30 @@ export default function PrivacyPage() {
             </p>
           </details>
           <details open>
-            <summary>Data sharing</summary>
-            <p>Data is not sold. The site may use hosting and database providers to operate the website.</p>
+            <summary>Who receives the data</summary>
+            <p>
+              Data is not sold. It is shared only with the service providers that operate the website and its
+              booking flow: Rosa Medina (the business owner, who receives appointment requests), the database and
+              hosting providers, and the email provider used to notify Rosa of a request. Appointment requests
+              submitted from an AI assistant (via the Medina Clean MCP connector) follow the same path. No advertising
+              networks or data brokers are involved.
+            </p>
           </details>
           <details open>
-            <summary>Deletion requests</summary>
-            <p>Clients may ask Rosa to remove appointment information or an approved review from the website.</p>
+            <summary>Data retention</summary>
+            <p>
+              Appointment requests are kept only as long as needed to respond to and service the request, and are
+              removed on request. Reviews are kept until the client asks to remove them. Low-resolution review photos
+              are stored only for approved, consented reviews and deleted when a review is removed.
+            </p>
+          </details>
+          <details open>
+            <summary>Deletion requests &amp; contact</summary>
+            <p>
+              Clients may ask Rosa to remove appointment information or an approved review at any time. For any
+              privacy request or question, contact Medina Clean at (470) 781-4143, or Northvalley Intelligence LLC at
+              contact@northvalleyintel.com.
+            </p>
           </details>
         </div>
       </div>

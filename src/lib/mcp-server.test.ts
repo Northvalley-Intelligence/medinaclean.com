@@ -34,6 +34,15 @@ describe("buildMcpServer", () => {
     ]);
   });
 
+  it("annotates read tools read-only and the write tool as not read-only (directory requirement)", async () => {
+    const { tools } = await client.listTools();
+    const byName = Object.fromEntries(tools.map((t) => [t.name, t]));
+    for (const name of ["check_service_area", "list_services", "get_pricing_rules", "get_estimate"]) {
+      expect(byName[name].annotations?.readOnlyHint).toBe(true);
+    }
+    expect(byName["request_appointment"].annotations?.readOnlyHint).toBe(false);
+  });
+
   it("get_estimate returns the deterministic starting price", async () => {
     const result = await client.callTool({
       name: "get_estimate",
