@@ -66,7 +66,7 @@ export function buildMcpServer(): McpServer {
     "check_service_area",
     {
       title: "Check service area",
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
       description:
         "Check whether a US ZIP code is inside Medina Clean's cleaning service area (about 20 miles of Woodstock, GA 30188). Call this FIRST, before get_estimate or request_appointment. Returns eligibility and a customer-facing message.",
       inputSchema: {
@@ -81,7 +81,7 @@ export function buildMcpServer(): McpServer {
     "list_services",
     {
       title: "List cleaning services",
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
       description:
         "List the cleaning services Medina Clean offers: houses, apartments, condos, small business, and post-construction cleanup.",
       inputSchema: { language: languageSchema }
@@ -93,7 +93,7 @@ export function buildMcpServer(): McpServer {
     "get_pricing_rules",
     {
       title: "Get pricing rules",
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
       description:
         "Get Medina Clean's published starting-rate pricing rules as structured data. Use this to explain how estimates are calculated.",
       inputSchema: {}
@@ -105,7 +105,7 @@ export function buildMcpServer(): McpServer {
     "get_estimate",
     {
       title: "Get a starting estimate",
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
       description:
         "Give an instant STARTING estimate (Rosa confirms the final price after seeing the property). Run check_service_area first. small_business and post-construction return no auto-quote (Rosa estimates onsite). Every priced estimate carries assumptions/disclaimers.",
       _meta: { "openai/outputTemplate": ESTIMATE_CARD_TEMPLATE_URI },

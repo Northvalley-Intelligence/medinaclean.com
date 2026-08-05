@@ -38,9 +38,17 @@ describe("buildMcpServer", () => {
     const { tools } = await client.listTools();
     const byName = Object.fromEntries(tools.map((t) => [t.name, t]));
     for (const name of ["check_service_area", "list_services", "get_pricing_rules", "get_estimate"]) {
-      expect(byName[name].annotations?.readOnlyHint).toBe(true);
+      expect(byName[name].annotations).toMatchObject({
+        readOnlyHint: true,
+        openWorldHint: false,
+        destructiveHint: false
+      });
     }
-    expect(byName["request_appointment"].annotations?.readOnlyHint).toBe(false);
+    expect(byName["request_appointment"].annotations).toMatchObject({
+      readOnlyHint: false,
+      destructiveHint: false,
+      openWorldHint: true
+    });
   });
 
   it("get_estimate returns the deterministic starting price", async () => {
