@@ -394,6 +394,8 @@ export async function SitePage({ locale }: { locale: Locale }) {
               <a href="#app-info">{t.appInfo.eyebrow}</a>
               <span aria-hidden> · </span>
               <a href="/privacy">{t.appInfo.privacyCta}</a>
+              <span aria-hidden> · </span>
+              <a href="/terms">{locale === "en" ? "Terms" : "Términos"}</a>
             </p>
             <p>Built by <a href="https://northvalleyintel.com">Northvalley Intelligence LLC</a>.</p>
           </div>
