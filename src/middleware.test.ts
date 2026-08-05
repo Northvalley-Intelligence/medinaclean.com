@@ -16,4 +16,12 @@ describe("SEO middleware redirects", () => {
     expect(response.status).toBe(308);
     expect(response.headers.get("location")).toBe("https://medinaclean.com/en/deep-cleaning-woodstock-ga");
   });
+
+  it("serves the OpenAI Apps domain-verification challenge token as plain text", async () => {
+    const response = middleware(new NextRequest("https://medinaclean.com/.well-known/openai-apps-challenge"));
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/plain");
+    expect(await response.text()).toBe("rELKH6yMIsvWfgD3kK4AJL9mMOGRWTfMRtZh0tLtaSg");
+  });
 });
