@@ -19,8 +19,18 @@ describe("getApprovedReviewsPage", () => {
   });
 
   it("returns empty when Supabase is not configured", async () => {
+    // Explicitly clear env — the deploy workflow runs tests with real Supabase vars set, so we must not
+    // rely on ambient absence (that made this fetch production data and fail).
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "");
+    vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "");
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
     const { getApprovedReviewsPage } = await import("./supabase-rest");
     expect(await getApprovedReviewsPage("en", 1)).toEqual({ reviews: [], page: 1, hasPrev: false, hasNext: false });
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("returns a full page, detects a next page, and filters approved+consented by language", async () => {
