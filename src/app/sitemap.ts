@@ -28,6 +28,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8
     },
+    {
+      url: `${siteUrl}/en/reviews`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.7
+    },
+    {
+      url: `${siteUrl}/es/reviews`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.7
+    },
     ...localServicePages.map((page) => ({
       url: `${siteUrl}/${page.locale}/${page.slug}`,
       lastModified: new Date(),
