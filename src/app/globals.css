@@ -1888,3 +1888,21 @@ textarea {
     width: 100%;
   }
 }
+
+.reviews-see-all {
+  margin-top: 22px;
+  text-align: center;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.pagination-page {
+  color: var(--muted);
+  font-weight: 700;
+}

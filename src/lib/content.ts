@@ -40,7 +40,7 @@ type SiteCopy = {
   };
   referral: { title: string; topline: string; body: string };
   gallery: { title: string; body: string; videos: string[]; action: string };
-  reviews: { title: string; body: string; empty: string; formTitle: string };
+  reviews: { title: string; body: string; empty: string; formTitle: string; seeAll: string };
   schedule: { title: string; body: string; formTitle: string; submit: string };
   faq: { title: string; items: string[][] };
   aboutPage: {
@@ -269,7 +269,8 @@ export const copy = {
       body:
         "Reviews appear here only after Rosa approves them. Photo reviews require permission and are saved as low-resolution images.",
       empty: "Approved reviews will appear here after launch.",
-      formTitle: "Leave a review"
+      formTitle: "Leave a review",
+      seeAll: "See all reviews"
     },
     schedule: {
       title: "Request an appointment",
@@ -471,7 +472,8 @@ export const copy = {
       body:
         "Las reseñas aparecen aquí solo después de la aprobación de Rosa. Las fotos requieren permiso y se guardan en baja resolución.",
       empty: "Las reseñas aprobadas aparecerán aquí después del lanzamiento.",
-      formTitle: "Dejar una reseña"
+      formTitle: "Dejar una reseña",
+      seeAll: "Ver todas las reseñas"
     },
     schedule: {
       title: "Solicitar una cita",

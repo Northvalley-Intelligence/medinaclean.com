@@ -228,6 +228,63 @@ export async function getApprovedReviews(language: "en" | "es") {
   return (await response.json().catch(() => [])) as ApprovedReview[];
 }
 
+export type ApprovedReviewsPage = {
+  reviews: ApprovedReview[];
+  page: number;
+  hasPrev: boolean;
+  hasNext: boolean;
+};
+
+// Paginated approved+consented reviews for the /reviews page. Fetches one extra row to detect a next page.
+export async function getApprovedReviewsPage(
+  language: "en" | "es",
+  page: number,
+  pageSize = 12
+): Promise<ApprovedReviewsPage> {
+  const safePage = Math.max(1, Math.floor(Number(page)) || 1);
+  const offset = (safePage - 1) * pageSize;
+  const empty: ApprovedReviewsPage = { reviews: [], page: safePage, hasPrev: safePage > 1, hasNext: false };
+
+  const key = serviceKey || publishableKey;
+  if (!url || !key) {
+    return empty;
+  }
+
+  const params = new URLSearchParams({
+    select: "id,name,rating,message,photo_path,created_at",
+    status: "eq.approved",
+    consent_to_publish: "eq.true",
+    language: `eq.${language}`,
+    order: "created_at.desc",
+    offset: String(offset),
+    limit: String(pageSize + 1)
+  });
+
+  let response: Response;
+  try {
+    response = await fetch(`${url}/rest/v1/reviews?${params.toString()}`, {
+      headers: { apikey: key, authorization: `Bearer ${key}` },
+      next: { revalidate: 300 }
+    });
+  } catch (error) {
+    console.error("Supabase reviews page fetch failed", error);
+    return empty;
+  }
+
+  if (!response.ok) {
+    console.error(`Supabase reviews page fetch failed: ${await response.text()}`);
+    return empty;
+  }
+
+  const rows = (await response.json().catch(() => [])) as ApprovedReview[];
+  return {
+    reviews: rows.slice(0, pageSize),
+    page: safePage,
+    hasPrev: safePage > 1,
+    hasNext: rows.length > pageSize
+  };
+}
+
 export async function getPublicSiteVideos() {
   const key = serviceKey || publishableKey;
   if (!url || !key) {
