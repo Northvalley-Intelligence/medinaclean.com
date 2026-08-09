@@ -15,11 +15,16 @@ const aiAnswerAgents = [
   "CCBot"
 ];
 
+// Endpoints/APIs are not indexable content (e.g. GET /mcp returns 405). Disallow them so search
+// engines stop trying to index them and reporting 4xx "not indexed" noise. Does not affect the MCP
+// server's use by assistants (that's a POST from the assistant runtime, not crawling).
+const disallowedPaths = ["/api/", "/mcp"];
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      { userAgent: "*", allow: "/" },
-      { userAgent: aiAnswerAgents, allow: "/" }
+      { userAgent: "*", allow: "/", disallow: disallowedPaths },
+      { userAgent: aiAnswerAgents, allow: "/", disallow: disallowedPaths }
     ],
     sitemap: "https://medinaclean.com/sitemap.xml",
     host: "https://medinaclean.com"
