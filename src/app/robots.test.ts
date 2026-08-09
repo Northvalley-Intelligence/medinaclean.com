@@ -14,4 +14,12 @@ describe("robots", () => {
     expect(aiRule?.allow).toBe("/");
     expect(result.sitemap).toBe("https://medinaclean.com/sitemap.xml");
   });
+
+  it("disallows API/MCP endpoints for all crawlers", () => {
+    const rules = robots().rules;
+    const list = Array.isArray(rules) ? rules : [rules];
+    for (const rule of list) {
+      expect(rule.disallow).toEqual(expect.arrayContaining(["/api/", "/mcp"]));
+    }
+  });
 });
