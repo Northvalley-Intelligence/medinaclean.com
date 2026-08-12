@@ -261,19 +261,15 @@ test("website appointment form validates empty street address on blur", async ({
   await expect(schedule).toContainText("Enter the street address.");
 });
 
-test("website pricing table shows Rosa's current estimate amounts", async ({ page }) => {
+test("website pricing section is a free-quote CTA with no published rates", async ({ page }) => {
   await page.goto("/en");
 
   const pricing = page.locator("#pricing");
-  await expect(pricing).toContainText("Use the guided estimate below to customize bedrooms, bathrooms, frequency, and add-ons");
-  await expect(pricing).toContainText("$30 per bedroom + bathroom");
-  await expect(pricing).toContainText("$40 per bedroom + bathroom");
-  await expect(pricing).toContainText("First cleaning is double");
-  await expect(pricing).toContainText("Oven and refrigerator cleaning");
-  await expect(pricing).toContainText("$50");
-  await expect(pricing).toContainText("$80 if very dirty");
-  await expect(pricing).toContainText("Post-construction cleanup");
-  await expect(pricing).toContainText("Onsite inspection required");
+  await expect(pricing).toContainText("Free, personalized quotes");
+  await expect(pricing).toContainText("Rosa gives you a free, personalized quote");
+  await expect(pricing.getByRole("link", { name: "Request a free quote" })).toHaveAttribute("href", "#schedule");
+  // No published dollar rates on the marketing page.
+  await expect(pricing).not.toContainText("$");
 });
 
 test("website chat includes site-detail answers and post-construction onsite estimate", async ({ page }) => {

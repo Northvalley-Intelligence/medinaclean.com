@@ -16,7 +16,7 @@ type SiteCopy = {
   };
   services: { title: string; body: string; items: string[][] };
   serviceAreas: { title: string; body: string; note: string };
-  pricing: { title: string; body: string; headers: string[]; note: string };
+  pricing: { title: string; body: string; note: string; cta: string };
   chat: { title: string; body: string };
   assistants: {
     eyebrow: string;
@@ -138,7 +138,7 @@ export const copy = {
     nav: {
       services: "Services",
       about: "About Rosa",
-      pricing: "Pricing",
+      pricing: "Free quote",
       chat: "Chat estimate",
       reviews: "Reviews",
       schedule: "Request an appointment",
@@ -203,12 +203,12 @@ export const copy = {
         "Rosa still reviews the exact address, travel time, property condition, and schedule before accepting any appointment."
     },
     pricing: {
-      title: "Starting rate guide",
+      title: "Free, personalized quotes",
       body:
-        "Use the guided estimate below to customize bedrooms, bathrooms, frequency, and add-ons for your specific case. These rates explain the starting rules Rosa uses before confirming the final price.",
-      headers: ["Service", "Calculation", "Standard estimate", "Heavy condition", "Note"],
+        "Every home and schedule is different, so Rosa gives you a free, personalized quote for your specific space — no guesswork, no pressure. Request an appointment and Rosa will review the details and confirm everything with you directly.",
       note:
-        "Rates assume Rosa brings standard cleaning materials and the client is comfortable with those materials. Special product requests, specialty surfaces, heavy buildup, pet conditions, move-out cleaning, or unusual requirements may create additional charges decided case by case."
+        "Quotes assume Rosa brings standard cleaning materials and the client is comfortable with those materials. Special product requests, specialty surfaces, heavy buildup, pet conditions, move-out cleaning, or unusual requirements are handled case by case.",
+      cta: "Request a free quote"
     },
     chat: {
       title: "Get a guided estimate",
@@ -341,7 +341,7 @@ export const copy = {
     nav: {
       services: "Servicios",
       about: "Sobre Rosa",
-      pricing: "Precios",
+      pricing: "Cotización",
       chat: "Estimado por chat",
       reviews: "Reseñas",
       schedule: "Pedir una cita",
@@ -406,12 +406,12 @@ export const copy = {
         "Rosa siempre revisa la dirección exacta, tiempo de viaje, condición de la propiedad y horario antes de aceptar una cita."
     },
     pricing: {
-      title: "Guía de precios iniciales",
+      title: "Cotizaciones gratis y personalizadas",
       body:
-        "Use el estimado guiado abajo para personalizar habitaciones, baños, frecuencia y extras para su caso específico. Estos precios explican las reglas iniciales que Rosa usa antes de confirmar el precio final.",
-      headers: ["Servicio", "Cálculo", "Estimado normal", "Condición fuerte", "Nota"],
+        "Cada hogar y horario es diferente, así que Rosa le da una cotización gratis y personalizada para su espacio específico, sin adivinanzas ni presión. Pida una cita y Rosa revisará los detalles y confirmará todo con usted directamente.",
       note:
-        "Los precios asumen que Rosa trae materiales de limpieza estándar y que el cliente está de acuerdo con esos materiales. Solicitudes especiales de productos, superficies delicadas, acumulación fuerte, mascotas, mudanzas o requisitos especiales pueden tener cargos adicionales decididos caso por caso."
+        "Las cotizaciones asumen que Rosa trae materiales de limpieza estándar y que el cliente está de acuerdo con esos materiales. Solicitudes especiales de productos, superficies delicadas, acumulación fuerte, mascotas, mudanzas o requisitos especiales se manejan caso por caso.",
+      cta: "Pedir cotización gratis"
     },
     chat: {
       title: "Reciba un estimado guiado",
