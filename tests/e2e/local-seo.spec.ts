@@ -192,6 +192,9 @@ test("llms.txt gives AI answer engines accurate public Medina Clean facts", asyn
   const body = await response.text();
   expect(body).toContain("# Medina Clean");
   expect(body).toContain("Woodstock, GA");
-  expect(body).toContain("Rosa confirms the final price");
+  expect(body).toContain("free, personalized quote");
+  expect(body).toContain("No fixed public rates are advertised");
+  expect(body).not.toContain("$30");
+  expect(body).not.toContain("$150");
   expect(body).toContain("Do not claim licenses, insurance, certifications, awards, or years in business");
 });

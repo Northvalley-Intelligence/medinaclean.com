@@ -242,28 +242,12 @@ export async function SitePage({ locale }: { locale: Locale }) {
             <h2>{t.pricing.title}</h2>
             <p>{t.pricing.body}</p>
           </div>
-          <div className="pricing-wrap">
-            <table className="pricing">
-              <thead>
-                <tr>
-                  {t.pricing.headers.map((header) => (
-                    <th key={header}>{header}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {pricing.map((row) => (
-                  <tr key={row.item}>
-                    <td>{row.item}</td>
-                    <td>{row.calculation}</td>
-                    <td>{row.standard}</td>
-                    <td>{row.veryDirty}</td>
-                    <td>{row.notes}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <p className="reviews-see-all">
+            <a className="button primary" href="#schedule">
+              <CalendarCheck size={18} aria-hidden />
+              {t.pricing.cta}
+            </a>
+          </p>
           <p className="note">{t.pricing.note}</p>
         </div>
       </section>
@@ -487,7 +471,6 @@ function JsonLd({ locale }: { locale: Locale }) {
       "Cobb County GA"
     ],
     availableLanguage: ["English", "Spanish"],
-    priceRange: "$$",
     serviceType: [
       "House cleaning",
       "Apartment cleaning",
@@ -509,9 +492,7 @@ function JsonLd({ locale }: { locale: Locale }) {
       name: locale === "en" ? "Cleaning services" : "Servicios de limpieza",
       itemListElement: pricing.map((row) => ({
         "@type": "Offer",
-        name: row.item,
-        priceCurrency: "USD",
-        description: `${row.calculation}. ${row.standard}. ${row.veryDirty}.`
+        name: row.item
       }))
     }
   };
