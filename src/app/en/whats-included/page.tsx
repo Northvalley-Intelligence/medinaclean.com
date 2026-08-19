@@ -6,7 +6,7 @@ import { openGraphImage, twitterCard } from "@/lib/site-seo";
 const t = checklistCopy.en;
 
 export const metadata: Metadata = {
-  title: `${t.title} | Medina Clean`,
+  title: t.title,
   description: t.description,
   alternates: {
     canonical: `/en/${t.slug}`,
