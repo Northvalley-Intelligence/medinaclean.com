@@ -40,7 +40,25 @@ describe("public reviews", () => {
     await expect(getApprovedReviewsSummary()).resolves.toEqual({ count: 3, average: 4.7 });
   });
 
-  it("returns a null-average empty summary with no approved reviews or no Supabase config", async () => {
+  it("returns a null-average empty summary when Supabase is not configured", async () => {
+    // Explicitly clear every credential this module reads, rather than relying on the ambient
+    // environment having none set: CI job envs differ (the deploy workflow injects real Supabase
+    // secrets into every step, including the test step), so an implicit "unconfigured" test here
+    // previously made a real network call to production Supabase and asserted against live data.
+    // Also stub fetch to fail loudly so a real network call (production or otherwise) cannot pass
+    // silently even if the config check above is ever loosened. Tests must never touch Rosa's
+    // production Supabase project.
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "");
+    vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new Error("Test must not reach the network; Supabase is intentionally unconfigured here.");
+      })
+    );
+
     const { getApprovedReviewsSummary } = await import("./supabase-rest");
 
     await expect(getApprovedReviewsSummary()).resolves.toEqual({ count: 0, average: null });
