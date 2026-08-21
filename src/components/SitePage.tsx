@@ -19,6 +19,7 @@ import { AppointmentForm } from "@/components/AppointmentForm";
 import { ChatEstimateAgent } from "@/components/ChatEstimateAgent";
 import { ReviewCard } from "@/components/ReviewCard";
 import { ReviewForm } from "@/components/ReviewForm";
+import { checklistCopy } from "@/lib/checklist";
 import { copy, phone, phoneDisplay, pricing, projectVideos, type Locale } from "@/lib/content";
 import { localServicePages } from "@/lib/local-seo";
 import { googleMapsSearchUrl, openGraphImage } from "@/lib/site-seo";
@@ -213,6 +214,11 @@ export async function SitePage({ locale }: { locale: Locale }) {
               );
             })}
           </div>
+          <p className="reviews-see-all">
+            <a className="button secondary" href={`/${locale}/${checklistCopy[locale].slug}`}>
+              {checklistCopy[locale].servicesLinkLabel}
+            </a>
+          </p>
         </div>
       </section>
 

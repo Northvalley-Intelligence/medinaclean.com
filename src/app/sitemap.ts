@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { checklistCopy } from "@/lib/checklist";
 import { localServicePages } from "@/lib/local-seo";
 import { siteUrl } from "@/lib/site-seo";
 
@@ -24,6 +25,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${siteUrl}/es/sobre-rosa-medina`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8
+    },
+    {
+      url: `${siteUrl}/en/${checklistCopy.en.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8
+    },
+    {
+      url: `${siteUrl}/es/${checklistCopy.es.slug}`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8
