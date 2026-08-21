@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ReviewsPage } from "@/components/ReviewsPage";
 
 export const metadata: Metadata = {
-  title: "Reseñas de clientes | Medina Clean",
+  title: "Reseñas de clientes",
   description: "Lea reseñas aprobadas de clientes de Medina Clean para limpieza de casas, apartamentos y pequeños negocios cerca de Woodstock, GA.",
   alternates: {
     canonical: "/es/reviews",

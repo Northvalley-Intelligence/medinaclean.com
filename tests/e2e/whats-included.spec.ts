@@ -57,3 +57,44 @@ test("homepage services section links to the full checklist page in both languag
     "/es/que-incluye"
   );
 });
+
+// Regression for the sitewide doubled-title bug: the root layout's title template ("%s | Medina
+// Clean") appends the brand suffix, so every page's own metadata title must be bare — a page that
+// still includes "| Medina Clean" itself renders "X | Medina Clean | Medina Clean". Covers the
+// pages that had the doubled suffix (/en, /es, reviews, about-rosa, and one representative
+// local-service [slug] page) plus the two checklist pages this suite already covers above.
+//
+// Note: some titles (e.g. the Spanish checklist page, "Qué Incluye una Limpieza de Medina Clean")
+// legitimately end with the brand name as prose before the template's suffix is even added, so a
+// plain `.not.toContain("Medina Clean | Medina Clean")` false-positives on those. The real bug
+// signature is the " | Medina Clean" separator pattern appearing more than once — once for the
+// template's suffix, and again only if the page's own title wrongly included the suffix itself.
+test("no page title doubles the Medina Clean suffix", async ({ page }) => {
+  const paths = [
+    "/en",
+    "/es",
+    "/en/reviews",
+    "/es/reviews",
+    "/en/about-rosa-medina",
+    "/es/sobre-rosa-medina",
+    "/en/deep-cleaning-woodstock-ga",
+    "/es/limpieza-profunda-woodstock-ga",
+    "/en/whats-included",
+    "/es/que-incluye"
+  ];
+
+  for (const path of paths) {
+    await page.goto(path);
+    const title = await page.title();
+    const suffixOccurrences = title.split(" | Medina Clean").length - 1;
+    expect(suffixOccurrences, `${path} title: "${title}"`).toBe(1);
+    expect(title, `${path} title: "${title}"`).toMatch(/ \| Medina Clean$/);
+  }
+
+  // Root "/" shares its route segment with layout.tsx, so the template does NOT apply there (a
+  // Next.js metadata rule, not a bug) — the page must keep its own single "Medina Clean" prefix.
+  await page.goto("/");
+  const rootTitle = await page.title();
+  expect(rootTitle).toBe("Medina Clean | Cleaning Services near Woodstock and Marietta, GA");
+  expect(rootTitle.split("Medina Clean").length - 1, `/ title: "${rootTitle}"`).toBe(1);
+});

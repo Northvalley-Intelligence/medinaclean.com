@@ -3,7 +3,7 @@ import { AboutPage } from "@/components/AboutPage";
 import { openGraphImage, twitterCard } from "@/lib/site-seo";
 
 export const metadata: Metadata = {
-  title: "About Rosa Medina | Medina Clean",
+  title: "About Rosa Medina",
   description:
     "Learn about Rosa Medina, the owner-led Medina Clean process, local Woodstock-area cleaning services, real project proof, and transparent trust claims.",
   alternates: {

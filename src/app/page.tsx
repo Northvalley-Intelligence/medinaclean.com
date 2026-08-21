@@ -10,6 +10,10 @@ const description =
   "Medina Clean is the website and booking app for Rosa Medina's home and small-business cleaning service near Woodstock, GA. Check the service area, get a starting estimate, read reviews, and request an appointment online or from an AI assistant.";
 
 export const metadata: Metadata = {
+  // NOTE: this page.tsx shares the root "/" route segment with the layout.tsx that defines the
+  // title template ("%s | Medina Clean"). Next.js does not apply a layout's own template to a
+  // title set in that same segment, so this title renders verbatim (no suffix appended) and must
+  // keep the full brand name itself, unlike every other page below it in the tree.
   title: "Medina Clean | Cleaning Services near Woodstock and Marietta, GA",
   description,
   alternates: {

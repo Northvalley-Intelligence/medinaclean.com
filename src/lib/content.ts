@@ -165,7 +165,7 @@ export const copy = {
       items: [
         [
           "Owner-led and local",
-          "Rosa Medina reviews appointment requests, service scope, timing, and final pricing directly before a cleaning is accepted."
+          "Rosa Medina has run Medina Clean for more than 10 years, personally reviewing appointment requests, service scope, timing, and final pricing before a cleaning is accepted."
         ],
         [
           "Clear booking process",
@@ -325,6 +325,7 @@ export const copy = {
       ],
       facts: [
         ["Business", "Medina Clean"],
+        ["Years in business", "More than 10 years"],
         ["Owner contact", "Direct communication with Rosa Medina"],
         ["Service center", "Woodstock, GA 30188"],
         ["Languages", "English and Spanish"],
@@ -368,7 +369,7 @@ export const copy = {
       items: [
         [
           "Dueña local",
-          "Rosa Medina revisa solicitudes, alcance del servicio, horarios y precio final directamente antes de aceptar una limpieza."
+          "Rosa Medina dirige Medina Clean desde hace más de 10 años y revisa personalmente cada solicitud, el alcance del servicio, los horarios y el precio final antes de aceptar una limpieza."
         ],
         [
           "Proceso claro",
@@ -528,6 +529,7 @@ export const copy = {
       ],
       facts: [
         ["Negocio", "Medina Clean"],
+        ["Años en el negocio", "Más de 10 años"],
         ["Contacto de la dueña", "Comunicación directa con Rosa Medina"],
         ["Centro de servicio", "Woodstock, GA 30188"],
         ["Idiomas", "Inglés y español"],
