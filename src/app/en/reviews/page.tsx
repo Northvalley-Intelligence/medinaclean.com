@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ReviewsPage } from "@/components/ReviewsPage";
 
 export const metadata: Metadata = {
-  title: "Customer Reviews | Medina Clean",
+  title: "Customer Reviews",
   description: "Read approved customer reviews for Medina Clean house, apartment, and small-business cleaning near Woodstock, GA.",
   alternates: {
     canonical: "/en/reviews",

@@ -23,7 +23,12 @@ import { checklistCopy } from "@/lib/checklist";
 import { copy, phone, phoneDisplay, pricing, projectVideos, type Locale } from "@/lib/content";
 import { localServicePages } from "@/lib/local-seo";
 import { googleMapsSearchUrl, openGraphImage } from "@/lib/site-seo";
-import { getApprovedReviews, getPublicSiteVideos } from "@/lib/supabase-rest";
+import {
+  type ApprovedReviewsSummary,
+  getApprovedReviews,
+  getApprovedReviewsSummary,
+  getPublicSiteVideos
+} from "@/lib/supabase-rest";
 import { mapVideoRow, type PublicVideo } from "@/lib/video-records";
 
 export async function SitePage({ locale }: { locale: Locale }) {
@@ -31,6 +36,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
   const otherLocale = locale === "en" ? "es" : "en";
   const aboutHref = locale === "en" ? "/en/about-rosa-medina" : "/es/sobre-rosa-medina";
   const approvedReviews = await getApprovedReviews(locale);
+  const reviewsSummary = await getApprovedReviewsSummary();
   const siteVideos = await getPublicSiteVideos();
   const videos = siteVideos.length > 0 ? siteVideos.map((video) => mapVideoRow(video, locale)) : fallbackVideos(locale);
   const serviceLinks = localServicePages.filter((page) => page.locale === locale && page.kind === "service");
@@ -38,7 +44,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
 
   return (
     <main className="site-shell">
-      <JsonLd locale={locale} />
+      <JsonLd locale={locale} reviewsSummary={reviewsSummary} />
       <header className="topbar">
         <a className="promo-strip" href="#referral">
           <Gift size={17} aria-hidden />
@@ -122,58 +128,6 @@ export async function SitePage({ locale }: { locale: Locale }) {
         ))}
       </section>
 
-      <section className="section alt" id="app-info">
-        <div className="section-inner">
-          <div className="section-head">
-            <p className="eyebrow">{t.appInfo.eyebrow}</p>
-            <h2>{t.appInfo.title}</h2>
-            <p>{t.appInfo.purpose}</p>
-          </div>
-          <h3>{t.appInfo.dataTitle}</h3>
-          <div className="services-grid">
-            {t.appInfo.scopes.map(([scope, why]) => (
-              <article className="card service-card" key={scope}>
-                <h3>{scope}</h3>
-                <p>{why}</p>
-              </article>
-            ))}
-          </div>
-          <p className="note">{t.appInfo.privacyNote}</p>
-          <p>
-            <a className="button secondary" href="/privacy">
-              {t.appInfo.privacyCta}
-            </a>
-          </p>
-        </div>
-      </section>
-
-      <section className="section trust-section" id="about">
-        <div className="section-inner trust-grid">
-          <div className="trust-copy">
-            <p className="eyebrow">{locale === "en" ? "Local trust" : "Confianza local"}</p>
-            <h2>{t.trust.title}</h2>
-            <p>{t.trust.body}</p>
-            <div className="trust-actions">
-              <a className="button primary" href={aboutHref}>
-                {t.trust.aboutCta}
-              </a>
-              <a className="button secondary" href={googleMapsSearchUrl} target="_blank" rel="noopener noreferrer">
-                <MapPin size={17} aria-hidden />
-                {t.trust.mapsCta}
-              </a>
-            </div>
-          </div>
-          <div className="trust-card-grid">
-            {t.trust.items.map(([title, body]) => (
-              <article className="card trust-card" key={title}>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="section alt reviews-section" id="reviews">
         <div className="section-inner">
           <div className="section-head">
@@ -219,6 +173,33 @@ export async function SitePage({ locale }: { locale: Locale }) {
               {checklistCopy[locale].servicesLinkLabel}
             </a>
           </p>
+        </div>
+      </section>
+
+      <section className="section trust-section" id="about">
+        <div className="section-inner trust-grid">
+          <div className="trust-copy">
+            <p className="eyebrow">{locale === "en" ? "Local trust" : "Confianza local"}</p>
+            <h2>{t.trust.title}</h2>
+            <p>{t.trust.body}</p>
+            <div className="trust-actions">
+              <a className="button primary" href={aboutHref}>
+                {t.trust.aboutCta}
+              </a>
+              <a className="button secondary" href={googleMapsSearchUrl} target="_blank" rel="noopener noreferrer">
+                <MapPin size={17} aria-hidden />
+                {t.trust.mapsCta}
+              </a>
+            </div>
+          </div>
+          <div className="trust-card-grid">
+            {t.trust.items.map(([title, body]) => (
+              <article className="card trust-card" key={title}>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -387,7 +368,7 @@ export async function SitePage({ locale }: { locale: Locale }) {
             </div>
             <p>{t.privacy}</p>
             <p className="footer-links">
-              <a href="#app-info">{t.appInfo.eyebrow}</a>
+              <a href="/privacy">{t.appInfo.eyebrow}</a>
               <span aria-hidden> · </span>
               <a href="/privacy">{t.appInfo.privacyCta}</a>
               <span aria-hidden> · </span>
@@ -452,7 +433,20 @@ function ReviewList({
   );
 }
 
-function JsonLd({ locale }: { locale: Locale }) {
+function JsonLd({ locale, reviewsSummary }: { locale: Locale; reviewsSummary: ApprovedReviewsSummary }) {
+  // Google Business Profile entity (Rosa's Knowledge Graph id) for entity consistency between the
+  // website and the GBP listing. Add more social profile URLs here if Rosa opens accounts.
+  const sameAs = ["https://www.google.com/search?kgmid=/g/11zcgpfjh8"];
+
+  const aggregateRating =
+    reviewsSummary.count > 0 && reviewsSummary.average !== null
+      ? {
+          "@type": "AggregateRating",
+          ratingValue: reviewsSummary.average,
+          reviewCount: reviewsSummary.count
+        }
+      : undefined;
+
   const cleaningService = {
     "@context": "https://schema.org",
     "@type": "CleaningService",
@@ -461,6 +455,8 @@ function JsonLd({ locale }: { locale: Locale }) {
     url: "https://medinaclean.com",
     image: openGraphImage.url,
     hasMap: googleMapsSearchUrl,
+    sameAs,
+    ...(aggregateRating ? { aggregateRating } : {}),
     founder: {
       "@type": "Person",
       name: "Rosa Medina"

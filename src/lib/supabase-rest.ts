@@ -191,6 +191,57 @@ export type ApprovedReview = {
   created_at: string;
 };
 
+export type ApprovedReviewsSummary = {
+  count: number;
+  average: number | null;
+};
+
+// Site-wide rating summary (both languages, since language only marks which language a review
+// was submitted in — not a translation of the same review) for aggregateRating structured data.
+// Real counts/average only; returns count 0 / average null when no approved reviews are readable.
+export async function getApprovedReviewsSummary(): Promise<ApprovedReviewsSummary> {
+  const key = serviceKey || publishableKey;
+  const empty: ApprovedReviewsSummary = { count: 0, average: null };
+  if (!url || !key) {
+    return empty;
+  }
+
+  const params = new URLSearchParams({
+    select: "rating",
+    status: "eq.approved",
+    consent_to_publish: "eq.true",
+    limit: "1000"
+  });
+
+  let response: Response;
+  try {
+    response = await fetch(`${url}/rest/v1/reviews?${params.toString()}`, {
+      headers: {
+        apikey: key,
+        authorization: `Bearer ${key}`
+      },
+      next: { revalidate: 300 }
+    });
+  } catch (error) {
+    console.error("Supabase approved reviews summary fetch failed", error);
+    return empty;
+  }
+
+  if (!response.ok) {
+    console.error(`Supabase approved reviews summary fetch failed: ${await response.text()}`);
+    return empty;
+  }
+
+  const rows = (await response.json().catch(() => [])) as { rating: number }[];
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return empty;
+  }
+
+  const total = rows.reduce((sum, row) => sum + row.rating, 0);
+  const average = Math.round((total / rows.length) * 10) / 10;
+  return { count: rows.length, average };
+}
+
 export async function getApprovedReviews(language: "en" | "es") {
   const key = serviceKey || publishableKey;
   if (!url || !key) {

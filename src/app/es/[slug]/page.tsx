@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: LocalServiceRouteProps): Prom
   const alternatePage = getLocalServiceAlternate(page);
 
   return {
-    title: `${page.title} | Medina Clean`,
+    title: page.title,
     description: page.description,
     alternates: {
       canonical: `/es/${page.slug}`,
