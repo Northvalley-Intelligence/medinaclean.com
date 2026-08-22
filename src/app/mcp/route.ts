@@ -20,8 +20,20 @@ function withCors(response: Response): Response {
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
+// Optional deployment write-secret, read ONLY from a transport-level Authorization header
+// ("Bearer <secret>" or the raw value) — never a user-facing MCP tool argument (OpenAI
+// resubmission finding, 2026-08-22). Disabled (no effect) unless MCP_WRITE_SHARED_SECRET is set.
+function extractWriteSecret(request: Request): string | undefined {
+  const header = request.headers.get("authorization");
+  if (!header) {
+    return undefined;
+  }
+  const bearerMatch = /^Bearer\s+(.+)$/i.exec(header.trim());
+  return bearerMatch ? bearerMatch[1].trim() : header.trim();
+}
+
 export async function POST(request: Request): Promise<Response> {
-  const server = buildMcpServer();
+  const server = buildMcpServer({ writeSecret: extractWriteSecret(request) });
   const transport = new WebStandardStreamableHTTPServerTransport({ enableJsonResponse: true });
 
   try {

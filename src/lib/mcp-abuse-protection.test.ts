@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  containsSensitivePattern,
   enforceAppointmentRateLimit,
   evaluateThrottle,
   isHoneypotTripped,
@@ -42,6 +43,33 @@ describe("verifySharedSecret", () => {
     expect(verifySharedSecret("s3cret", "s3cret")).toBe(true);
     expect(verifySharedSecret("wrong", "s3cret")).toBe(false);
     expect(verifySharedSecret("", "s3cret")).toBe(false);
+  });
+});
+
+describe("containsSensitivePattern", () => {
+  it("is false for ordinary scheduling notes", () => {
+    expect(containsSensitivePattern("Has a dog, please use the side gate")).toBe(false);
+    expect(containsSensitivePattern("")).toBe(false);
+    expect(containsSensitivePattern(undefined)).toBe(false);
+  });
+
+  it("does not false-positive on phone numbers, addresses, or ISO times", () => {
+    expect(containsSensitivePattern("Call (470) 781-4143 before arriving")).toBe(false);
+    expect(containsSensitivePattern("Gate code near 100 Main Street, 30188")).toBe(false);
+    expect(containsSensitivePattern("Prefer 2026-08-10T09:00 if possible")).toBe(false);
+  });
+
+  it("flags a US SSN format", () => {
+    expect(containsSensitivePattern("My SSN is 123-45-6789")).toBe(true);
+  });
+
+  it("flags a Luhn-valid, formatted card number", () => {
+    expect(containsSensitivePattern("Card: 4111 1111 1111 1111")).toBe(true);
+    expect(containsSensitivePattern("4111-1111-1111-1111")).toBe(true);
+  });
+
+  it("does not flag a digit run that fails the Luhn check", () => {
+    expect(containsSensitivePattern("Order number 1234 5678 9012 3456")).toBe(false);
   });
 });
 

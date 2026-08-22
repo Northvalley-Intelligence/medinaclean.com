@@ -35,7 +35,16 @@ function toolResultWithUi(result: Record<string, unknown>, language: "en" | "es"
   };
 }
 
-export function buildMcpServer(): McpServer {
+export type BuildMcpServerOptions = {
+  // Optional deployment write-secret, sourced ONLY from a transport-level header/env by the
+  // caller (src/app/mcp/route.ts reads it off the Authorization header) — never a user-facing
+  // tool argument. See mcp-request-appointment.ts for the OpenAI-resubmission PII minimization
+  // note (2026-08-22).
+  writeSecret?: string;
+};
+
+export function buildMcpServer(options: BuildMcpServerOptions = {}): McpServer {
+  const { writeSecret } = options;
   const server = new McpServer(
     { name: "medina-clean", version: "1.0.0" },
     {
@@ -132,12 +141,14 @@ export function buildMcpServer(): McpServer {
       title: "Request an appointment",
       annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true },
       description:
-        "Submit an appointment REQUEST to Rosa. This does NOT confirm the appointment — Rosa reviews the address, timing, and property before accepting, then contacts the customer. Run check_service_area first. Collect name, phone, address, ZIP, service type, bedrooms, bathrooms, and up to three preferred times.",
+        "Submit an appointment REQUEST to Rosa. This does NOT confirm the appointment — Rosa reviews the address, timing, and property before accepting, then contacts the customer. Run check_service_area first. " +
+        "Collects only what an in-home cleaning visit requires: name, phone, and address/ZIP (so Rosa can identify, reach, and travel to the customer to review and confirm the request), plus service type, bedrooms, bathrooms, and up to three preferred times. " +
+        "Used solely to review and confirm this request — never sold, never used for anything else. Details: https://medinaclean.com/privacy",
       _meta: { "openai/outputTemplate": APPOINTMENT_FORM_TEMPLATE_URI },
       inputSchema: {
-        name: z.string().describe("Customer full name."),
-        phone: z.string().describe("US phone number Rosa can call/text."),
-        address: z.string().describe("Service street address."),
+        name: z.string().describe("Customer full name. Used only so Rosa can identify who the request is for."),
+        phone: z.string().describe("US phone number Rosa can call/text to confirm the request."),
+        address: z.string().describe("Service street address. Used only so Rosa can confirm the property and travel to it."),
         zip: z.string().describe("Service ZIP code (must be in-area)."),
         service_type: z.string().describe("Service type, e.g. 'Every 2 weeks' or 'First-time / one-time'."),
         bedrooms: z.number().int().min(1).max(5),
@@ -147,13 +158,21 @@ export function buildMcpServer(): McpServer {
           .min(1)
           .max(3)
           .describe("Up to three preferred date/times (ISO-8601 preferred)."),
-        notes: z.string().optional().describe("Optional notes (pets, access, special requests)."),
+        notes: z
+          .string()
+          .optional()
+          .describe(
+            "Brief access/scheduling notes only (e.g. pets, gate code, parking). Do NOT include health, payment, ID/SSN, or other sensitive information — such notes are rejected."
+          ),
         language: languageSchema,
-        honeypot: z.string().optional().describe("Anti-spam field. Leave empty."),
-        secret: z.string().optional().describe("Optional shared secret if the deployment requires one.")
+        honeypot: z.string().optional().describe("Anti-spam field. Leave empty.")
       }
     },
-    async (input) => toolResultWithUi(await requestAppointment(input), input.language === "es" ? "es" : "en")
+    async (input) =>
+      toolResultWithUi(
+        await requestAppointment({ ...input, secret: writeSecret }),
+        input.language === "es" ? "es" : "en"
+      )
   );
 
   return server;

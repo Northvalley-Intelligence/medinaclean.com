@@ -48,6 +48,43 @@ export function verifySharedSecret(provided: string | undefined | null, expected
   return mismatch === 0;
 }
 
+// Obvious-sensitive-pattern guard for free-text notes (OpenAI review finding: don't solicit or
+// accept more than necessary). Catches formatted card numbers (grouped digits, 13-19 total,
+// Luhn-valid) and US SSN format (XXX-XX-XXXX). Deliberately narrow — it must not false-positive
+// on ordinary scheduling notes like addresses, gate codes, or phone numbers.
+const SSN_PATTERN = /\b\d{3}-\d{2}-\d{4}\b/;
+const CARD_LIKE_PATTERN = /\b\d{4}[ -]?\d{4}[ -]?\d{4}[ -]?\d{1,7}\b/;
+
+function luhnValid(digits: string): boolean {
+  let sum = 0;
+  let alternate = false;
+  for (let i = digits.length - 1; i >= 0; i -= 1) {
+    let d = digits.charCodeAt(i) - 48;
+    if (alternate) {
+      d *= 2;
+      if (d > 9) d -= 9;
+    }
+    sum += d;
+    alternate = !alternate;
+  }
+  return sum % 10 === 0;
+}
+
+export function containsSensitivePattern(value: string | undefined | null): boolean {
+  const text = String(value ?? "");
+  if (!text) {
+    return false;
+  }
+  if (SSN_PATTERN.test(text)) {
+    return true;
+  }
+  const cardMatches = text.match(new RegExp(CARD_LIKE_PATTERN, "g")) ?? [];
+  return cardMatches.some((match) => {
+    const digitsOnly = match.replace(/[ -]/g, "");
+    return digitsOnly.length >= 13 && digitsOnly.length <= 19 && luhnValid(digitsOnly);
+  });
+}
+
 export function evaluateThrottle({
   recentCount,
   maxPerWindow = DEFAULT_MAX_PER_WINDOW

@@ -51,6 +51,23 @@ describe("requestAppointment — success (BDD-011)", () => {
     expect(persisted[0]).not.toHaveProperty("status");
   });
 
+  // OpenAI resubmission finding (2026-08-22): return no unnecessary personal identifiers.
+  // The success response must carry only status/reference/next-step text — never an echo of the
+  // submitted name, phone, address, or notes.
+  it("echoes no submitted PII back in the success response", async () => {
+    const { d } = deps();
+    const result = await requestAppointment(baseInput, d);
+
+    expect(result.ok).toBe(true);
+    const keys = Object.keys(result);
+    expect(keys.sort()).toEqual(["message", "ok", "request_id", "status"]);
+    const serialized = JSON.stringify(result);
+    expect(serialized).not.toContain(baseInput.name);
+    expect(serialized).not.toContain(baseInput.phone);
+    expect(serialized).not.toContain(baseInput.address);
+    expect(serialized).not.toContain(baseInput.notes);
+  });
+
   it("returns a Spanish confirmation when language is es", async () => {
     const { d } = deps();
     const result = await requestAppointment({ ...baseInput, language: "es" }, d);
@@ -103,5 +120,26 @@ describe("requestAppointment — abuse & validation gates", () => {
     const { d, persisted } = deps();
     await requestAppointment(baseInput, d);
     expect(persisted[0].phone).toBe("+14705550111");
+  });
+
+  it("rejects notes containing a formatted card number and never persists", async () => {
+    const { d, persist } = deps();
+    const result = await requestAppointment({ ...baseInput, notes: "Card: 4111 1111 1111 1111" }, d);
+    expect(result).toMatchObject({ ok: false, reason: "sensitive_notes", status: 400 });
+    expect(persist).not.toHaveBeenCalled();
+  });
+
+  it("rejects notes containing an SSN format and never persists", async () => {
+    const { d, persist } = deps();
+    const result = await requestAppointment({ ...baseInput, notes: "SSN 123-45-6789" }, d);
+    expect(result).toMatchObject({ ok: false, reason: "sensitive_notes", status: 400 });
+    expect(persist).not.toHaveBeenCalled();
+  });
+
+  it("allows ordinary access/scheduling notes through", async () => {
+    const { d, persist } = deps();
+    const result = await requestAppointment({ ...baseInput, notes: "Side gate code 4521, dog is friendly" }, d);
+    expect(result.ok).toBe(true);
+    expect(persist).toHaveBeenCalledTimes(1);
   });
 });
