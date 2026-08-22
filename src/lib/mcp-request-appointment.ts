@@ -4,6 +4,7 @@ import {
   type AppointmentRow
 } from "./appointment-intake";
 import {
+  containsSensitivePattern,
   countRecentAppointmentRequestsByPhone,
   enforceAppointmentRateLimit,
   isHoneypotTripped,
@@ -14,8 +15,15 @@ import { checkServiceArea, type McpLanguage } from "./mcp-readonly-tools";
 
 // GEN-001 TASK-009 — request_appointment write path for the agent-native MCP lane.
 // Composes the abuse gate (TASK-008) and the shared intake (extraction) into one flow:
-// honeypot -> shared secret -> phone -> ZIP in-area -> throttle -> persist pending -> report pending_review.
+// honeypot -> shared secret -> phone -> ZIP in-area -> sensitive-notes guard -> throttle ->
+// persist pending -> report pending_review.
 // The assistant REQUESTS; it never confirms. status is always "pending_review" on success (RISK-005).
+//
+// PII minimization (OpenAI resubmission, 2026-08-22 finding): `secret` is NOT part of the public
+// MCP tool schema (mcp-server.ts) — it is threaded in here only from a transport-level source
+// (the /mcp route reads it off a request header, never a user-facing tool argument). This type
+// still carries `secret` because this function is the shared write path used from that trusted
+// caller; it must never be re-exposed as a tool input.
 
 export type RequestAppointmentInput = {
   name: string;
@@ -44,6 +52,7 @@ export type RequestAppointmentRejectReason =
   | "invalid_secret"
   | "invalid_phone"
   | "out_of_area"
+  | "sensitive_notes"
   | "rate_limited"
   | "invalid_input";
 
@@ -81,6 +90,12 @@ export async function requestAppointment(
   const area = checkServiceArea({ zip: input.zip, language });
   if (!area.eligible) {
     return { ok: false, reason: "out_of_area", status: 400, message: area.message };
+  }
+
+  // 4b. Notes must be brief access/scheduling notes only — reject obvious sensitive patterns
+  // (card numbers, SSNs) rather than soliciting or persisting them (RISK-012).
+  if (containsSensitivePattern(input.notes)) {
+    return reject("sensitive_notes", 400, language);
   }
 
   // 5. $0 Supabase per-phone throttle.
@@ -151,6 +166,10 @@ function rejectMessage(reason: RequestAppointmentRejectReason, language: McpLang
     out_of_area: {
       en: "This ZIP appears outside the service area. Rosa can review it manually.",
       es: "Este ZIP parece estar fuera del área de servicio. Rosa puede revisarlo manualmente."
+    },
+    sensitive_notes: {
+      en: "Notes should only cover access or scheduling details. Please remove any card, SSN, health, or payment information and try again.",
+      es: "Las notas deben ser solo sobre acceso u horarios. Elimina cualquier número de tarjeta, SSN, o información de salud o pago e inténtalo de nuevo."
     },
     rate_limited: {
       en: "We've received several requests from this number recently. Rosa will follow up — please avoid resending.",
