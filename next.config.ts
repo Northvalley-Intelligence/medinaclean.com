@@ -1,4 +1,24 @@
+import { existsSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 import type { NextConfig } from "next";
+
+export const SHARED_OPENROUTER_ENV_FILE = join(homedir(), "code", ".northvalley", "openrouter.env");
+
+// Local dev only: fall back to the shared OpenRouter key file when no repo-local
+// env (.env.local, already loaded by Next) has set the key.
+export function loadSharedOpenRouterEnv(
+  phase: string,
+  file: string = SHARED_OPENROUTER_ENV_FILE,
+  env: Record<string, string | undefined> = process.env,
+  load: (path: string) => void = (path) => process.loadEnvFile(path)
+) {
+  if (phase !== PHASE_DEVELOPMENT_SERVER || env.OPENROUTER_API_KEY || !existsSync(file)) {
+    return;
+  }
+  load(file);
+}
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -45,4 +65,7 @@ const nextConfig: NextConfig = {
   }
 };
 
-export default nextConfig;
+export default function config(phase: string): NextConfig {
+  loadSharedOpenRouterEnv(phase);
+  return nextConfig;
+}
