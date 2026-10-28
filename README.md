@@ -482,6 +482,8 @@ npm run dev
 
 Copy `.env.example` to `.env.local` after creating a Supabase Free project.
 
+`npm run dev` only: if `OPENROUTER_API_KEY` is not set by `.env.local`, `next.config.ts` loads it from the shared file `~/code/.northvalley/openrouter.env` (when present). A repo-local value always wins; production builds and deploys are unaffected.
+
 For isolated local database and browser integration testing, see `docs/local-testing.md`.
 
 Useful test commands:
