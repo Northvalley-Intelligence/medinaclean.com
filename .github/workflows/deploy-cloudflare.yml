@@ -89,6 +89,29 @@ jobs:
       - name: Build Cloudflare worker
         run: npm run cf:build
 
+      - name: Workers-runtime check (wrangler dev, local)
+        run: |
+          set -euo pipefail
+          npx wrangler dev --local --port 8799 > "$RUNNER_TEMP/wrangler-dev.log" 2>&1 &
+          dev_pid=$!
+          trap 'kill "$dev_pid" 2>/dev/null || true' EXIT
+          failed=0
+          for path in /en /es; do
+            code=000
+            for attempt in $(seq 1 30); do
+              code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8799${path}" || true)
+              [ "$code" = "200" ] && break
+              sleep 2
+            done
+            echo "${path} -> ${code}"
+            [ "$code" = "200" ] || failed=1
+          done
+          if [ "$failed" -ne 0 ]; then
+            echo "Workers runtime did not serve 200 on /en and /es."
+            tail -n 40 "$RUNNER_TEMP/wrangler-dev.log" | sed -E 's/(key|token|secret|password)=[^ ]+/\1=***/Ig'
+            exit 1
+          fi
+
       - name: Sync Worker secrets
         run: |
           set -euo pipefail
@@ -140,3 +163,19 @@ jobs:
 
       - name: Deploy
         run: npx wrangler deploy
+
+      - name: Smoke test the live site
+        run: |
+          set -euo pipefail
+          failed=0
+          for path in / /en /es; do
+            code=000
+            for attempt in 1 2 3 4 5 6; do
+              code=$(curl -s -o /dev/null -w '%{http_code}' "${NEXT_PUBLIC_SITE_URL}${path}" || true)
+              case "$code" in 2??|3??) break ;; esac
+              [ "$attempt" -lt 6 ] && sleep 10
+            done
+            echo "${path} -> ${code}"
+            case "$code" in 2??|3??) ;; *) failed=1 ;; esac
+          done
+          exit "$failed"
